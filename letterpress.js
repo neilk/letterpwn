@@ -44,7 +44,6 @@ function getCacheDir(appDir) {
   if (!cacheDirStat.isDirectory()) {
     fs.mkdirSync(cacheDir);
   } else {
-    console.log(cacheDirStat.mode & 0700);
     if ((cacheDirStat.mode & 0700) !== 0700) {
       console.log("permissions are wrong for cacheDir: %s missing user %s %s %s",
                   cacheDir,
