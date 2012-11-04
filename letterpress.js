@@ -1,13 +1,34 @@
 var fs = require('fs');
+var path = require('path');
+var util = require('util');
 
-var cacheDir = process.env.HOME + '/.letterpressCache';
+
+// set up cache directory
+var appDir = path.dirname(process.argv[1]);
+
+var cacheDir = path.join(appDir, '.letterPressCache');
+var cacheDirStat = fs.statSync(cacheDir);
+if (!cacheDirStat.isDirectory()) {
+  fs.mkdirSync(cacheDir);
+} else {
+  console.log(cacheDirStat.mode & 0700);
+  if ((cacheDirStat.mode & 0700) !== 0700) {
+    console.log("permissions are wrong for cacheDir: %s missing user %s %s %s",
+                cacheDir,
+                cacheDirStat.mode & 0400 ? '' : 'read',
+                cacheDirStat.mode & 0200 ? '' : 'write',
+                cacheDirStat.mode & 0100 ? '' : 'execute/traverse');
+    process.exit(1);
+  }
+}
 
 var board, desired;
-
+// command line arguments
 // argv[0] is executing binary, argv[1] is scriptname
-var arg = process.argv.slice(2);
-var board = letterStringToCanonicalArray(arg[0]);
-var desired = letterStringToCanonicalArray(arg[1]);
+var commandLineArgs = process.argv.slice(2);
+var board = letterStringToCanonicalArray(commandLineArgs[0]);
+var desired = letterStringToCanonicalArray(commandLineArgs[1]);
+
 
 console.log(board);
 console.log(desired);
@@ -23,6 +44,6 @@ function letterStringToCanonicalArray(letterStr) {
   for (var i = 0; i < letterStr.length; i += 1) {
     arr.push(letterStr[i]);
   }
-  return arr;
+  return arr.sort();
 }
 
