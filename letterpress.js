@@ -33,9 +33,11 @@ function letterStringToCanonicalArray(letterStr) {
 }
 
 /**
- * Given directory, set up a cache directory with appropriate permissions.
+ * Given a directory, set up a cache directory with appropriate permissions.
+ * If and when we do this for reals, should be part of VM setup (Vagrant or whatever)
+ * Actually, this should all be memcacheable
  * Exits with error if cannot do so
- * @param {String} directory
+ * @param {String} directory appDir
  * @param {String} cache directory
  */
 function getCacheDir(appDir) {
