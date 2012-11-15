@@ -1,8 +1,8 @@
-var fs = require('fs');
-var path = require('path');
-var util = require('util');
-var lazy = require('lazy');
-
+var   fs = require('fs'),
+      path = require('path'),
+      util = require('util'),
+      lazy = require('lazy'),
+      events = require('events');
 
 // set up cache directory
 var appDir = path.dirname(process.argv[1]);
@@ -12,7 +12,7 @@ var wordFile = path.join(appDir, 'words.txt');
 // command line arguments
 // argv[0] is executing binary, argv[1] is scriptname
 var commandLineArgs = process.argv.slice(2);
-var board = letterStringToCanonicalArray(commandLineArgs[0]);
+var board = canonicalize(commandLineArgs[0]);
 
 if (board.length !== 25) {
   console.log("board must have 25 letters, instead has " + board.length);
@@ -21,7 +21,7 @@ if (board.length !== 25) {
 }
 var desired = [];
 if (typeof commandLineArgs[1] !== null) {
-  desired = letterStringToCanonicalArray(commandLineArgs[1]);
+  desired = canonicalize(commandLineArgs[1]);
 }
 console.log(board);
 console.log(desired);
@@ -46,16 +46,19 @@ function getPossibleWords(board) {
     function checkLine(line) {
       var wordStr = line.toString();
       wordStr = wordStr.replace(/\n/g, '');
-      var word = letterStringToCanonicalArray(wordStr);
+      var word = canonicalize(wordStr);
       if (isSubset(board, word)) {
-        words.push([wordStr, word]);
+        return [wordStr, word];
       }
+      console.log("processed " + word);
     }
 
     console.log("about to read...");
     var stream = fs.createReadStream(wordFile);
-    var lazyReader = new lazy(stream).lines.forEach(checkLine);
+    var reader = new lazy(stream).lines.forEach(checkLine).on('pipe');
     console.log("after read...");
+    console.log(reader);
+    process.exit(0);
 //    fs.writeFileSync(cachePath, words);
   // }
   return words;
@@ -94,16 +97,16 @@ function getDesiredMatcher(desired) {
 
 
 /**
- * Take a sorted array of characters
+ * Take string, return canonical sorted array of characters
  * @param {String} letters
  * @return {Array} of single character strings
  */
-function letterStringToCanonicalArray(letterStr) {
+function canonicalize(s) {
   var arr = [];
-  if (typeof letterStr === 'string') {
-    letterStr = letterStr.replace(/\W/g, '');
-    for (var i = 0; i < letterStr.length; i += 1) {
-      arr.push(letterStr[i]);
+  if (typeof s === 'string') {
+    s = s.replace(/\W/g, '');
+    for (var i = 0; i < s.length; i += 1) {
+      arr.push(s[i]);
     }
   }
   return arr.sort();
