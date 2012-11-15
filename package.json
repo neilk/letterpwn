@@ -1,0 +1,20 @@
+{
+  "name": "letterpress-cheat",
+  "description": "tool for winning at letterpress",
+  "version": "0.0.1",
+  "author": {
+    "name": "Neil Kandalgaonkar",
+    "email": "neilk@neilk.net",
+    "url": "http://neilk.net/"
+  },
+  "license": {
+    "type": "GPL2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/neilk/letterpress-cheat.git"
+  },
+  "dependencies": {
+    "lazy": ">=1.0.8"
+  }
+}
