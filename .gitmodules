@@ -1,6 +1,6 @@
 [submodule "node_modules/lazy"]
 	path = node_modules/lazy
-	url = git://github.com/pkrumins/node-lazy.git
+	url = git://github.com/neilk/node-lazy.git
 [submodule "node_modules/q"]
 	path = node_modules/q
 	url = git://github.com/kriskowal/q.git
