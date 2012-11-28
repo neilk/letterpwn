@@ -15,6 +15,5 @@
     "url": "http://github.com/neilk/letterpress-cheat.git"
   },
   "dependencies": {
-    "lazy": ">=1.0.8"
   }
 }
