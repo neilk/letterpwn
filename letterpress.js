@@ -163,7 +163,7 @@ function main() {
       var wordStrs = [];
       if (wordTuples.length) {
         for (var i = 0; i < wordTuples.length; i += 1) {
-          wordStrs.push(wordTuples[0]);
+          wordStrs.push(wordTuples[i][0]);
         }
         console.log(( wordStrs.sort(byLengthDescending) ).join(" "));
       }
