@@ -4,3 +4,9 @@
 [submodule "node_modules/q"]
 	path = node_modules/q
 	url = git://github.com/kriskowal/q.git
+[submodule "node_modules/step"]
+	path = node_modules/step
+	url = http://github.com/creationix/step.git
+[submodule "node_modules/async"]
+	path = node_modules/async
+	url = http://github.com/caolan/async.git
