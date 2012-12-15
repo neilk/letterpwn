@@ -98,7 +98,7 @@ function main() {
     return b.length - a.length;
   }
 
-  function readFromCache(cachePath, cont) {
+  function readFromCache(cachePath, isDesired, cont) {
     fs.readFile(cachePath, function (err, data) {
       if (err) {
         // ???
@@ -148,10 +148,19 @@ function main() {
       var wordSource;
       return function(isDesired, cont) {
         fs.stat(cachePath, function(err, stats) {
-          if (err.code !== 'ENOENT' && typeof stats !== 'undefined') {
+          if (err === null && typeof stats !== 'undefined') {
             readFromCache(cachePath, isDesired, cont);
           } else {
-            readFromStream(wordFile, isDesired, cont);
+            readFromStream(wordFile, isDesired, function(ws) {
+              fs.writeFile(cachePath, JSON.stringify(ws), function(err) {
+                if (err) {
+                  console.log("error writing cachefile to " + cachePath);
+                  /* ??? */
+                } else {
+                  cont(ws);
+                }
+              });
+            });
           }
         });
       };
@@ -183,7 +192,6 @@ function main() {
   var wordStrs = [];
   var cacheDir = getCacheDir(appDir, cont);
   function cont(cacheDir) {
-    console.log("cacheDir is " + cacheDir);
     var getBoardScanner = getScanner(cacheDir, wordFile);
     var getWordTuplesForBoard = getBoardScanner(board);
     var filteredWordsFn = function( wordTuples ) {
