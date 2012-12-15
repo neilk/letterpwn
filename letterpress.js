@@ -2,7 +2,7 @@ var   fs = require('fs'),
       path = require('path'),
       util = require('util'),
       lazy = require('lazy'),
-      events = require('events');
+      md5 = require('md5');
 
 function main() {
   /**
@@ -99,23 +99,6 @@ function main() {
   }
 
   /**
-   * Read list of word-tuples from cached JSON file, check if
-   * desired, then run callback with desired words
-   * @param {String}
-   * @param {Function}
-   * @param {Function}
-   */
-  function readFromCache(cachePath, cont) {
-    fs.readFile(cachePath, function (err, data) {
-      if (err) {
-        // ???
-      } else {
-        cont(JSON.parse(data));
-      }
-    });
-  }
-
-  /**
    * Read list of words from dictionary, line at a time
    * determine if possible words on this board
    * then determine if desired
@@ -124,7 +107,7 @@ function main() {
    * @param {String} wordFile
    * @param {Function} callback
    */
-  function readFromStream(board, wordFile, cont) {
+  function getWordTuplesForBoard(board, wordFile, cont) {
     var tuples = [];
     var stream = fs.createReadStream(wordFile);
     lazy(stream)
@@ -154,28 +137,58 @@ function main() {
      * Given a board, return word scanner
      */
     return function(board) {
-      var cachePath = path.join(cacheDir, board.join(""));
-      var wordSource;
-      return function(isDesired, cont) {
-        fs.stat(cachePath, function(err, stats) {
-          if (err === null && typeof stats !== 'undefined') {
-            readFromCache(cachePath, cont);
-          } else {
-            readFromStream(board, wordFile, function(ws) {
-              fs.writeFile(cachePath, JSON.stringify(ws), function(err) {
-                if (err) {
-                  console.log("error writing cachefile to " + cachePath);
-                  /* ??? */
-                } else {
-                  cont(ws);
-                }
-              });
-            });
-          }
-        });
+      return function(cont) {
       };
     };
   }
+
+  /**
+   * Given a cache directory, return a function that can be used to make
+   * other functions use an on-disk cache in that directory
+   * @param {String} cacheDir
+   * @return {Function}
+   */
+  function getCachizer(cacheDir) {
+    /**
+     * Given a function whose last argument is a callback,
+     * return a version that uses
+     * an on-disk JSON cache in cacheDir for the function, and then calls the
+     * callback with the results
+     * @param {Function}
+     * @return {Function}
+     */
+     return function(fn) {
+       return function() {
+         var args = Array.prototype.slice.call(arguments);
+         var cb = args.pop();
+         var cachePath = path.join(cacheDir, md5.digest_s(JSON.stringify(args)));
+         fs.stat(cachePath, function(err, stats) {
+           if (err === null && typeof stats !== 'undefined') {
+             // if we have it in cache, read it into the callback
+             fs.readFile(cachePath, function (err, data) {
+               if (err) {
+                 console.log("could not read from cache file " + cachePath);
+               } else {
+                 cb(JSON.parse(data));
+               }
+             });
+           } else {
+             // replace the original callback with one that writes results to cache
+             args.push( function(results) {
+               fs.writeFile(cachePath, JSON.stringify(results), function(err) {
+                 if (err) {
+                   console.log("error writing cachefile to " + cachePath);
+                 }
+                 cb(results);
+               });
+             });
+             fn.apply(null, args);
+           }
+         });
+       };
+     };
+  }
+
 
   // let's wheedle some walruses
 
@@ -202,8 +215,7 @@ function main() {
   var wordStrs = [];
   var cacheDir = getCacheDir(appDir, cont);
   function cont(cacheDir) {
-    var getBoardScanner = getScanner(cacheDir, wordFile);
-    var getWordTuplesForBoard = getBoardScanner(board);
+    var cachize = getCachizer(cacheDir);
     var filteredWordsFn = function(wordTuples) {
       var wordStrs = [];
       if (wordTuples.length) {
@@ -215,7 +227,8 @@ function main() {
         console.log(( wordStrs.sort(byLengthDescending) ).join(" "));
       }
     }
-    getWordTuplesForBoard(isDesired, filteredWordsFn);
+    var cachedGetWordTuplesForBoard = cachize(getWordTuplesForBoard);
+    cachedGetWordTuplesForBoard(board, wordFile, filteredWordsFn);
   }
 }
 
