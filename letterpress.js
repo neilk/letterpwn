@@ -149,6 +149,45 @@ function main() {
    * @return {Function}
    */
   function getCachizer(cacheDir) {
+
+    /**
+     * Read data from cache into a callback
+     * @param {String} cachePath
+     * @param {Function} cb
+     */
+    function readFromCache(cachePath, cb) {
+      // if we have it in cache, read it into the callback
+      fs.readFile(cachePath, function (err, data) {
+        if (err) {
+          console.log("could not read from cache file " + cachePath);
+        } else {
+          cb(JSON.parse(data));
+        }
+      });
+    }
+
+    /**
+     * Call a function with arguments, assuming last arg is a callback
+     * wrap final callback with our own
+     * which writes results to cache
+     * @param {String} cachePath
+     * @param {Function} fn - function to call
+     * @param {Array} args - arguments for function
+     * @param {Function} cb - callback to wrap
+     */
+    function writeToCache(cachePath, fn, args, cb) {
+      // replace the original callback with one that writes results to cache
+      args.push( function(results) {
+        fs.writeFile(cachePath, JSON.stringify(results), function(err) {
+          if (err) {
+            console.log("error writing cachefile to " + cachePath);
+          }
+          cb(results);
+        });
+      });
+      fn.apply(null, args);
+    }
+
     /**
      * Given a function whose last argument is a callback,
      * return a version that uses
@@ -164,25 +203,9 @@ function main() {
          var cachePath = path.join(cacheDir, md5.digest_s(JSON.stringify(args)));
          fs.stat(cachePath, function(err, stats) {
            if (err === null && typeof stats !== 'undefined') {
-             // if we have it in cache, read it into the callback
-             fs.readFile(cachePath, function (err, data) {
-               if (err) {
-                 console.log("could not read from cache file " + cachePath);
-               } else {
-                 cb(JSON.parse(data));
-               }
-             });
+             readFromCache(cachePath, cb);
            } else {
-             // replace the original callback with one that writes results to cache
-             args.push( function(results) {
-               fs.writeFile(cachePath, JSON.stringify(results), function(err) {
-                 if (err) {
-                   console.log("error writing cachefile to " + cachePath);
-                 }
-                 cb(results);
-               });
-             });
-             fn.apply(null, args);
+             writeToCache(cachePath, fn, args, cb);
            }
          });
        };
