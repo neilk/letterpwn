@@ -98,6 +98,40 @@ function main() {
     return b.length - a.length;
   }
 
+  function readFromCache(cachePath, cont) {
+    fs.readFile(cachePath, function (err, data) {
+      if (err) {
+        // ???
+      }
+      var desiredWs = [];
+      var ws = JSON.parse(data);
+      for (var i = 0; i < ws.length; i += 1) {
+        if (isDesired(ws[i][1])) {
+          desiredWs.push(ws[i]);
+        }
+      }
+      cont(desiredWs);
+    });
+  }
+
+  function readFromStream(wordFile, isDesired, cont) {
+    var tuples = [];
+    var stream = fs.createReadStream(wordFile);
+    lazy(stream)
+    .lines
+    .map( function(line) {
+      var wordStr = line.toString().replace(/\n/g, '');
+      return([wordStr, canonicalize(wordStr)])
+    } )
+    .filter( function( tuple ) {
+      return isSubset(board, tuple[1]) && isDesired(tuple[1]);
+    })
+    .join( function(wordTuples) {
+      cont(wordTuples);
+    } );
+  }
+
+
   /**
    * Given a board, determine all the words that could possibly go onto it
    * Relies on global variables cacheDir and wordFile
@@ -111,24 +145,17 @@ function main() {
      */
     return function(board) {
       var cachePath = path.join(cacheDir, board.join(""));
-      // return function given word & desiredFilter & callback; calls callback with filtered list of tuples
+      var wordSource;
       return function(isDesired, cont) {
-        var tuples = [];
-        var stream = fs.createReadStream(wordFile);
-        lazy(stream)
-          .lines
-          .map( function(line) {
-            var wordStr = line.toString().replace(/\n/g, '');
-            return([wordStr, canonicalize(wordStr)])
-          } )
-          .filter( function( tuple ) {
-            return isSubset(board, tuple[1]) && isDesired(tuple[1]);
-          })
-          .join( function(wordTuples) {
-            cont(wordTuples);
-          } );
-      }
-    }
+        fs.stat(cachePath, function(err, stats) {
+          if (err.code !== 'ENOENT' && typeof stats !== 'undefined') {
+            readFromCache(cachePath, isDesired, cont);
+          } else {
+            readFromStream(wordFile, isDesired, cont);
+          }
+        });
+      };
+    };
   }
 
   // let's wheedle some walruses
@@ -148,7 +175,7 @@ function main() {
   }
 
   var desired = [];
-  if (typeof commandLineArgs[1] !== null) {
+  if (typeof commandLineArgs[1] !== 'undefined') {
     desired = canonicalize(commandLineArgs[1]);
   }
   var isDesired = getDesiredMatcher(desired);
