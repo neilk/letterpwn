@@ -118,17 +118,17 @@ function main() {
     var tuples = [];
     var stream = fs.createReadStream(wordFile);
     lazy(stream)
-    .lines
-    .map( function(line) {
-      var wordStr = line.toString().replace(/\n/g, '');
-      return([wordStr, canonicalize(wordStr)])
-    } )
-    .filter( function( tuple ) {
-      return isSubset(board, tuple[1]) && isDesired(tuple[1]);
-    })
-    .join( function(wordTuples) {
-      cont(wordTuples);
-    } );
+      .lines
+      .map( function(line) {
+        var wordStr = line.toString().replace(/\n/g, '');
+        return([wordStr, canonicalize(wordStr)])
+      } )
+      .filter( function( tuple ) {
+        return isSubset(board, tuple[1]) && isDesired(tuple[1]);
+      })
+      .join( function(wordTuples) {
+        cont(wordTuples);
+      } );
   }
 
 
