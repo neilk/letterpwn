@@ -105,19 +105,13 @@ function main() {
    * @param {Function}
    * @param {Function}
    */
-  function readFromCache(cachePath, isDesired, cont) {
+  function readFromCache(cachePath, cont) {
     fs.readFile(cachePath, function (err, data) {
       if (err) {
         // ???
+      } else {
+        cont(JSON.parse(data));
       }
-      var desiredWs = [];
-      var ws = JSON.parse(data);
-      for (var i = 0; i < ws.length; i += 1) {
-        if (isDesired(ws[i][1])) {
-          desiredWs.push(ws[i]);
-        }
-      }
-      cont(desiredWs);
     });
   }
 
@@ -127,11 +121,10 @@ function main() {
    * then determine if desired
    * then run callback with desired words
    * @param {Array} board
-   * @param {String}
-   * @param {Function}
-   * @param {Function}
+   * @param {String} wordFile
+   * @param {Function} callback
    */
-  function readFromStream(board, wordFile, isDesired, cont) {
+  function readFromStream(board, wordFile, cont) {
     var tuples = [];
     var stream = fs.createReadStream(wordFile);
     lazy(stream)
@@ -141,7 +134,7 @@ function main() {
         return([wordStr, canonicalize(wordStr)])
       } )
       .filter( function( tuple ) {
-        return isSubset(board, tuple[1]) && isDesired(tuple[1]);
+        return isSubset(board, tuple[1]);
       })
       .join( function(wordTuples) {
         cont(wordTuples);
@@ -166,9 +159,9 @@ function main() {
       return function(isDesired, cont) {
         fs.stat(cachePath, function(err, stats) {
           if (err === null && typeof stats !== 'undefined') {
-            readFromCache(cachePath, isDesired, cont);
+            readFromCache(cachePath, cont);
           } else {
-            readFromStream(board, wordFile, isDesired, function(ws) {
+            readFromStream(board, wordFile, function(ws) {
               fs.writeFile(cachePath, JSON.stringify(ws), function(err) {
                 if (err) {
                   console.log("error writing cachefile to " + cachePath);
@@ -211,11 +204,13 @@ function main() {
   function cont(cacheDir) {
     var getBoardScanner = getScanner(cacheDir, wordFile);
     var getWordTuplesForBoard = getBoardScanner(board);
-    var filteredWordsFn = function( wordTuples ) {
+    var filteredWordsFn = function(wordTuples) {
       var wordStrs = [];
       if (wordTuples.length) {
         for (var i = 0; i < wordTuples.length; i += 1) {
-          wordStrs.push(wordTuples[i][0]);
+          if (isDesired(wordTuples[i][1])) {
+            wordStrs.push(wordTuples[i][0]);
+          }
         }
         console.log(( wordStrs.sort(byLengthDescending) ).join(" "));
       }
