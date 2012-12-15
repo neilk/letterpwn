@@ -98,6 +98,13 @@ function main() {
     return b.length - a.length;
   }
 
+  /**
+   * Read list of word-tuples from cached JSON file, check if
+   * desired, then run callback with desired words
+   * @param {String}
+   * @param {Function}
+   * @param {Function}
+   */
   function readFromCache(cachePath, isDesired, cont) {
     fs.readFile(cachePath, function (err, data) {
       if (err) {
@@ -114,7 +121,17 @@ function main() {
     });
   }
 
-  function readFromStream(wordFile, isDesired, cont) {
+  /**
+   * Read list of words from dictionary, line at a time
+   * determine if possible words on this board
+   * then determine if desired
+   * then run callback with desired words
+   * @param {Array} board
+   * @param {String}
+   * @param {Function}
+   * @param {Function}
+   */
+  function readFromStream(board, wordFile, isDesired, cont) {
     var tuples = [];
     var stream = fs.createReadStream(wordFile);
     lazy(stream)
@@ -151,7 +168,7 @@ function main() {
           if (err === null && typeof stats !== 'undefined') {
             readFromCache(cachePath, isDesired, cont);
           } else {
-            readFromStream(wordFile, isDesired, function(ws) {
+            readFromStream(board, wordFile, isDesired, function(ws) {
               fs.writeFile(cachePath, JSON.stringify(ws), function(err) {
                 if (err) {
                   console.log("error writing cachefile to " + cachePath);
