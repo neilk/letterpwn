@@ -235,7 +235,7 @@ function main() {
   }
   var isDesired = getDesiredMatcher(desired);
 
-  var filteredWordsFn = function(wordTuples) {
+  var printDesiredWords = function(wordTuples) {
     var wordStrs = [];
     if (wordTuples.length) {
       for (var i = 0; i < wordTuples.length; i += 1) {
@@ -247,10 +247,10 @@ function main() {
     }
   };
 
-  var cacheDir = getCacheDir(appDir, function(cacheDir) {
+  getCacheDir(appDir, function(cacheDir) {
     var cachize = getCachizer(cacheDir);
     var cachedGetWordTuplesForBoard = cachize(getWordTuplesForBoard);
-    cachedGetWordTuplesForBoard(board, wordFile, filteredWordsFn);
+    cachedGetWordTuplesForBoard(board, wordFile, printDesiredWords);
   });
 }
 
