@@ -4,6 +4,10 @@ var   fs = require('fs'),
       lazy = require('lazy'),
       md5 = require('md5');
 
+
+// N.b. throughout this program, "word" refers to a data structure which contains the original
+// word and a canonical representation of it
+
 function main() {
   /**
    * Given two sorted arrays of chars, determine if 2nd is subset of 1st
@@ -100,14 +104,18 @@ function main() {
 
   /**
    * Read list of words from dictionary, line at a time
-   * determine if possible words on this board
-   * then determine if desired
-   * then run callback with desired words
+   * determine possible words on this board
+   * then run callback with possible words
+   *
+   * n.b. the canonical representation can and should be
+   * cached, but then we'd have to slurp it into memory
+   * and run this as a daemon
+   *
    * @param {Array} board
    * @param {String} wordFile
    * @param {Function} callback
    */
-  function getWordTuplesForBoard(board, wordFile, cont) {
+  function getWordsForBoard(board, wordFile, cont) {
     var tuples = [];
     var stream = fs.createReadStream(wordFile);
     lazy(stream)
@@ -119,28 +127,11 @@ function main() {
       .filter( function( tuple ) {
         return isSubset(board, tuple[1]);
       })
-      .join( function(wordTuples) {
-        cont(wordTuples);
+      .join( function(words) {
+        cont(words);
       } );
   }
 
-
-  /**
-   * Given a board, determine all the words that could possibly go onto it
-   * Relies on global variables cacheDir and wordFile
-   * @param {String} cache directory
-   * @param {String} word file
-   * @return {Function}
-   */
-  function getScanner(cacheDir, wordFile) {
-    /**
-     * Given a board, return word scanner
-     */
-    return function(board) {
-      return function(cont) {
-      };
-    };
-  }
 
   /**
    * Given a cache directory, return a function that can be used to make
@@ -171,9 +162,9 @@ function main() {
      * wrap final callback with our own
      * which writes results to cache
      * @param {String} cachePath
-     * @param {Function} fn - function to call
-     * @param {Array} args - arguments for function
-     * @param {Function} cb - callback to wrap
+     * @param {Function} fn function to call
+     * @param {Array} args arguments for function
+     * @param {Function} cb callback to wrap
      */
     function writeToCache(cachePath, fn, args, cb) {
       // replace the original callback with one that writes results to cache
@@ -190,9 +181,12 @@ function main() {
 
     /**
      * Given a function whose last argument is a callback,
-     * return a version that uses
-     * an on-disk JSON cache in cacheDir for the function, and then calls the
+     * return a version that uses an on-disk JSON cache in cacheDir
+     * for the function, and then calls the
      * callback with the results
+     *
+     * n.b. functions that take functions as arguments, or rely
+     * on "this" context, won't work properly
      * @param {Function}
      * @return {Function}
      */
@@ -235,12 +229,12 @@ function main() {
   }
   var isDesired = getDesiredMatcher(desired);
 
-  var printDesiredWords = function(wordTuples) {
+  var printDesiredWords = function(words) {
     var wordStrs = [];
-    if (wordTuples.length) {
-      for (var i = 0; i < wordTuples.length; i += 1) {
-        if (isDesired(wordTuples[i][1])) {
-          wordStrs.push(wordTuples[i][0]);
+    if (words.length) {
+      for (var i = 0; i < words.length; i += 1) {
+        if (isDesired(words[i][1])) {
+          wordStrs.push(words[i][0]);
         }
       }
       console.log(( wordStrs.sort(byLengthDescending) ).join(" "));
@@ -249,8 +243,8 @@ function main() {
 
   getCacheDir(appDir, function(cacheDir) {
     var cachize = getCachizer(cacheDir);
-    var cachedGetWordTuplesForBoard = cachize(getWordTuplesForBoard);
-    cachedGetWordTuplesForBoard(board, wordFile, printDesiredWords);
+    var cachedGetWordsForBoard = cachize(getWordsForBoard);
+    cachedGetWordsForBoard(board, wordFile, printDesiredWords);
   });
 }
 
