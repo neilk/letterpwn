@@ -235,24 +235,23 @@ function main() {
   }
   var isDesired = getDesiredMatcher(desired);
 
-  var wordStrs = [];
-  var cacheDir = getCacheDir(appDir, cont);
-  function cont(cacheDir) {
-    var cachize = getCachizer(cacheDir);
-    var filteredWordsFn = function(wordTuples) {
-      var wordStrs = [];
-      if (wordTuples.length) {
-        for (var i = 0; i < wordTuples.length; i += 1) {
-          if (isDesired(wordTuples[i][1])) {
-            wordStrs.push(wordTuples[i][0]);
-          }
+  var filteredWordsFn = function(wordTuples) {
+    var wordStrs = [];
+    if (wordTuples.length) {
+      for (var i = 0; i < wordTuples.length; i += 1) {
+        if (isDesired(wordTuples[i][1])) {
+          wordStrs.push(wordTuples[i][0]);
         }
-        console.log(( wordStrs.sort(byLengthDescending) ).join(" "));
       }
+      console.log(( wordStrs.sort(byLengthDescending) ).join(" "));
     }
+  };
+
+  var cacheDir = getCacheDir(appDir, function(cacheDir) {
+    var cachize = getCachizer(cacheDir);
     var cachedGetWordTuplesForBoard = cachize(getWordTuplesForBoard);
     cachedGetWordTuplesForBoard(board, wordFile, filteredWordsFn);
-  }
+  });
 }
 
 main();
