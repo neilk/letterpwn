@@ -57,7 +57,7 @@ function main() {
     return arr.sort();
   }
 
-  /*
+  /**
    * Given a directory, set up a cache directory with appropriate permissions.
    * If and when we do this for reals, should be part of VM setup (Vagrant or whatever)
    * Actually, this should all be memcacheable
