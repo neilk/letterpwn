@@ -10,6 +10,3 @@
 [submodule "node_modules/async"]
 	path = node_modules/async
 	url = http://github.com/caolan/async.git
-[submodule "node_modules/md5"]
-	path = node_modules/md5
-	url = https://github.com/coolaj86/jsMD5.git
