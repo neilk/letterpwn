@@ -2,7 +2,7 @@ var   fs = require('fs'),
       path = require('path'),
       util = require('util'),
       lazy = require('lazy'),
-      md5 = require('md5');
+      md5 = require('MD5');
 
 
 // N.b. throughout this program, "word" refers to a data structure which contains the original
@@ -194,7 +194,7 @@ function main() {
        return function() {
          var args = Array.prototype.slice.call(arguments);
          var cb = args.pop();
-         var cachePath = path.join(cacheDir, md5.digest_s(JSON.stringify(args)));
+         var cachePath = path.join(cacheDir, md5(JSON.stringify(args)));
          fs.stat(cachePath, function(err, stats) {
            if (err === null && typeof stats !== 'undefined') {
              readFromCache(cachePath, cb);
