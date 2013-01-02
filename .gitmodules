@@ -10,3 +10,6 @@
 [submodule "node_modules/async"]
 	path = node_modules/async
 	url = http://github.com/caolan/async.git
+[submodule "node_modules/MD5"]
+	path = node_modules/MD5
+	url = https://github.com/pvorb/node-md5.git
