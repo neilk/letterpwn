@@ -1,9 +1,11 @@
-var   diskcache = require('diskcache'),
-      fs = require('fs'),
-      http = require('http'),
-      lazy = require('lazy'),
-      path = require('path'),
-      url = require('url');
+var
+  _ = require('underscore'),
+  diskcache = require('diskcache'),
+  fs = require('fs'),
+  http = require('http'),
+  lazy = require('lazy'),
+  path = require('path'),
+  url = require('url');
 
 // N.b. throughout this program, "word" refers to a data structure which contains the original
 // word and a canonical representation of it
@@ -67,33 +69,27 @@ function byLengthDescending(a, b) {
 }
 
 /**
- * Read list of words from dictionary, line at a time
- * determine possible words on this board
- * then run callback with possible words
- *
- * n.b. the canonical representation can and should be
- * cached, but then we'd have to slurp it into memory
- * and run this as a daemon
- *
- * @param {Array} board
- * @param {String} wordFile
- * @param {Function} callback
+ * Return a function closed over a complex structure of words
+ * (This is so we can make the inner function cacheable)
+ * @param {Array} words
+ * @return {Function} taking board and callback
  */
-function getWordsForBoard(board, wordFile, cont) {
-  var tuples = [];
-  var stream = fs.createReadStream(wordFile);
-  lazy(stream)
-    .lines
-    .map( function(line) {
-      var wordStr = line.toString().replace(/\n/g, '');
-      return([wordStr, canonicalize(wordStr)])
-    } )
-    .filter( function( tuple ) {
+function getWordScanner(words) {
+  /**
+   * Read list of words from dictionary
+   * determine possible words on this board
+   * then run callback with possible words
+   * may want to cache this outside process or in LRU cache or something...?
+   * leaving callback in for now in case there is some IO to do here
+   *
+   * @param {Array} words canonical data structure of dictionary words
+   * @param {Function} callback
+   */
+  return function(board, cont) {
+    cont(_.filter(words, function( tuple ) {
       return isSubset(board, tuple[1]);
-    })
-    .join( function(words) {
-      cont(words);
-    } );
+    }));
+  };
 }
 
 function getDesiredWords(isDesired, cont) {
@@ -110,19 +106,7 @@ function getDesiredWords(isDesired, cont) {
   };
 };
 
-// let's wheedle some walruses
-
-
-var appDir = path.dirname(process.argv[1]);
-var wordFile = path.join(appDir, 'words.txt');
-
-diskcache.init(appDir, function(cacheize) {
-  serve({
-    getWordsForBoard: cacheize(getWordsForBoard)
-  });
-});
-
-function serve(env) {
+function serve(getWordsForBoard) {
   http.createServer(function (req, res) {
     var query = url.parse(req.url, true).query;
     if (typeof query.board == 'undefined') {
@@ -134,22 +118,61 @@ function serve(env) {
         res.writeHead(500, {'Content-Type': 'text/plain'});
         res.end("board must have 25 letters");
       } else {
+        console.log("got a request");
         var desired = [];
         if (typeof query.desired !== 'undefined') {
           desired = canonicalize(query.desired);
         }
+        console.log("got a request with desire");
         var isDesired = getDesiredMatcher(desired);
+        console.log("got a request with desire, matcher");
         var printDesiredWordsSorted = getDesiredWords(isDesired, function(wordStrs) {
+          console.log("printing!");
           var results = wordStrs.sort(byLengthDescending).join(" ");
           res.writeHead(200, {'Content-Type': 'text/plain'});
           res.end(results);
         });
-        env.getWordsForBoard(board, wordFile, printDesiredWordsSorted);
+        console.log("calling cached function");
+        getWordsForBoard(board, printDesiredWordsSorted);
       }
     }
   }).listen(1337, '127.0.0.1');
   console.log('Server running at http://127.0.0.1:1337');
 }
+
+
+/**
+ * initializes canonical words data structure from disk, calls callback
+ * @param {String} wordFile path to file containing words, one per line
+ * @param {Function} cont callback
+ */
+function getWords(wordFile, cont) {
+  var stream = fs.createReadStream(wordFile);
+  lazy(stream)
+    .lines
+    .map( function(line) {
+      var wordStr = line.toString().replace(/\n/g, '');
+      return([wordStr, canonicalize(wordStr)])
+    } )
+    .join( function(words) {
+      cont(words);
+    } );
+}
+
+
+// let's wheedle some walruses
+
+var appDir = path.dirname(process.argv[1]);
+var wordFile = path.join(appDir, 'words.txt');
+
+diskcache.init(appDir, function(cacheize) {
+  console.log("loading word files...");
+  getWords(wordFile, function (words) {
+    console.log("loaded " + words.length + " words");
+    var getWordsForBoard = cacheize(getWordScanner(words));
+    serve(getWordsForBoard);
+  });
+});
 
 
 

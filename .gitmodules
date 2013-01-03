@@ -13,3 +13,6 @@
 [submodule "node_modules/MD5"]
 	path = node_modules/MD5
 	url = https://github.com/pvorb/node-md5.git
+[submodule "node_modules/underscore"]
+	path = node_modules/underscore
+	url = https://github.com/documentcloud/underscore.git
