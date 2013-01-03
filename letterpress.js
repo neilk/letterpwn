@@ -169,7 +169,7 @@ function serve(getWordStructsForBoard) {
 /**
  * initializes canonical words data structure from disk, calls callback
  * with this data structure
- * @param {String} wordFile path to file containing words, one per line
+ * @param {String} wordFile path to file containing words and frequencies, tab separated, one per line
  * @param {Function} cont callback
  */
 function getWords(wordFile, cont) {
