@@ -1,7 +1,9 @@
 var   diskcache = require('diskcache'),
       fs = require('fs'),
+      http = require('http'),
       lazy = require('lazy'),
-      path = require('path');
+      path = require('path'),
+      url = require('url');
 
 // N.b. throughout this program, "word" refers to a data structure which contains the original
 // word and a canonical representation of it
@@ -110,32 +112,44 @@ function getDesiredWords(isDesired, cont) {
 
 // let's wheedle some walruses
 
+
 var appDir = path.dirname(process.argv[1]);
-
 var wordFile = path.join(appDir, 'words.txt');
-// command line arguments
-// argv[0] is executing binary, argv[1] is scriptname
-var commandLineArgs = process.argv.slice(2);
-var board = canonicalize(commandLineArgs[0]);
-
-if (board.length !== 25) {
-  console.log("board must have 25 letters, instead has " + board.length);
-  console.log(board);
-  process.exit(1);
-}
-
-var desired = [];
-if (typeof commandLineArgs[1] !== 'undefined') {
-  desired = canonicalize(commandLineArgs[1]);
-}
-var isDesired = getDesiredMatcher(desired);
-var printDesiredWordsSorted = getDesiredWords(isDesired, function(wordStrs) {
-  console.log(( wordStrs.sort(byLengthDescending) ).join(" "));
-});
 
 diskcache.init(appDir, function(cacheize) {
-  var cachedGetWordsForBoard = cacheize(getWordsForBoard);
-  cachedGetWordsForBoard(board, wordFile, printDesiredWordsSorted);
+  serve({
+    getWordsForBoard: cacheize(getWordsForBoard)
+  });
 });
+
+function serve(env) {
+  http.createServer(function (req, res) {
+    var query = url.parse(req.url, true).query;
+    if (typeof query.board == 'undefined') {
+      res.writeHead(500, {'Content-Type': 'text/plain'});
+      res.end("board must exist");
+    } else {
+      var board = canonicalize(query.board);
+      if (board.length !== 25) {
+        res.writeHead(500, {'Content-Type': 'text/plain'});
+        res.end("board must have 25 letters");
+      } else {
+        var desired = [];
+        if (typeof query.desired !== 'undefined') {
+          desired = canonicalize(query.desired);
+        }
+        var isDesired = getDesiredMatcher(desired);
+        var printDesiredWordsSorted = getDesiredWords(isDesired, function(wordStrs) {
+          var results = wordStrs.sort(byLengthDescending).join(" ");
+          res.writeHead(200, {'Content-Type': 'text/plain'});
+          res.end(results);
+        });
+        env.getWordsForBoard(board, wordFile, printDesiredWordsSorted);
+      }
+    }
+  }).listen(1337, '127.0.0.1');
+  console.log('Server running at http://127.0.0.1:1337');
+}
+
 
 
