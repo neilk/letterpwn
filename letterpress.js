@@ -92,6 +92,13 @@ function getWordScanner(words) {
   };
 }
 
+/**
+ * Returns function to test if words have desired properties
+ * XXX this feels wrong - it's just a wrapper around a filter. But abstracted
+ * this way because it is sandwiched between functions that do IO
+ * @param {Function} isDesired
+ * @param {Function} cont callback
+ */
 function getDesiredWords(isDesired, cont) {
   return function(words) {
     var wordStrs = [];
@@ -106,6 +113,10 @@ function getDesiredWords(isDesired, cont) {
   };
 };
 
+/**
+ * Actually serve requests
+ * @param {Function} getWordsForBoard efficiently cached function to get the words for a particular board
+ */
 function serve(getWordsForBoard) {
   http.createServer(function (req, res) {
     var query = url.parse(req.url, true).query;
@@ -143,6 +154,7 @@ function serve(getWordsForBoard) {
 
 /**
  * initializes canonical words data structure from disk, calls callback
+ * with this data structure
  * @param {String} wordFile path to file containing words, one per line
  * @param {Function} cont callback
  */
