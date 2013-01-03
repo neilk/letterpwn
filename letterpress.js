@@ -26,23 +26,6 @@ function isSubset(set, sub) {
 }
 
 /**
- * Return function to determine if a word has all desired characters
- * @param {Array} of chars - desired chars
- * @return {Function}
- */
-function getDesiredMatcher(desired) {
-  /**
-   * Checks if a given word has all the desired characters
-   * @param {Array} of chars
-   * @return {Boolean}
-   */
-  return function(word) {
-    return isSubset(word, desired);
-  }
-}
-
-
-/**
  * Take string, return canonical sorted array of characters
  * @param {String} letters
  * @return {Array} of single character strings
@@ -93,9 +76,8 @@ function getWordScanner(words) {
 }
 
 /**
- * Returns function to test if words have desired properties
- * XXX this feels wrong - it's just a wrapper around a filter. But abstracted
- * this way because it is sandwiched between functions that do IO
+ * Returns mapping function to test if words have desired properties.
+ * Intended to be part of an underscore
  * @param {Function} isDesired
  * @param {Function} cont callback
  */
@@ -135,16 +117,38 @@ function serve(getWordsForBoard) {
           desired = canonicalize(query.desired);
         }
         console.log("got a request with desire");
-        var isDesired = getDesiredMatcher(desired);
-        console.log("got a request with desire, matcher");
-        var printDesiredWordsSorted = getDesiredWords(isDesired, function(wordStrs) {
+
+        /**
+         * Main work of this service. Call callback with sorted array of words
+         * for this board that are also desired
+         * @param {Function} getWordsForBoard cached function to get words for board
+         * @param {Array} board
+         * @param {Array} desired array of characters
+         * @param {Function} cont callback
+         */
+        function getDesiredWordsForBoard(getWordsForBoard, board, desired, cont) {
+          getWordsForBoard(board, function(words) {
+            cont(
+              _.chain(words)
+                .filter(function(w) {
+                  return isSubset(w[1], desired)  // word-canonical pairs that are desired
+                })
+                .map(function(w) {
+                  return w[0];   // strip away the canonicalized part
+                })
+                .sortBy(byLengthDescending)
+                .value()
+            );
+          });
+        }
+
+        function printWords(wordStrs) {
           console.log("printing!");
-          var results = wordStrs.sort(byLengthDescending).join(" ");
           res.writeHead(200, {'Content-Type': 'text/plain'});
-          res.end(results);
-        });
-        console.log("calling cached function");
-        getWordsForBoard(board, printDesiredWordsSorted);
+          res.end(wordStrs.join(" "));
+        }
+
+        getDesiredWordsForBoard(getWordsForBoard, board, desired, printWords);
       }
     }
   }).listen(1337, '127.0.0.1');
