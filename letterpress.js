@@ -66,8 +66,8 @@ function getWordScanner(words) {
    * @param {Function} callback
    */
   return function(board, cont) {
-    cont(_.filter(words, function( tuple ) {
-      return isSubset(board, tuple[1]);
+    cont(_.filter(words, function( struct ) {
+      return isSubset(board, struct[1]);
     }));
   };
 }
@@ -94,9 +94,9 @@ function getDesiredWords(isDesired, cont) {
 
 /**
  * Actually serve requests
- * @param {Function} getWordCanonicalPairsForBoard efficiently cached function to get the words for a particular board
+ * @param {Function} getWordStructsForBoard efficiently cached function to get the words for a particular board
  */
-function serve(getWordCanonicalPairsForBoard) {
+function serve(getWordStructsForBoard) {
   http.createServer(function (req, res) {
     var query = url.parse(req.url, true).query;
     if (typeof query.board == 'undefined') {
@@ -113,20 +113,34 @@ function serve(getWordCanonicalPairsForBoard) {
         if (typeof query.desired !== 'undefined') {
           desired = canonicalize(query.desired);
         }
-        console.log("got a request with desire");
+
+        minFrequency = 0;
+        if (typeof query.minFrequency !== 'undefined') {
+          minFrequency = parseInt(query.minFrequency, 10);
+          if (minFrequency > MAX_FREQUENCY) {
+            minFrequency = MAX_FREQUENCY;
+          }
+          if (isNaN(minFrequency) || minFrequency < 0) {
+            minFrequency = 0;
+          }
+        }
 
         /**
          * Main work of this service. Call callback with array of words
-         * for this board that are also desired
-         * @param {Function} getWordCanonicalPairsForBoard cached function to get words for board
+         * for this board that are also desired, excluding rare words if so specified
+         * @param {Function} getWordStructsForBoard cached function to get words for board
          * @param {Array} board
          * @param {Array} desired array of characters
+         * @param {Integer} minFrequency
          * @param {Function} cont callback
          */
-        function getDesiredWordsForBoard(getWordCanonicalPairsForBoard, board, desired, cont) {
-          getWordCanonicalPairsForBoard(board, function(words) {
+        function getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, cont) {
+          getWordStructsForBoard(board, function(words) {
             cont(
               _.chain(words)
+                .filter(function(w){
+                  return w[2] >= minFrequency;
+                })
                 .filter(function(w) {
                   return isSubset(w[1], desired)  // word-canonical pairs that are desired
                 })
@@ -144,7 +158,7 @@ function serve(getWordCanonicalPairsForBoard) {
           res.end(words.sort(byLengthDescending).join(" "));
         }
 
-        getDesiredWordsForBoard(getWordCanonicalPairsForBoard, board, desired, printWords);
+        getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, printWords);
       }
     }
   }).listen(1337, '127.0.0.1');
@@ -163,11 +177,13 @@ function getWords(wordFile, cont) {
   lazy(stream)
     .lines
     .map( function(line) {
-      var wordStr = line.toString().replace(/\n/g, '');
-      return([wordStr, canonicalize(wordStr)])
+      var wordFreq = line.toString().replace(/\n/g, '').split(/\t/);
+      var word = wordFreq[0];
+      var frequency = parseInt(wordFreq[1], 10);
+      return([word, canonicalize(word), frequency])
     } )
-    .join( function(words) {
-      cont(words);
+    .join( function(wordStructs) {
+      cont(wordStructs);
     } );
 }
 
@@ -175,14 +191,15 @@ function getWords(wordFile, cont) {
 // let's wheedle some walruses
 
 var appDir = path.dirname(process.argv[1]);
-var wordFile = path.join(appDir, 'words.txt');
+var wordFile = path.join(appDir, 'words-freq-sorted-log.txt');
+var MAX_FREQUENCY = 24;
 
 diskcache.init(appDir, function(cacheize) {
   console.log("loading word files...");
   getWords(wordFile, function (words) {
     console.log("loaded " + words.length + " words");
-    var getWordCanonicalPairsForBoard = cacheize(getWordScanner(words));
-    serve(getWordCanonicalPairsForBoard);
+    var getWordStructsForBoard = cacheize(getWordScanner(words));
+    serve(getWordStructsForBoard);
   });
 });
 
