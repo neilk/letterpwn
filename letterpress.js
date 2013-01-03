@@ -7,9 +7,6 @@ var
   path = require('path'),
   url = require('url');
 
-// N.b. throughout this program, "word" refers to a data structure which contains the original
-// word and a canonical representation of it
-
 /**
  * Given two sorted arrays of chars, determine if 2nd is subset of 1st
  * @param {Array} of chars
@@ -97,9 +94,9 @@ function getDesiredWords(isDesired, cont) {
 
 /**
  * Actually serve requests
- * @param {Function} getWordsForBoard efficiently cached function to get the words for a particular board
+ * @param {Function} getWordCanonicalPairsForBoard efficiently cached function to get the words for a particular board
  */
-function serve(getWordsForBoard) {
+function serve(getWordCanonicalPairsForBoard) {
   http.createServer(function (req, res) {
     var query = url.parse(req.url, true).query;
     if (typeof query.board == 'undefined') {
@@ -119,15 +116,15 @@ function serve(getWordsForBoard) {
         console.log("got a request with desire");
 
         /**
-         * Main work of this service. Call callback with sorted array of words
+         * Main work of this service. Call callback with array of words
          * for this board that are also desired
-         * @param {Function} getWordsForBoard cached function to get words for board
+         * @param {Function} getWordCanonicalPairsForBoard cached function to get words for board
          * @param {Array} board
          * @param {Array} desired array of characters
          * @param {Function} cont callback
          */
-        function getDesiredWordsForBoard(getWordsForBoard, board, desired, cont) {
-          getWordsForBoard(board, function(words) {
+        function getDesiredWordsForBoard(getWordCanonicalPairsForBoard, board, desired, cont) {
+          getWordCanonicalPairsForBoard(board, function(words) {
             cont(
               _.chain(words)
                 .filter(function(w) {
@@ -136,19 +133,18 @@ function serve(getWordsForBoard) {
                 .map(function(w) {
                   return w[0];   // strip away the canonicalized part
                 })
-                .sortBy(byLengthDescending)
                 .value()
             );
           });
         }
 
-        function printWords(wordStrs) {
+        function printWords(words) {
           console.log("printing!");
           res.writeHead(200, {'Content-Type': 'text/plain'});
-          res.end(wordStrs.join(" "));
+          res.end(words.sort(byLengthDescending).join(" "));
         }
 
-        getDesiredWordsForBoard(getWordsForBoard, board, desired, printWords);
+        getDesiredWordsForBoard(getWordCanonicalPairsForBoard, board, desired, printWords);
       }
     }
   }).listen(1337, '127.0.0.1');
@@ -185,8 +181,8 @@ diskcache.init(appDir, function(cacheize) {
   console.log("loading word files...");
   getWords(wordFile, function (words) {
     console.log("loaded " + words.length + " words");
-    var getWordsForBoard = cacheize(getWordScanner(words));
-    serve(getWordsForBoard);
+    var getWordCanonicalPairsForBoard = cacheize(getWordScanner(words));
+    serve(getWordCanonicalPairsForBoard);
   });
 });
 
