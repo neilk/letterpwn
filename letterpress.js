@@ -73,26 +73,6 @@ function getWordScanner(words) {
 }
 
 /**
- * Returns mapping function to test if words have desired properties.
- * Intended to be part of an underscore
- * @param {Function} isDesired
- * @param {Function} next callback
- */
-function getDesiredWords(isDesired, next) {
-  return function(words) {
-    var wordStrs = [];
-    if (words.length) {
-      for (var i = 0; i < words.length; i += 1) {
-        if (isDesired(words[i][1])) {
-          wordStrs.push(words[i][0]);
-        }
-      }
-    }
-    next(wordStrs);
-  };
-};
-
-/**
  * Actually serve requests
  * @param {Function} getWordStructsForBoard efficiently cached function to get the words for a particular board
  */
