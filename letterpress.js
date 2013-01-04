@@ -167,8 +167,13 @@ function serve(getWordStructsForBoard) {
 
 
 /**
- * initializes canonical words data structure from disk, calls callback
- * with this data structure
+ * Initializes canonical words data structure from disk, calls callback
+ * with this data structure.
+ * Creates an array of 'word structs', an array of arrays where each element is of the form
+ *   [ word, canonical-word, frequency ]
+ *      word is simply the word, as a string
+ *      canonical-word is the word unpacked into a sorted array of characters, good for instant subset comparisons
+ *      frequency is an integer from 1-24 expressing how common this word is. 1=very rare, 24=very common. Log scale.
  * @param {String} wordFile path to file containing words and frequencies, tab separated, one per line
  * @param {Function} next callback
  */
