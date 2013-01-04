@@ -65,8 +65,8 @@ function getWordScanner(words) {
    * @param {Array} words canonical data structure of dictionary words
    * @param {Function} callback
    */
-  return function(board, cont) {
-    cont(_.filter(words, function( struct ) {
+  return function(board, next) {
+    next(_.filter(words, function( struct ) {
       return isSubset(board, struct[1]);
     }));
   };
@@ -76,9 +76,9 @@ function getWordScanner(words) {
  * Returns mapping function to test if words have desired properties.
  * Intended to be part of an underscore
  * @param {Function} isDesired
- * @param {Function} cont callback
+ * @param {Function} next callback
  */
-function getDesiredWords(isDesired, cont) {
+function getDesiredWords(isDesired, next) {
   return function(words) {
     var wordStrs = [];
     if (words.length) {
@@ -88,7 +88,7 @@ function getDesiredWords(isDesired, cont) {
         }
       }
     }
-    cont(wordStrs);
+    next(wordStrs);
   };
 };
 
@@ -132,20 +132,20 @@ function serve(getWordStructsForBoard) {
          * @param {Array} board
          * @param {Array} desired array of characters
          * @param {Integer} minFrequency
-         * @param {Function} cont callback
+         * @param {Function} next callback
          */
-        function getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, cont) {
+        function getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, next) {
           getWordStructsForBoard(board, function(words) {
-            cont(
+            next(
               _.chain(words)
                 .filter(function(w){
-                  return w[2] >= minFrequency;
+                  return w[2] >= minFrequency; // throw away rare words if specified
                 })
                 .filter(function(w) {
-                  return isSubset(w[1], desired)  // word-canonical pairs that are desired
+                  return isSubset(w[1], desired)  // word structs that are desired
                 })
                 .map(function(w) {
-                  return w[0];   // strip away the canonicalized part
+                  return w[0];   // return just the word
                 })
                 .value()
             );
@@ -170,9 +170,9 @@ function serve(getWordStructsForBoard) {
  * initializes canonical words data structure from disk, calls callback
  * with this data structure
  * @param {String} wordFile path to file containing words and frequencies, tab separated, one per line
- * @param {Function} cont callback
+ * @param {Function} next callback
  */
-function getWords(wordFile, cont) {
+function getWords(wordFile, next) {
   var stream = fs.createReadStream(wordFile);
   lazy(stream)
     .lines
@@ -183,7 +183,7 @@ function getWords(wordFile, cont) {
       return([word, canonicalize(word), frequency])
     } )
     .join( function(wordStructs) {
-      cont(wordStructs);
+      next(wordStructs);
     } );
 }
 
