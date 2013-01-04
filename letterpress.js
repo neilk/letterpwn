@@ -131,7 +131,7 @@ function serve(getWordStructsForBoard) {
          * @param {Function} getWordStructsForBoard cached function to get words for board
          * @param {Array} board
          * @param {Array} desired array of characters
-         * @param {Integer} minFrequency
+         * @param {Number} minFrequency
          * @param {Function} next callback
          */
         function getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, next) {
