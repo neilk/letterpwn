@@ -59,6 +59,51 @@ function getWordScanner(words) {
 }
 
 /**
+ * Main work of this service. Call callback with array of words
+ * for this board that are also desired, excluding rare words if so specified
+ * @param {Function} getWordStructsForBoard cached function to get words for board
+ * @param {Array} board
+ * @param {Array} desired array of characters
+ * @param {Number} minFrequency
+ * @param {Function} next callback
+ */
+function getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, next) {
+  getWordStructsForBoard(board, function(words) {
+    next(
+      _.chain(words)
+        .filter(function(w){
+          return w[2] >= minFrequency; // throw away rare words if specified
+        })
+        .filter(function(w) {
+          return isSubset(w[1], desired)  // word structs that are desired
+        })
+        .map(function(w) {
+          return w[0];   // return just the word
+        })
+        .value()
+    );
+  });
+}
+
+
+/**
+ * Partial to print words to response
+ * @param {http.response} res
+ * @return {Function}
+ */
+function getWordPrinter(res) {
+  /**
+   * Print words to response
+   * @param {Array} words array of strings
+   */
+  return function(words) {
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end(_.chain(words).sort(byLengthDescending).map( function(s) { return "[" + s + "]" } ).value().join(" "));
+  }
+}
+
+
+/**
  * Actually serve requests
  * @param {Function} getWordStructsForBoard efficiently cached function to get the words for a particular board
  */
@@ -90,40 +135,7 @@ function serve(getWordStructsForBoard) {
             minFrequency = 0;
           }
         }
-
-        /**
-         * Main work of this service. Call callback with array of words
-         * for this board that are also desired, excluding rare words if so specified
-         * @param {Function} getWordStructsForBoard cached function to get words for board
-         * @param {Array} board
-         * @param {Array} desired array of characters
-         * @param {Number} minFrequency
-         * @param {Function} next callback
-         */
-        function getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, next) {
-          getWordStructsForBoard(board, function(words) {
-            next(
-              _.chain(words)
-                .filter(function(w){
-                  return w[2] >= minFrequency; // throw away rare words if specified
-                })
-                .filter(function(w) {
-                  return isSubset(w[1], desired)  // word structs that are desired
-                })
-                .map(function(w) {
-                  return w[0];   // return just the word
-                })
-                .value()
-            );
-          });
-        }
-
-        function printWords(words) {
-          console.log("printing!");
-          res.writeHead(200, {'Content-Type': 'text/plain'});
-          res.end(words.sort(byLengthDescending).join(" "));
-        }
-
+        var printWords = getWordPrinter(res);
         getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, printWords);
       }
     }
