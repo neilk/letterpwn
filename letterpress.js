@@ -30,8 +30,8 @@ function getWordScanner(words) {
    * Read list of words from dictionary
    * determine possible words on this board
    * then run callback with possible words
-   * may want to cache this outside process or in LRU cache or something...?
-   * leaving callback in for now in case there is some IO to do here
+   * using a callback here because this function is cached with external files and/or an LRU,
+   * and thus will do IO
    *
    * @param {Array} words canonical data structure of dictionary words
    * @param {Function} callback
