@@ -1,10 +1,12 @@
 var
   _ = require('underscore'),
+  canonicalize = require('canonicalize'),
   diskcache = require('diskcache'),
   fs = require('fs'),
   http = require('http'),
   lazy = require('lazy'),
   path = require('path'),
+  words = require('words'), // not a library - this is the dictionary
   url = require('url');
 
 /**
@@ -20,22 +22,6 @@ function isSubset(set, sub) {
     }
   }
   return subI == sub.length;
-}
-
-/**
- * Take string, return canonical sorted array of characters
- * @param {String} letters
- * @return {Array} of single character strings
- */
-function canonicalize(s) {
-  var arr = [];
-  if (typeof s === 'string') {
-    s = s.replace(/\W/g, '');
-    for (var i = 0; i < s.length; i += 1) {
-      arr.push(s[i]);
-    }
-  }
-  return arr.sort();
 }
 
 /**
@@ -146,46 +132,15 @@ function serve(getWordStructsForBoard) {
 }
 
 
-/**
- * Initializes canonical words data structure from disk, calls callback
- * with this data structure.
- * Creates an array of 'word structs', an array of arrays where each element is of the form
- *   [ word, canonical-word, frequency ]
- *      word is simply the word, as a string
- *      canonical-word is the word unpacked into a sorted array of characters, good for instant subset comparisons
- *      frequency is an integer from 1-24 expressing how common this word is. 1=very rare, 24=very common. Log scale.
- * @param {String} wordFile path to file containing words and frequencies, tab separated, one per line
- * @param {Function} next callback
- */
-function getWords(wordFile, next) {
-  var stream = fs.createReadStream(wordFile);
-  lazy(stream)
-    .lines
-    .map( function(line) {
-      var wordFreq = line.toString().replace(/\n/g, '').split(/\t/);
-      var word = wordFreq[0];
-      var frequency = parseInt(wordFreq[1], 10);
-      return([word, canonicalize(word), frequency])
-    } )
-    .join( function(wordStructs) {
-      next(wordStructs);
-    } );
-}
-
-
 // let's wheedle some walruses
 
 var appDir = path.dirname(process.argv[1]);
-var wordFile = path.join(appDir, 'words-freq-sorted-log.txt');
+var wordFile = path.join(appDir, 'words.json');
 var MAX_FREQUENCY = 24;
 
 diskcache.init(appDir, function(cacheize) {
-  console.log("loading word files...");
-  getWords(wordFile, function (words) {
-    console.log("loaded " + words.length + " words");
-    var getWordStructsForBoard = cacheize(getWordScanner(words));
-    serve(getWordStructsForBoard);
-  });
+  var getWordStructsForBoard = cacheize(getWordScanner(words));
+  serve(getWordStructsForBoard);
 });
 
 
