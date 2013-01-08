@@ -1,2 +1,3 @@
 .diskcache
 jtags
+node_modules/*
