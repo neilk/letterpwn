@@ -6,7 +6,7 @@ var
   lazy = require('lazy'),
   path = require('path'),
   set = require('set'),
-  words = require('words'), // not a library - this is the dictionary
+  words = require('data/words'), // not a library - this is the dictionary
   url = require('url');
 
 /**
@@ -132,7 +132,6 @@ function serve(getWordStructsForBoard) {
 // let's wheedle some walruses
 
 var appDir = path.dirname(process.argv[1]);
-var wordFile = path.join(appDir, 'words.json');
 var MAX_FREQUENCY = 24;
 
 diskcache.init(appDir, function(cacheize) {
