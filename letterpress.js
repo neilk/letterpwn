@@ -1,28 +1,13 @@
 var
   _ = require('underscore'),
-  canonicalize = require('canonicalize'),
   diskcache = require('diskcache'),
   fs = require('fs'),
   http = require('http'),
   lazy = require('lazy'),
   path = require('path'),
+  set = require('set'),
   words = require('words'), // not a library - this is the dictionary
   url = require('url');
-
-/**
- * Given two sorted arrays of chars, determine if 2nd is subset of 1st
- * @param {Array} of chars
- * @param {Array} of chars
- * @return {Boolean}
- */
-function isSubset(set, sub) {
-  for (var setI = 0, subI = 0; setI < set.length && subI < sub.length; setI += 1) {
-    if (set[setI] === sub[subI]) {
-      subI++;
-    }
-  }
-  return subI == sub.length;
-}
 
 /**
  * Comparator for length of strings
@@ -53,7 +38,7 @@ function getWordScanner(words) {
    */
   return function(board, next) {
     next(_.filter(words, function( struct ) {
-      return isSubset(board, struct[1]);
+      return set.isSubset(board, struct[1]);
     }));
   };
 }
@@ -75,7 +60,7 @@ function getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFreq
           return w[2] >= minFrequency; // throw away rare words if specified
         })
         .filter(function(w) {
-          return isSubset(w[1], desired)  // word structs that are desired
+          return set.isSubset(w[1], desired)  // word structs that are desired
         })
         .map(function(w) {
           return w[0];   // return just the word
@@ -114,7 +99,7 @@ function serve(getWordStructsForBoard) {
       res.writeHead(500, {'Content-Type': 'text/plain'});
       res.end("board must exist");
     } else {
-      var board = canonicalize(query.board);
+      var board = set.getCanonical(query.board);
       if (board.length !== 25) {
         res.writeHead(500, {'Content-Type': 'text/plain'});
         res.end("board must have 25 letters");
@@ -122,7 +107,7 @@ function serve(getWordStructsForBoard) {
         console.log("got a request");
         var desired = [];
         if (typeof query.desired !== 'undefined') {
-          desired = canonicalize(query.desired);
+          desired = set.getCanonical(query.desired);
         }
 
         minFrequency = 0;

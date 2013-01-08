@@ -9,8 +9,8 @@
  */
 
 var
-  canonicalize = require('canonicalize'),
-  lazy = require('lazy');
+  lazy = require('lazy'),
+  set = require('set');
 
 /**
  * Initializes canonical words data structure from disk, calls callback
@@ -30,7 +30,7 @@ function convert(stream, next) {
       var wordFreq = line.toString().replace(/\n/g, '').split(/\t/);
       var word = wordFreq[0];
       var frequency = parseInt(wordFreq[1], 10);
-      return([word, canonicalize(word), frequency])
+      return([word, set.getCanonical(word), frequency])
     } )
     .join( function(wordStructs) {
       next(wordStructs);
