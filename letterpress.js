@@ -1,6 +1,7 @@
 var
   _ = require('underscore'),
   diskcache = require('diskcache'),
+  express = require('express'),
   fs = require('fs'),
   http = require('http'),
   lazy = require('lazy'),
@@ -92,8 +93,9 @@ function getWordPrinter(res) {
  * Actually serve requests
  * @param {Function} getWordStructsForBoard efficiently cached function to get the words for a particular board
  */
-function serve(getWordStructsForBoard) {
-  http.createServer(function (req, res) {
+function getServer(getWordStructsForBoard) {
+  var MAX_FREQUENCY = 24;
+  return function (req, res) {
     var query = url.parse(req.url, true).query;
     if (typeof query.board == 'undefined') {
       res.writeHead(500, {'Content-Type': 'text/plain'});
@@ -104,12 +106,10 @@ function serve(getWordStructsForBoard) {
         res.writeHead(500, {'Content-Type': 'text/plain'});
         res.end("board must have 25 letters");
       } else {
-        console.log("got a request");
         var desired = [];
         if (typeof query.desired !== 'undefined') {
           desired = set.getCanonical(query.desired);
         }
-
         minFrequency = 0;
         if (typeof query.minFrequency !== 'undefined') {
           minFrequency = parseInt(query.minFrequency, 10);
@@ -124,20 +124,30 @@ function serve(getWordStructsForBoard) {
         getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, printWords);
       }
     }
-  }).listen(1337, '127.0.0.1');
-  console.log('Server running at http://127.0.0.1:1337');
+  };
 }
 
-
+/**
+ * Start up the express app
+ * @param {Function} server the handler for /
+ */
+function startApp(server) {
+  var app = express();
+  app.set('views', path.join(appDir, 'views'));
+  app.set('view engine', 'jade');
+  app.use(express.logger('dev'));
+  app.use(express.static(path.join(appDir, '/public')))
+  app.get('/', server);
+  app.listen(3000)
+}
 // let's wheedle some walruses
 
 var appDir = path.dirname(process.argv[1]);
-var MAX_FREQUENCY = 24;
 
 diskcache.init(appDir, function(cacheize) {
   var getWordStructsForBoard = cacheize(getWordScanner(words));
-  serve(getWordStructsForBoard);
+  var server = getServer(getWordStructsForBoard);
+  startApp(server);
 });
-
 
 
