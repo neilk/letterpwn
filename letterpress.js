@@ -131,14 +131,14 @@ function getServer(getWordStructsForBoard) {
  * Start up the express app
  * @param {Function} server the handler for /
  */
-function startApp(server) {
+function startApp(appDir, server) {
   var app = express();
   app.set('views', path.join(appDir, 'views'));
   app.set('view engine', 'jade');
   app.use(express.logger('dev'));
   app.use(express.static(path.join(appDir, 'public')))
   app.get('/', server);
-  app.listen(3000)
+  app.listen(3000);
 }
 // let's wheedle some walruses
 
@@ -147,7 +147,7 @@ var appDir = path.dirname(process.argv[1]);
 diskcache.init(appDir, function(cacheize) {
   var getWordStructsForBoard = cacheize(getWordScanner(words));
   var server = getServer(getWordStructsForBoard);
-  startApp(server);
+  startApp(appDir, server);
 });
 
 
