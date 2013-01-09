@@ -136,7 +136,7 @@ function startApp(server) {
   app.set('views', path.join(appDir, 'views'));
   app.set('view engine', 'jade');
   app.use(express.logger('dev'));
-  app.use(express.static(path.join(appDir, '/public')))
+  app.use(express.static(path.join(appDir, 'public')))
   app.get('/', server);
   app.listen(3000)
 }
