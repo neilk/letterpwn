@@ -92,6 +92,7 @@ function getWordPrinter(res) {
 /**
  * Actually serve requests
  * @param {Function} getWordStructsForBoard efficiently cached function to get the words for a particular board
+ * @return {Function} suitable for serving requests
  */
 function getServer(getWordStructsForBoard) {
   var MAX_FREQUENCY = 24;
