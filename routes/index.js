@@ -1,8 +1,8 @@
 var
   _ = require('underscore'),
   diskcache = require('diskcache'),
-  express = require('express'),
   fs = require('fs'),
+  handleWhenReady = require('handleWhenReady'),
   http = require('http'),
   lazy = require('lazy'),
   path = require('path'),
@@ -94,7 +94,7 @@ function getWordPrinter(res) {
  * @param {Function} getWordStructsForBoard efficiently cached function to get the words for a particular board
  * @return {Function} suitable for serving requests
  */
-function getServer(getWordStructsForBoard) {
+function getHandler(getWordStructsForBoard) {
   var MAX_FREQUENCY = 24;
   return function (req, res) {
     var query = url.parse(req.url, true).query;
@@ -128,27 +128,14 @@ function getServer(getWordStructsForBoard) {
   };
 }
 
-/**
- * Start up the express app
- * @param {Function} server the handler for /
- */
-function startApp(appDir, server) {
-  var app = express();
-  app.set('views', path.join(appDir, 'views'));
-  app.set('view engine', 'jade');
-  app.use(express.logger('dev'));
-  app.use(express.static(path.join(appDir, 'public')))
-  app.get('/', server);
-  app.listen(3000);
-}
-// let's wheedle some walruses
 
-var appDir = path.dirname(process.argv[1]);
+/* when ready, replace it with the real handler */
+var getDiskCachedHandler = function(ready) {
+  diskcache.init(__dirname, function(cacheize) {
+    var getWordStructsForBoard = cacheize(getWordScanner(words));
+    ready(getHandler(getWordStructsForBoard));
+  });
+};
 
-diskcache.init(appDir, function(cacheize) {
-  var getWordStructsForBoard = cacheize(getWordScanner(words));
-  var server = getServer(getWordStructsForBoard);
-  startApp(appDir, server);
-});
-
+exports.index = handleWhenReady(getDiskCachedHandler);
 
