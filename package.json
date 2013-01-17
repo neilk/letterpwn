@@ -17,6 +17,7 @@
   "dependencies": {
     "MD5": "1.x",
     "express": "3.x",
+    "express-validator": "*",
     "jade": "*",
     "lazy": "1.x",
     "underscore": "1.x"

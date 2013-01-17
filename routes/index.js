@@ -1,11 +1,12 @@
 var
   _ = require('underscore'),
   diskcache = require('lib/diskcache'),
+  expressValidator = require('express-validator'),
   handleWhenReady = require('lib/handleWhenReady'),
   http = require('http'),
   set = require('lib/set'),
   words = require('data/words'), // not a library - this is the dictionary
-  url = require('url');
+  util = require('util');
 
 /**
  * Comparator for length of strings
@@ -86,6 +87,18 @@ function getWordPrinter(res) {
 }
 
 
+// some extra filters for our processing
+expressValidator.Filter.prototype.toLowerCase = function() {
+  this.modify(this.str.toLowerCase());
+  return this.str;
+};
+
+expressValidator.Filter.prototype.lettersOnly = function() {
+  this.modify(this.str.replace(/[^a-z]/g, ''));
+  return this.str;
+};
+
+
 /**
  * Actually serve requests
  * @param {Function} getWordStructsForBoard efficiently cached function to get the words for a particular board
@@ -93,38 +106,39 @@ function getWordPrinter(res) {
  */
 function getHandler(getWordStructsForBoard) {
   var MAX_FREQUENCY = 24;
+
   return function (req, res) {
-    var query = url.parse(req.url, true).query;
-    if (typeof query.board == 'undefined') {
+    req.assert('board', 'Board must exist').notEmpty();
+    if (typeof req.param('board') !== 'undefined') {
+      req.sanitize('board').lettersOnly().toLowerCase();
+      req.assert('board', 'Board must have 25 letters').len(25, 25);
+    }
+
+    if (typeof req.param('desired') !== 'undefined') {
+      req.sanitize('desired').lettersOnly().toLowerCase();
+      req.assert('desired', 'Desired letters must be 25 letters maximum').len(0, 25);
+    }
+
+    req.sanitize('minFrequency').toInt();
+    req.assert('minFrequency', 'Frequency must be between 0 and ' + MAX_FREQUENCY)
+      .min(0)
+      .max(MAX_FREQUENCY);
+
+    console.log( [req.param('board'), req.param('desired'), req.param('minFrequency')].join(",") );
+    var errors = req.validationErrors();
+    if (errors) {
       res.writeHead(500, {'Content-Type': 'text/plain'});
-      res.end("board must exist");
+      res.end("Errors! " + util.inspect(errors));
     } else {
-      var board = set.getCanonical(query.board);
-      if (board.length !== 25) {
-        res.writeHead(500, {'Content-Type': 'text/plain'});
-        res.end("board must have 25 letters");
-      } else {
-        var desired = [];
-        if (typeof query.desired !== 'undefined') {
-          desired = set.getCanonical(query.desired);
-        }
-        minFrequency = 0;
-        if (typeof query.minFrequency !== 'undefined') {
-          minFrequency = parseInt(query.minFrequency, 10);
-          if (minFrequency > MAX_FREQUENCY) {
-            minFrequency = MAX_FREQUENCY;
-          }
-          if (isNaN(minFrequency) || minFrequency < 0) {
-            minFrequency = 0;
-          }
-        }
-        var printWords = getWordPrinter(res);
-        getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, printWords);
-      }
+      var board = set.getCanonical(req.param('board'));
+      var desired = set.getCanonical(req.param('desired')) || [];
+      var minFrequency = req.param('minFrequency') || 0;
+      console.log( util.inspect( { 'board': board, 'desired': desired, 'minFrequency': minFrequency } ) );
+      var printWords = getWordPrinter(res);
+      getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, printWords);
     }
   };
 }
-
 
 /* when ready, replace it with the real handler */
 var getDiskCachedHandler = function(ready) {
@@ -134,5 +148,7 @@ var getDiskCachedHandler = function(ready) {
   });
 };
 
-exports.index = handleWhenReady(getDiskCachedHandler);
 
+
+
+exports.index = handleWhenReady(getDiskCachedHandler);

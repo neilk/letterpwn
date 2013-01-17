@@ -4,9 +4,10 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , http = require('http')
-  , path = require('path');
+    expressValidator = require('express-validator'),
+    http = require('http'),
+    routes = require('./routes'),
+    path = require('path');
 
 var app = express();
 
@@ -14,6 +15,7 @@ app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.use(expressValidator);
   app.use(express.favicon());
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
