@@ -1,12 +1,12 @@
 var
   _ = require('underscore'),
-  diskcache = require('diskcache'),
+  diskcache = require('lib/diskcache'),
   fs = require('fs'),
-  handleWhenReady = require('handleWhenReady'),
+  handleWhenReady = require('lib/handleWhenReady'),
   http = require('http'),
   lazy = require('lazy'),
   path = require('path'),
-  set = require('set'),
+  set = require('lib/set'),
   words = require('data/words'), // not a library - this is the dictionary
   url = require('url');
 
