@@ -3,7 +3,6 @@ var
   diskcache = require('./lib/diskcache'),
   expressValidator = require('express-validator'),
   routeWhenReady = require('./lib/routeWhenReady'),
-  http = require('http'),
   set = require('./lib/set'),
   words = require('./data/words'), // not a library - this is the dictionary
   util = require('util');
