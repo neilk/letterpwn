@@ -2,7 +2,7 @@ var
   _ = require('underscore'),
   diskcache = require('lib/diskcache'),
   expressValidator = require('express-validator'),
-  handleWhenReady = require('lib/handleWhenReady'),
+  routeWhenReady = require('lib/routeWhenReady'),
   http = require('http'),
   set = require('lib/set'),
   words = require('data/words'), // not a library - this is the dictionary
@@ -149,4 +149,4 @@ var getDiskCachedHandler = function(ready) {
 
 
 
-exports.index = handleWhenReady(getDiskCachedHandler);
+exports.index = routeWhenReady(getDiskCachedHandler);
