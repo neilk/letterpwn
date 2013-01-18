@@ -46,20 +46,22 @@ function getWordScanner(words) {
  * Main work of this service. Call callback with array of words
  * for this board that are also desired, excluding rare words if so specified
  * @param {Function} getWordStructsForBoard cached function to get words for board
- * @param {Array} board
- * @param {Array} desired array of characters
+ * @param {String} board
+ * @param {String} desired
  * @param {Number} minFrequency
  * @param {Function} next callback
  */
 function getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, next) {
-  getWordStructsForBoard(board, function(words) {
+  var boardSet = set.getCanonical(board);
+  var desiredSet = set.getCanonical(desired);
+  getWordStructsForBoard(boardSet, function(words) {
     next(
       _.chain(words)
         .filter(function(w){
           return w[2] >= minFrequency; // throw away rare words if specified
         })
         .filter(function(w) {
-          return set.isSubset(w[1], desired)  // word structs that are desired
+          return set.isSubset(w[1], desiredSet)  // word structs that are desired
         })
         .map(function(w) {
           return w[0];   // return just the word
@@ -75,14 +77,14 @@ function getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFreq
  * @param {http.response} res
  * @return {Function}
  */
-function getWordPrinter(res) {
+function getWordPrinter(res, params) {
   /**
-   * Print words to response
+   * Render template to client
    * @param {Array} words array of strings
    */
   return function(words) {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end(_.chain(words).sort(byLengthDescending).map( function(s) { return "[" + s + "]" } ).value().join(" "));
+    params.words = words.sort(byLengthDescending);
+    res.render('index', params);
   }
 }
 
@@ -124,15 +126,24 @@ function getHandler(getWordStructsForBoard) {
       .min(0)
       .max(MAX_FREQUENCY);
 
+    var params = {
+      'board': req.param('board'),
+      'desired': req.param('desired'),
+      'minFrequency': req.param('minFrequency'),
+      'errors': [],
+      'words': [],
+      'title': 'Letterpress cheat!'
+    };
     var errors = req.validationErrors();
     if (errors) {
-      res.writeHead(500, {'Content-Type': 'text/plain'});
-      res.end("Errors! " + util.inspect(errors));
+      params.errors = errors;
+      console.log(errors);
+      res.render('index', params);
     } else {
-      var board = set.getCanonical(req.param('board'));
-      var desired = set.getCanonical(req.param('desired')) || [];
+      var board = req.param('board');
+      var desired = req.param('desired') || [];
       var minFrequency = req.param('minFrequency') || 0;
-      var printWords = getWordPrinter(res);
+      var printWords = getWordPrinter(res, params);
       getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, printWords);
     }
   };
