@@ -136,7 +136,6 @@ function getHandler(getWordStructsForBoard) {
     var errors = req.validationErrors();
     if (errors) {
       params.errors = errors;
-      console.log(errors);
       res.render('index', params);
     } else {
       var board = req.param('board');
