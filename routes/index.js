@@ -78,6 +78,12 @@ expressValidator.Filter.prototype.lettersOnly = function() {
   return this.str;
 };
 
+expressValidator.Validator.prototype.isSubsetOf = function(supersetStr) {
+  if (!set.isSubset(set.getCanonical(supersetStr), set.getCanonical(this.str))) {
+    this.error(this.msg || this.str + ' is not a subset of ' + supersetStr);
+  }
+  return this;
+};
 
 /**
  * Actually serve requests
@@ -97,6 +103,7 @@ function getRoute(getWordStructsForBoard) {
     if (typeof req.param('desired') !== 'undefined') {
       req.sanitize('desired').lettersOnly().toLowerCase();
       req.assert('desired', 'Desired letters must be 25 letters maximum').len(0, 25);
+      req.assert('desired').isSubsetOf(req.param('board'));
     }
 
     req.sanitize('minFrequency').toInt();
