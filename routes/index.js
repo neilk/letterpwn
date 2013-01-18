@@ -124,7 +124,6 @@ function getHandler(getWordStructsForBoard) {
       .min(0)
       .max(MAX_FREQUENCY);
 
-    console.log( [req.param('board'), req.param('desired'), req.param('minFrequency')].join(",") );
     var errors = req.validationErrors();
     if (errors) {
       res.writeHead(500, {'Content-Type': 'text/plain'});
@@ -133,7 +132,6 @@ function getHandler(getWordStructsForBoard) {
       var board = set.getCanonical(req.param('board'));
       var desired = set.getCanonical(req.param('desired')) || [];
       var minFrequency = req.param('minFrequency') || 0;
-      console.log( util.inspect( { 'board': board, 'desired': desired, 'minFrequency': minFrequency } ) );
       var printWords = getWordPrinter(res);
       getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, printWords);
     }
