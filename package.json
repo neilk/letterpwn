@@ -18,6 +18,7 @@
     "MD5": "1.x",
     "express": "3.x",
     "express-validator": "*",
+    "node": "0.8.14",
     "jade": "*",
     "lazy": "1.x",
     "underscore": "1.x"
