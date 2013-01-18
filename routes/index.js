@@ -1,8 +1,7 @@
 var
   _ = require('underscore'),
-  diskcache = require('../lib/diskcache'),
   expressValidator = require('express-validator'),
-  routeWhenReady = require('../lib/routeWhenReady'),
+  lru = require('lru-cache'),
   set = require('../lib/set'),
   words = require('../data/words'), // not a library - this is the dictionary
   util = require('util');
@@ -21,7 +20,7 @@ function byLengthDescending(a, b) {
  * Return a function closed over a complex structure of words
  * (This is so we can make the inner function cacheable)
  * @param {Array} words
- * @return {Function} taking board and callback
+ * @return {Function} taking board returning matching word structures
  */
 function getWordScanner(words) {
   /**
@@ -34,10 +33,10 @@ function getWordScanner(words) {
    * @param {Array} words canonical data structure of dictionary words
    * @param {Function} callback
    */
-  return function(board, next) {
-    next(_.filter(words, function( struct ) {
+  return function(board) {
+    return _.filter(words, function( struct ) {
       return set.isSubset(board, struct[1]);
-    }));
+    });
   };
 }
 
@@ -48,43 +47,23 @@ function getWordScanner(words) {
  * @param {String} board
  * @param {String} desired
  * @param {Number} minFrequency
- * @param {Function} next callback
+ * @return {Array} of strings, the actual words
  */
 function getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, next) {
   var boardSet = set.getCanonical(board);
   var desiredSet = set.getCanonical(desired);
-  getWordStructsForBoard(boardSet, function(words) {
-    next(
-      _.chain(words)
-        .filter(function(w){
-          return w[2] >= minFrequency; // throw away rare words if specified
-        })
-        .filter(function(w) {
-          return set.isSubset(w[1], desiredSet)  // word structs that are desired
-        })
-        .map(function(w) {
-          return w[0];   // return just the word
-        })
-        .value()
-    );
-  });
-}
-
-
-/**
- * Partial to print words to response
- * @param {http.response} res
- * @return {Function}
- */
-function getWordPrinter(res, params) {
-  /**
-   * Render template to client
-   * @param {Array} words array of strings
-   */
-  return function(words) {
-    params.words = words.sort(byLengthDescending);
-    res.render('index', params);
-  }
+  var wordStructs = getWordStructsForBoard(boardSet);
+  return _.chain(words)
+      .filter(function(w){
+        return w[2] >= minFrequency; // throw away rare words if specified
+      })
+      .filter(function(w) {
+        return set.isSubset(w[1], desiredSet)  // word structs that are desired
+      })
+      .map(function(w) {
+        return w[0];   // return just the word
+      })
+      .value();
 }
 
 
@@ -105,7 +84,7 @@ expressValidator.Filter.prototype.lettersOnly = function() {
  * @param {Function} getWordStructsForBoard efficiently cached function to get the words for a particular board
  * @return {Function} suitable for serving requests
  */
-function getHandler(getWordStructsForBoard) {
+function getRoute(getWordStructsForBoard) {
   var MAX_FREQUENCY = 24;
 
   return function (req, res) {
@@ -141,21 +120,41 @@ function getHandler(getWordStructsForBoard) {
       var board = req.param('board');
       var desired = req.param('desired') || [];
       var minFrequency = req.param('minFrequency') || 0;
-      var printWords = getWordPrinter(res, params);
-      getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency, printWords);
+      var words = getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency);
+      params.words = words.sort(byLengthDescending);
+      res.render('index', params);
     }
   };
 }
 
-/* when ready, replace it with the real handler */
-var getDiskCachedHandler = function(ready) {
-  diskcache.init(__dirname, function(cacheize) {
-    var getWordStructsForBoard = cacheize(getWordScanner(words));
-    ready(getHandler(getWordStructsForBoard));
-  });
-};
+/**
+ * Given a function,
+ * return a memoized version using an LRU cache
+ *
+ * n.b. functions that take functions as arguments, or rely
+ * on "this" context, won't work properly
+ * @param {Function}
+ * @return {Function}
+ */
+function memoize(fn) {
+  var cache = lru(10000);
+  return function() {
+    var args = Array.prototype.slice.call(arguments);
+    var key = args.join(':');
+    var results;
+    if (cache.has(key)) {
+      results = cache.get(key);
+    } else {
+      results = fn.apply(null, args);
+      cache.set(key, results);
+    }
+    return results;
+  }
+}
 
+var getWordStructsForBoard = memoize(getWordScanner(words));
 
+var route = getRoute(getWordStructsForBoard);
 
+exports.index = route;
 
-exports.index = routeWhenReady(getDiskCachedHandler);

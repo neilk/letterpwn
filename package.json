@@ -24,6 +24,7 @@
     "express-validator": "*",
     "jade": "*",
     "lazy": "1.x",
+    "lru-cache": "*",
     "underscore": "1.x"
   }
 }
