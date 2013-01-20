@@ -53,7 +53,7 @@ function getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFreq
   var boardSet = set.getCanonical(board);
   var desiredSet = set.getCanonical(desired);
   var wordStructs = getWordStructsForBoard(boardSet);
-  return _.chain(words)
+  return _.chain(wordStructs)
       .filter(function(w){
         return w[2] >= minFrequency; // throw away rare words if specified
       })
