@@ -94,8 +94,9 @@ function getRoute(getWordStructsForBoard) {
   var MAX_FREQUENCY = 24;
 
   return function (req, res) {
+
     req.assert('board', 'Board must exist').notEmpty();
-    if (typeof req.param('board') !== 'undefined') {
+    if (typeof req.param('board') !== 'undefined' && req.param('board') !== '') {
       req.sanitize('board').lettersOnly().toLowerCase();
       req.assert('board', 'Board must have 25 letters').len(25, 25);
     }
@@ -119,18 +120,15 @@ function getRoute(getWordStructsForBoard) {
       'words': [],
       'title': 'Letterpress cheat!'
     };
-    var errors = req.validationErrors();
-    if (errors) {
-      params.errors = errors;
-      res.render('index', params);
-    } else {
+    params.errors = req.validationErrors();
+    if (!params.errors) {
       var board = req.param('board');
       var desired = req.param('desired') || [];
       var minFrequency = req.param('minFrequency') || 0;
       var words = getDesiredWordsForBoard(getWordStructsForBoard, board, desired, minFrequency);
       params.words = words.sort(byLengthDescending);
-      res.render('index', params);
     }
+    res.render('index', params);
   };
 }
 
