@@ -1,7 +1,7 @@
 var
   _ = require('underscore'),
   expressValidator = require('express-validator'),
-  lru = require('lru-cache'),
+  memoize = require('../lib/lru-memoize'),
   set = require('../lib/set'),
   words = require('../data/words'), // not a library - this is the dictionary
   util = require('util');
@@ -130,31 +130,6 @@ function getRoute(getWordStructsForBoard) {
     }
     res.render('index', params);
   };
-}
-
-/**
- * Given a function,
- * return a memoized version using an LRU cache
- *
- * n.b. functions that take functions as arguments, or rely
- * on "this" context, won't work properly
- * @param {Function}
- * @return {Function}
- */
-function memoize(fn) {
-  var cache = lru(10000);
-  return function() {
-    var args = Array.prototype.slice.call(arguments);
-    var key = args.join(':');
-    var results;
-    if (cache.has(key)) {
-      results = cache.get(key);
-    } else {
-      results = fn.apply(null, args);
-      cache.set(key, results);
-    }
-    return results;
-  }
 }
 
 var getWordStructsForBoard = memoize(getWordScanner(words));
