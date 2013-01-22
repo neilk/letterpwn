@@ -1,7 +1,7 @@
 var
   _ = require('underscore'),
   expressValidator = require('express-validator'),
-  memoize = require('../lib/lru-memoize'),
+  memoize = require('lru-memoize'),
   set = require('../lib/set'),
   words = require('../data/words'), // not a library - this is the dictionary
   util = require('util');
