@@ -1,22 +1,24 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  if errors.length > 0
-    ul 
-      for error in errors
-        li= error.param + ': ' + error.msg
-  form(method='GET')
-    label board
-      input(name='board', value=board)
-    label minimum frequency
-      input(name='minFrequency', value=minFrequency)
-    label desired letters
-      input(name='desired', value=desired)
-    input(type='submit')
-  if words.length > 0
-    p These are the words:
-    ul
-      each word in words
-        li= word
+  div(id='header')
+    img(src='/logo.png', id='logo')
+    h1= title
+  div(id='content')
+    if errors.length > 0
+      ul 
+        for error in errors
+          li= error.param + ': ' + error.msg
+    form(id='form', method='GET')
+      label board
+        textarea(name='board', value=board)
+      label minimum frequency
+        input(name='minFrequency', value=minFrequency)
+      label desired letters
+        input(name='desired', value=desired)
+      input(type='submit')
+    if words.length > 0
+      p These are the words:
+      ul
+        each word in words
+          li= word
