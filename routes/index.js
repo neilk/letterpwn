@@ -120,8 +120,8 @@ function getRoute(getWordStructsForBoard) {
       'words': [],
       'title': 'Letterpress cheat!'
     };
-    params.errors = req.validationErrors();
-    if (!params.errors) {
+    params.errors = req.validationErrors() || [];
+    if (!params.errors.length) {
       var board = req.param('board');
       var desired = req.param('desired') || [];
       var minFrequency = req.param('minFrequency') || 0;
