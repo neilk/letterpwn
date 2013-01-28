@@ -25,6 +25,17 @@ a {
   padding: 2em;
 }
 
+#getBoard input.letter {
+  text-transform: uppercase;
+  height: 1em;
+  width: 1em;
+  padding: .5em;
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0em;
+  text-align: center;
+}
+
 #form textarea[name=board] {
   resize: none;
   font-family: courier, fixed;

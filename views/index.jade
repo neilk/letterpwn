@@ -6,10 +6,19 @@ block content
       ul 
         for error in errors
           li= error.param + ': ' + error.msg
-    form(id='form', method='GET')
+    form(id='getBoard')
+      table
+        th
+        each i in [0, 1, 2, 3, 4]
+          tr
+          each j in [0, 1, 2, 3, 4]
+            td
+              input.letter(type='text', name='b' + (i * 5 + j), tabIndex=(i * 5 + j + 1), size=1, maxLength=1)
+      input(type='submit', tabIndex=26)
+    form(id='getMove', method='GET')
       p
         label board
-          textarea(name='board')= board
+          input(name='board')= board
       p
         div(id='minFrequencySlider')
         label minimum frequency
