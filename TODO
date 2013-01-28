@@ -1,0 +1,14 @@
+- sequence of events
+  - enter board (w/instruction)
+  - frequency inputs appear
+    - slider
+  - desired inputs appear
+  - changing anything, wait a few ms, requests the API
+- make page nicer
+- error handling:
+ - on page
+ - in XHR
+- pagination in API (get first 5, memoize, paginate)
+
+- rethink, does backbone make sense here or...?
+
