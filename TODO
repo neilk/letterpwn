@@ -5,6 +5,7 @@
   - desired inputs appear
   - changing anything, wait a few ms, requests the API
 - make page nicer
+- api timer
 - error handling:
  - on page
  - in XHR
