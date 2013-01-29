@@ -46,8 +46,8 @@ exports.api = function(req, res, next) {
   } else {
     var board = req.param('board'); // guaranteed to exist
     var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lp.DEFAULT_FREQUENCY;
-    var words = lp.getWordsForBoard(board, minFrequency);
-    res.send(words);
+    var moves = lp.getMovesForBoard(board, minFrequency);
+    res.send(moves);
   }
 }
 
