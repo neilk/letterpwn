@@ -1,7 +1,8 @@
 // generate the map of position to adjacent position on
 // the letterpress board
 
-var _ = require('underscore');
+var _ = require('underscore'),
+    lp = require('lib/letterpress');
 
 var neighbors = [
   [ -1, 0 ],
@@ -23,7 +24,15 @@ _.each( _.range(5), function(i) {
     })
   })
 });
-console.log(JSON.stringify(adjacent, null, 2));
+
+adjacentBitMasks = [];
+for (var i = 0; i <= 24; i++) {
+  adjacentBitMasks.push(
+    [ lp.getBitMaskForPositions([i]), lp.getBitMaskForPositions(adjacent[i]) ]
+  )
+}
+
+console.log(JSON.stringify(adjacentBitMasks, null, 2));
 
 function getPos(n, i, j) {
   i += n[0];

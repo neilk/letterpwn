@@ -14,7 +14,7 @@ block content
             tr
             each j in [0, 1, 2, 3, 4]
               td
-                input.letter(type='text', name='b' + (i * 5 + j), tabIndex=(i * 5 + j + 1), size=1, maxLength=1)
+                input.letter(class='letter', type='text', id='b' + (i * 5 + j), name='b' + (i * 5 + j), tabIndex=(i * 5 + j + 1), size=1, maxLength=1)
         p
           label minimum frequency
             input(name='minFrequency', value=minFrequency, size=2)

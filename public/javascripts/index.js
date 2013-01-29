@@ -1,5 +1,5 @@
 (function($){
-  var letterInputsSelector = '#getBoard input[type=text]';
+  var letterInputsSelector = 'input.letter';
 
   $(letterInputsSelector)
     .click( function() { $(this).select(); } )
@@ -29,13 +29,46 @@
   function displayWords(data) {
     var $words = $('<span>');
     if (data.length) {
-      $words.append(data.map( function(item) { return item[0];} ).join(', '));
+      for (var i = 0; i < data.length; i++) {
+        var bitMask = data[i][0];
+        var word = data[i][1];
+        $word = $('<span>')
+          .addClass('word')
+          .append(word)
+          .hover(
+            function(bitMask){
+              return function() {
+                highlightMove(bitMask, true);
+              }
+            }(bitMask),
+            function(bitMask){
+              return function() {
+                highlightMove(bitMask, false);
+              }
+            }(bitMask)
+          );
+        $words.append($word);
+        if (i < data.length - 1) {
+          $words.append(', ');
+        }
+      }
     } else {
       $words.append('(none)');
     }
     // var $words = $('<ul>');
     // data.map( function(item){ $words.append($('<li>').append(item)) } );
     $('#words').html($words);
+  }
+
+  function highlightMove(bitMask, on) {
+    var bit = 1;
+    var background = on ? '#ffffcc' : 'none';
+    for(var i = 0; i <= 24; i++) {
+      if (bitMask & bit) {
+        $('#b' + i).css({background: background})
+      }
+      bit <<= 1;
+    }
   }
 
   function getMovesForBoard(board, minFrequency) {

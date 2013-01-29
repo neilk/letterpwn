@@ -1,3 +1,5 @@
+- the scoring algo is still wonky, although almost working
+
 - sequence of events
   - enter board (w/instruction)
   - frequency inputs appear
@@ -10,6 +12,8 @@
  - on page
  - in XHR
 - pagination in API (get first 5, memoize, paginate)
+
+- moves should be precomputed?
 
 - rethink, does backbone make sense here or...?
 
