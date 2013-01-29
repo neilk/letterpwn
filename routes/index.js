@@ -32,12 +32,6 @@ exports.api = function(req, res, next) {
     req.assert('board', 'Board must have ' + lp.BOARD_SIZE + ' letters').len(lp.BOARD_SIZE, lp.BOARD_SIZE);
   }
 
-  if (typeof req.param('desired') !== 'undefined') {
-    req.sanitize('desired').lettersOnly().toLowerCase();
-    req.assert('desired', 'Desired letters must be ' + lp.BOARD_SIZE + ' letters maximum').len(0, lp.BOARD_SIZE);
-    req.assert('desired').isSubsetOf(req.param('board'));
-  }
-
   if (typeof req.param('minFrequency') !== 'undefined') {
     req.sanitize('minFrequency').toInt();
     req.assert('minFrequency', 'Frequency must be between 0 and ' + lp.MAX_FREQUENCY)
@@ -51,9 +45,8 @@ exports.api = function(req, res, next) {
     throw new Error( errors );
   } else {
     var board = req.param('board'); // guaranteed to exist
-    var desired = req.param('desired') || '';
     var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lp.DEFAULT_FREQUENCY;
-    var words = lp.getDesiredWordsForBoard(board, desired, minFrequency);
+    var words = lp.getWordsForBoard(board, minFrequency);
     res.send(words);
   }
 }

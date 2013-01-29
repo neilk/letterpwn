@@ -20,8 +20,7 @@
     var board = letterInputsToString();
     if (board.length === 25) {
       var minFrequency = $('#getBoard input[name=minFrequency]').get(0).value;
-      var desired = $('#getBoard input[name=desired]').get(0).value;
-      getDesiredWordsForBoard(board, minFrequency, desired);
+      getWordsForBoard(board, minFrequency);
     } else {
       displayWords([]);
     }
@@ -39,12 +38,11 @@
     $('#words').html($words);
   }
 
-  function getDesiredWordsForBoard(board, minFrequency, desired) {
+  function getWordsForBoard(board, minFrequency) {
     var ajaxRequest = {
       data: {
         board: board,
         minFrequency: minFrequency,
-        desired: desired
       },
       error: function(xhr, status, err) {
         console.log(xhr, status, err);
