@@ -18,7 +18,7 @@ _.each( _.range(5), function(i) {
     adjacent[p] = [];
     _.each(neighbors, function (n) {
       var pa = getPos(n, i, j);
-      if (pa >= 0 && pa <= 24) {
+      if (pa != null) {
         adjacent[p].push(pa);
       }
     })
@@ -37,5 +37,9 @@ console.log(JSON.stringify(adjacentBitMasks, null, 2));
 function getPos(n, i, j) {
   i += n[0];
   j += n[1];
-  return i*5 + j;
+  if (i >= 0 && i <= 4 && j >= 0 && j <= 4) {
+    return i*5 + j;
+  } else {
+    return null;
+  }
 }
