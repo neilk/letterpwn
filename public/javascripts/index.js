@@ -22,7 +22,21 @@
       var minFrequency = $('#getBoard input[name=minFrequency]').get(0).value;
       var desired = $('#getBoard input[name=desired]').get(0).value;
       getDesiredWordsForBoard(board, minFrequency, desired);
+    } else {
+      displayWords([]);
     }
+  }
+
+  function displayWords(data) {
+    var $words = $('<span>');
+    if (data.length) {
+      $words.append(data.join(', '));
+    } else {
+      $words.append('(none)');
+    }
+    // var $words = $('<ul>');
+    // data.map( function(item){ $words.append($('<li>').append(item)) } );
+    $('#words').html($words);
   }
 
   function getDesiredWordsForBoard(board, minFrequency, desired) {
@@ -36,10 +50,7 @@
         console.log(xhr, status, err);
       },
       success: function(data, textStatus, xhr) {
-        var $words = $('<span>').append(data.join(', '));
-        // var $words = $('<ul>');
-        // data.map( function(item){ $words.append($('<li>').append(item)) } );
-        $('#words').html($words);
+        displayWords(data);
       }
     }
 
@@ -51,4 +62,5 @@
   }
 
   $('#getBoard input').keyup(updateWords);
+  displayWords([]);
 })(jQuery);
