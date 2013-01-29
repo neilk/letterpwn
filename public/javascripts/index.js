@@ -32,20 +32,21 @@
       for (var i = 0; i < data.length; i++) {
         var bitMask = data[i][0];
         var word = data[i][1];
+        var capturedBitMask = data[i][2];
         $word = $('<span>')
           .addClass('word')
           .append(word)
           .hover(
-            function(bitMask){
+            function(bitMask, capturedBitMask){
               return function() {
-                highlightMove(bitMask, true);
+                highlightMove(bitMask, capturedBitMask, true);
               }
-            }(bitMask),
-            function(bitMask){
+            }(bitMask, capturedBitMask),
+            function(bitMask, capturedBitMask){
               return function() {
-                highlightMove(bitMask, false);
+                highlightMove(bitMask, capturedBitMask, false);
               }
-            }(bitMask)
+            }(bitMask, capturedBitMask)
           );
         $words.append($word);
         if (i < data.length - 1) {
@@ -60,15 +61,23 @@
     $('#words').html($words);
   }
 
-  function highlightMove(bitMask, on) {
-    var bit = 1;
-    var background = on ? '#ffffcc' : 'none';
-    for(var i = 0; i <= 24; i++) {
-      if (bitMask & bit) {
-        $('#b' + i).css({background: background})
+  function highlightMove(bitMask, capturedBitMask, on) {
+    function highlightMask(mask, klass, on) {
+      var bit = 1;
+      for(var i = 0; i <= 24; i++) {
+        if (mask & bit) {
+          var $el = $('#b' + i);
+          if (on) {
+            $el.addClass(klass);
+          } else {
+            $el.removeClass(klass);
+          }
+        }
+        bit <<= 1;
       }
-      bit <<= 1;
     }
+    highlightMask(bitMask ^ capturedBitMask, 'ours', on);
+    highlightMask(capturedBitMask, 'ours captured', on);
   }
 
   function getMovesForBoard(board, minFrequency) {

@@ -64,3 +64,19 @@ h2 {
   color: #cccccc;
   margin-top: 0em;
 }
+
+.ours {
+  background: #72d0ff;
+}
+
+.ours.captured {
+  background: #00a1fe;
+}
+
+.theirs {
+  background: #ee9f90;
+}
+
+.theirs.captured {
+  background: #f5443c;
+}
