@@ -36,13 +36,18 @@ a {
   text-align: center;
 }
 
-#form textarea[name=board] {
-  resize: none;
-  font-family: courier, fixed;
-  font-size: 2em;
-  width: 5.5em;
-  height: 5.5em;
-  line-height: 1em;
-  letter-spacing: 0.4em;
+#controls {
+  float: left;
+  width: 15em;
 }
 
+#results {
+  margin-left: 15em;
+}
+
+#timing {
+  float: right;
+  font-size: x-small;
+  color: #cccccc;
+  margin-top: 0em;
+}

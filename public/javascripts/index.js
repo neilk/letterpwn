@@ -1,10 +1,4 @@
 (function($){
-  $('#minFrequencySlider').slider({
-    value:16,
-    min:0,
-    max:24
-  });
-
   var letterInputsSelector = '#getBoard input[type=text]';
 
   $(letterInputsSelector)
@@ -25,14 +19,14 @@
   function updateWords() {
     var board = letterInputsToString();
     if (board.length === 25) {
-      var minFrequency = $('#getBoard input[name=minFrequency]').get().value;
-      var desired = $('#getBoard input[name=desired]').get().value;
+      var minFrequency = $('#getBoard input[name=minFrequency]').get(0).value;
+      var desired = $('#getBoard input[name=desired]').get(0).value;
       getDesiredWordsForBoard(board, minFrequency, desired);
     }
   }
 
   function getDesiredWordsForBoard(board, minFrequency, desired) {
-    $.ajax('/api', {
+    var ajaxRequest = {
       data: {
         board: board,
         minFrequency: minFrequency,
@@ -42,12 +36,19 @@
         console.log(xhr, status, err);
       },
       success: function(data, textStatus, xhr) {
-        var $ul = $('<ul>');
-        data.map( function(item){ $ul.append($('<li>').append(item)) } );
-        $('#words').html($ul);
+        var $words = $('<span>').append(data.join(', '));
+        // var $words = $('<ul>');
+        // data.map( function(item){ $words.append($('<li>').append(item)) } );
+        $('#words').html($words);
       }
-    });
+    }
+
+    var startTime = new Date();
+    $.ajax('/api', ajaxRequest)
+      .done(function() {
+        $('#timing').html( "Request completed in " + ((new Date() - startTime)/1000).toFixed(3) + " seconds");
+      });
   }
 
-  $('#getBoard input').change(updateWords);
+  $('#getBoard input').keyup(updateWords);
 })(jQuery);

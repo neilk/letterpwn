@@ -1,6 +1,7 @@
 var
   expressValidator = require('express-validator'),
-  lp = require('../lib/letterpress');
+  lp = require('../lib/letterpress'),
+  set = require('../lib/set');
 
 
 // some extra filters for our processing
@@ -59,7 +60,7 @@ exports.api = function(req, res, next) {
 
 exports.index = function(req, res, next) {
   var params = {
-    'title': 'lp cheat! with API',
+    'title': 'letterpress cheat! with API',
     'errors': [],
     'minFrequency': 16,
     'desired': '',
