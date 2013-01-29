@@ -14,11 +14,6 @@ block content
           each j in [0, 1, 2, 3, 4]
             td
               input.letter(type='text', name='b' + (i * 5 + j), tabIndex=(i * 5 + j + 1), size=1, maxLength=1)
-      input(type='submit', tabIndex=26)
-    form(id='getMove', method='GET')
-      p
-        label board
-          input(name='board')= board
       p
         div(id='minFrequencySlider')
         label minimum frequency
@@ -26,13 +21,9 @@ block content
       p
         label desired letters
           input(name='desired', value=desired)
-      p
-        input(type='submit')
-    if words.length > 0
-      p These are the words:
-      ul
-        each word in words
-          li= word
+    div
+      p Words?
+      p(id='words')
 
 block contentScripts
   script(src='/javascripts/index.js')
