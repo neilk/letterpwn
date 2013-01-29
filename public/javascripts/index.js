@@ -28,6 +28,7 @@
   }
 
   function displayWords(data) {
+    $('#getBoard td').removeClass('ours captured');
     var $words = $('<span>');
     if (data.length) {
       for (var i = 0; i < data.length; i++) {
