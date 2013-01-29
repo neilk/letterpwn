@@ -19,6 +19,7 @@
   function updateWords() {
     var board = letterInputsToString();
     if (board.length === 25) {
+      $('input').blur();
       var minFrequency = $('#getBoard input[name=minFrequency]').get(0).value;
       getMovesForBoard(board, minFrequency);
     } else {
@@ -103,4 +104,7 @@
 
   $('#getBoard input').keyup(updateWords);
   displayWords([]);
+
+  $('#b0').click();
+
 })(jQuery);
