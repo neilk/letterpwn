@@ -50,7 +50,7 @@
           );
         $words.append($word);
         if (i < data.length - 1) {
-          $words.append(', ');
+          $words.append(' ');
         }
       }
     } else {
@@ -66,7 +66,7 @@
       var bit = 1;
       for(var i = 0; i <= 24; i++) {
         if (mask & bit) {
-          var $el = $('#b' + i);
+          var $el = $('#tdb' + i);
           if (on) {
             $el.addClass(klass);
           } else {

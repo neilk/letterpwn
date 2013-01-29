@@ -65,6 +65,22 @@ h2 {
   margin-top: 0em;
 }
 
+input.letter {
+  background: none;
+}
+
+#getBoard table input {
+  border: 0px;
+}
+
+.checker0 {
+  background: #fafafa;
+}
+
+.checker1 {
+  background: #f5f5f5;
+}
+
 .ours {
   background: #72d0ff;
 }
@@ -79,4 +95,16 @@ h2 {
 
 .theirs.captured {
   background: #f5443c;
+}
+
+#words {
+  line-height: 2em;
+}
+
+.word {
+  padding: 0.25em 0.75em;
+  border: 1px solid #e0e0e0;
+  background: #f5f5f5;
+  /* border-radius: 0.5em;
+  box-shadow: 2px 2px 2px #dddddd; */
 }
