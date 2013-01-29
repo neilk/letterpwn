@@ -8,13 +8,20 @@ a {
   color: #00B7FF;
 }
 
+h1 {
+  font-size: large;
+  font-weight: bold;
+  color: white;
+}
+
 #header {
-  background: #ffe099;
-  padding: 2em;
+  background: #666666;
+  padding: 1em;
   margin-bottom: 1em;
 }
 
 #header #logo {
+  margin-top: -25px;
   width: 100px;
   height: 100px;
   float: left;
