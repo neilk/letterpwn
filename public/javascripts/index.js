@@ -103,6 +103,15 @@
       });
   }
 
+  $('#randomize').click(function(e) {
+    $('input.letter').each(function() {
+      // ascii 'a' = 65
+      this.value = String.fromCharCode(Math.floor(Math.random()*26+65));
+    });
+    updateWords();
+  })
+
+
   $('#getBoard input').keyup(updateWords);
   displayWords([]);
 
