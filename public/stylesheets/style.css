@@ -1,7 +1,32 @@
+/* @license
+ * MyFonts Webfont Build ID 2463715, 2013-01-29T19:12:47-0500
+ * 
+ * The fonts listed in this notice are subject to the End User License
+ * Agreement(s) entered into by the website owner. All other parties are 
+ * explicitly restricted from using the Licensed Webfonts(s).
+ * 
+ * You may obtain a valid license at the URLs below.
+ * 
+ * Webfont: Core Humanist Sans by Fonts by Alex
+ * URL: http://www.myfonts.com/fonts/fonts-by-alex/core-humanist-sans/regular/
+ * Copyright: Copyright (c) 2012 by Alex Scholing. All rights reserved.
+ * Licensed pageviews: Unlimited
+ * 
+ * 
+ * License: http://www.myfonts.com/viewlicense?type=web&buildid=2463715
+ * 
+ * © 2013 MyFonts Inc
+*/
+
+@font-face {font-family: 'CoreHumanistSans';src: url('webfonts/2597E3_0_0.eot');src: url('webfonts/2597E3_0_0.eot?#iefix') format('embedded-opentype'),url('webfonts/2597E3_0_0.woff') format('woff'),url('webfonts/2597E3_0_0.ttf') format('truetype');}
+
+/* end of webfonts */
+
+
 body {
   padding: 0px;
   margin: 0px;
-  font: 14px Helvetica, Arial, sans-serif;
+  font: 14px CoreHumanistSans, Helvetica, Arial, sans-serif;
 }
 
 a {
@@ -39,15 +64,15 @@ h2 {
 }
 
 input {
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: CoreHumanistSans, Helvetica, Arial, sans-serif;
 }
 
 #getBoard input.letter {
   text-transform: uppercase;
   height: 1.5em;
   width: 1.5em;
-  padding: .5em;
-  font-size: 1.5em;
+  padding: .25em;
+  font-size: 2em;
   font-weight: normal;
   margin: 0em;
   text-align: center;
