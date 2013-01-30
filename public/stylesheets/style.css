@@ -38,24 +38,28 @@ h2 {
   padding: 2em;
 }
 
+input {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
 #getBoard input.letter {
   text-transform: uppercase;
-  height: 1em;
-  width: 1em;
+  height: 1.5em;
+  width: 1.5em;
   padding: .5em;
-  font-size: 1em;
-  font-weight: bold;
+  font-size: 1.5em;
+  font-weight: normal;
   margin: 0em;
   text-align: center;
 }
 
 #controls {
   float: left;
-  width: 15em;
+  width: 25em;
 }
 
 #results {
-  margin-left: 15em;
+  margin-left: 25em;
 }
 
 #timing {
