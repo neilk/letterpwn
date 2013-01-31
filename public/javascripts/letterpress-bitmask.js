@@ -48,6 +48,6 @@
       }
     });
     return protectedBitMask;
-  }
+  };
 
 })(typeof exports === 'undefined' ? this['lpBitMask']={} : exports);
