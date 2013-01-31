@@ -112,7 +112,7 @@ input.letter {
   background: #72d0ff;
 }
 
-.ours.captured {
+.ours.protected {
   background: #00a1fe;
 }
 
@@ -120,7 +120,7 @@ input.letter {
   background: #ee9f90;
 }
 
-.theirs.captured {
+.theirs.protected {
   background: #f5443c;
 }
 

@@ -28,6 +28,7 @@
   }
 
   function updateWords() {
+    oursMask = 0;
     var board = letterInputsToString();
     if (board.length === 25) {
       $('input').blur();
@@ -39,27 +40,23 @@
   }
 
   function displayWords(data) {
-    $('#getBoard td').removeClass('ours captured');
+    $('#getBoard td').removeClass('ours protected');
     var $words = $('<span>');
     if (data.length) {
       for (var i = 0; i < data.length; i++) {
         var bitMask = data[i][0];
         var word = data[i][1];
-        var capturedBitMask = data[i][2];
         $word = $('<span>')
           .addClass('word')
           .append(word)
+          .data('bitMask', bitMask)
           .hover(
-            function(bitMask, capturedBitMask){
-              return function() {
-                highlightMove(bitMask, capturedBitMask, true);
-              }
-            }(bitMask, capturedBitMask),
-            function(bitMask, capturedBitMask){
-              return function() {
-                highlightMove(bitMask, capturedBitMask, false);
-              }
-            }(bitMask, capturedBitMask)
+            function(){
+              highlightMove(oursMask | $(this).data('bitMask'));
+            },
+            function(){
+              highlightMove(oursMask);
+            }
           );
         $words.append($word);
         if (i < data.length - 1) {
@@ -87,9 +84,8 @@
         bit <<= 1;
       }
     }
-    capturedBitMask = 0;
-    highlightMask(bitMask ^ capturedBitMask, 'ours');
-    highlightMask(capturedBitMask, 'captured');
+    highlightMask(bitMask, 'ours');
+    highlightMask(lpBitMask.getProtectedBitMask(bitMask), 'protected');
   }
 
   function getMovesForBoard(board, minFrequency) {
@@ -133,7 +129,7 @@
       console.log("before" + oursMask);
       oursMask ^= $(this).data('bitmask');
       console.log("after" + oursMask);
-      highlightMove(oursMask, 0, true);
+      highlightMove(oursMask);
     });
     //$('input.letter').attr('disabled', 'disabled');
   });
