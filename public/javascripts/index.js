@@ -1,15 +1,26 @@
 (function($){
   var letterInputsSelector = 'input.letter';
 
+  function initLettersForTyping() {
+    $(letterInputsSelector)
+      .removeAttr('disabled')
+      .click( function() { $(this).select(); } )
+  }
+
   $(letterInputsSelector)
-    .click( function() { $(this).select(); } )
     .keyup( function(event) {
       // this form has tabIndexes 1-25 for the inputs. Submit button is 26.
       if (event.which !== 9) {
         var nextTabIndex = (parseInt(this.tabIndex, 10) + 1).toString()
         $(this.form).find('[tabIndex=' + nextTabIndex.toString() + ']').focus().select();
       }
-    });
+    })
+    // we assume the name of the input is 'b12' for the 13th square
+    .each( function() {
+      var pos = parseInt(this.name.substr(1), 10);
+      $(this).data('pos', pos);
+      $(this).data('bitmask', 1 << pos);
+    } );
 
   function letterInputsToString() {
     var board = $(letterInputsSelector).get().reduce(function(r,el){ return r + el.value; }, '');
@@ -63,23 +74,22 @@
     $('#words').html($words);
   }
 
-  function highlightMove(bitMask, capturedBitMask, on) {
-    function highlightMask(mask, klass, on) {
+  function highlightMove(bitMask) {
+    function highlightMask(mask, klass) {
       var bit = 1;
       for(var i = 0; i <= 24; i++) {
+        var $el = $('#tdb' + i);
         if (mask & bit) {
-          var $el = $('#tdb' + i);
-          if (on) {
-            $el.addClass(klass);
-          } else {
-            $el.removeClass(klass);
-          }
+          $el.addClass(klass);
+        } else {
+          $el.removeClass(klass);
         }
         bit <<= 1;
       }
     }
-    highlightMask(bitMask ^ capturedBitMask, 'ours', on);
-    highlightMask(capturedBitMask, 'ours captured', on);
+    capturedBitMask = 0;
+    highlightMask(bitMask ^ capturedBitMask, 'ours');
+    highlightMask(capturedBitMask, 'captured');
   }
 
   function getMovesForBoard(board, minFrequency) {
@@ -112,6 +122,23 @@
   })
 
 
+  $('#paintControls #paintOff').click(function(e) {
+    initLettersForTyping();
+  });
+
+  var oursMask = 0;
+  $('#paintControls .ours').click(function(e) {
+    $('input.letter').click( function() {
+      console.log($(this).data('pos'));
+      console.log("before" + oursMask);
+      oursMask ^= $(this).data('bitmask');
+      console.log("after" + oursMask);
+      highlightMove(oursMask, 0, true);
+    });
+    //$('input.letter').attr('disabled', 'disabled');
+  });
+
+  initLettersForTyping();
   $('#getBoard input').keyup(updateWords);
   displayWords([]);
 

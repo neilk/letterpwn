@@ -135,3 +135,17 @@ input.letter {
   /* border-radius: 0.5em;
   box-shadow: 2px 2px 2px #dddddd; */
 }
+
+#paintControls td {
+  padding: 1em;
+}
+
+.fill {
+  width: 1em;
+  height: 1em;
+}
+
+#paintOff {
+  background: #cccccc;
+}
+

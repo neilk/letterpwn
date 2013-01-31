@@ -21,6 +21,14 @@ block content
         p
           label minimum frequency
             input(name='minFrequency', value=minFrequency, size=2)
+      table(id='paintControls')
+        tr
+          td
+            div.fill.ours(id='oursPaint')
+          td
+            div.fill.theirs(id='theirsPaint')
+          td
+            div.fill(id='paintOff')
       p(id='devControls')
         input(id='randomize', type='submit', value='randomize')
     div(id='results')
