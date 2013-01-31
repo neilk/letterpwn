@@ -47,7 +47,15 @@ exports.api = function(req, res, next) {
     var board = req.param('board'); // guaranteed to exist
     var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lp.DEFAULT_FREQUENCY;
     var moves = lp.getMovesForBoard(board, minFrequency);
-    res.send(moves.slice(0, 9));
+
+    // send top 10, removing data to only show bitmask and string representation of word.
+    res.send(
+      moves
+        .slice(0, 9)
+        .map(function(move) {
+          return [move[2], move[3][0]];
+        })
+    );
   }
 }
 
