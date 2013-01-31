@@ -39,6 +39,20 @@ exports.api = function(req, res, next) {
       .max(lp.MAX_FREQUENCY);
   }
 
+  if (typeof req.param('oursBitMask') !== 'undefined') {
+    req.sanitize('oursBitMask').toInt();
+    req.assert('oursBitMask', 'oursBitMask must be between 0 and ' + lp.MAX_BITMASK)
+      .min(0)
+      .max(lp.MAX_BITMASK);
+  }
+
+  if (typeof req.param('theirsBitMask') !== 'undefined') {
+    req.sanitize('theirsBitMask').toInt();
+    req.assert('theirsBitMask', 'theirsBitMask must be between 0 and ' + lp.MAX_BITMASK)
+      .min(0)
+      .max(lp.MAX_BITMASK);
+  }
+
   var errors = req.validationErrors() || [];
   if (errors.length) {
     // how do we get the default error-renderer to do the right thing?
@@ -46,7 +60,9 @@ exports.api = function(req, res, next) {
   } else {
     var board = req.param('board'); // guaranteed to exist
     var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lp.DEFAULT_FREQUENCY;
-    var moves = lp.getMovesForBoard(board, minFrequency);
+    var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
+    var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
+    var moves = lp.getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask);
 
     // send top 10, removing data to only show bitmask and string representation of word.
     res.send(

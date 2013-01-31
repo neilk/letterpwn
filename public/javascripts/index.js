@@ -28,12 +28,11 @@
   }
 
   function updateWords() {
-    oursMask = 0;
     var board = letterInputsToString();
     if (board.length === 25) {
       $('input').blur();
       var minFrequency = $('#getBoard input[name=minFrequency]').get(0).value;
-      getMovesForBoard(board, minFrequency);
+      getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask);
     } else {
       displayWords([]);
     }
@@ -41,6 +40,7 @@
 
   function displayWords(data) {
     $('#getBoard td').removeClass('ours protected');
+    colorBoard(oursBitMask, theirsBitMask);
     var $words = $('<span>');
     if (data.length) {
       for (var i = 0; i < data.length; i++) {
@@ -52,10 +52,10 @@
           .data('bitMask', bitMask)
           .hover(
             function(){
-              highlightMove(oursMask | $(this).data('bitMask'));
+              colorBoard(oursBitMask | $(this).data('bitMask'), theirsBitMask);
             },
             function(){
-              highlightMove(oursMask);
+              colorBoard(oursBitMask, theirsBitMask);
             }
           );
         $words.append($word);
@@ -71,28 +71,36 @@
     $('#words').html($words);
   }
 
-  function highlightMove(bitMask) {
-    function highlightMask(mask, klass) {
+  function colorBoard(oursBitMask, theirsBitMask) {
+    function colorMask(mask, klass) {
+      console.log(mask, klass);
       var bit = 1;
       for(var i = 0; i <= 24; i++) {
         var $el = $('#tdb' + i);
         if (mask & bit) {
           $el.addClass(klass);
+          console.log(klass, "for", $el.get(0).id)
         } else {
           $el.removeClass(klass);
         }
         bit <<= 1;
       }
     }
-    highlightMask(bitMask, 'ours');
-    highlightMask(lpBitMask.getProtectedBitMask(bitMask), 'protected');
+    function colorPlayer(mask, klass) {
+      colorMask(mask, klass);
+      colorMask(lpBitMask.getProtectedBitMask(mask), klass + 'Protected');
+    }
+    colorPlayer(oursBitMask, 'ours');
+    colorPlayer(theirsBitMask, 'theirs');
   }
 
-  function getMovesForBoard(board, minFrequency) {
+  function getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask) {
     var ajaxRequest = {
       data: {
         board: board,
         minFrequency: minFrequency,
+        oursBitMask: oursBitMask,
+        theirsBitMask: theirsBitMask
       },
       error: function(xhr, status, err) {
         console.log(xhr, status, err);
@@ -110,6 +118,10 @@
   }
 
   $('#randomize').click(function(e) {
+    oursBitMask = 0;
+    theirsBitMask = 0;
+    colorBoard(0, 0); // why should we have to do this here? updateWords does it, but it happens slowly
+
     $('input.letter').each(function() {
       // ascii 'a' = 65
       this.value = String.fromCharCode(Math.floor(Math.random()*26+65));
@@ -122,20 +134,33 @@
     initLettersForTyping();
   });
 
-  var oursMask = 0;
+  var oursBitMask = 0;
+  var theirsBitMask = 0;
   $('#paintControls .ours').click(function(e) {
     $('input.letter').click( function() {
-      console.log($(this).data('pos'));
-      console.log("before" + oursMask);
-      oursMask ^= $(this).data('bitmask');
-      console.log("after" + oursMask);
-      highlightMove(oursMask);
+      // remove this position from 'theirs'
+      theirsBitMask &= ~ $(this).data('bitmask');
+      // toggle it in 'ours'
+      oursBitMask ^= $(this).data('bitmask');
+      colorBoard(oursBitMask, theirsBitMask);
+      updateWords();
     });
-    //$('input.letter').attr('disabled', 'disabled');
+  });
+  $('#paintControls .theirs').click(function(e) {
+    $('input.letter').click( function() {
+      // remove this position from 'ours'
+      oursBitMask &= ~ $(this).data('bitmask');
+      // toggle it in theirs
+      theirsBitMask ^= $(this).data('bitmask');
+      colorBoard(oursBitMask, theirsBitMask);
+      updateWords();
+    });
   });
 
+
   initLettersForTyping();
-  $('#getBoard input').keyup(updateWords);
+  $('#getBoard input.letter').keyup(updateWords);
+  $('#getBoard input[name=minFrequency]').keyup(updateWords);
   displayWords([]);
 
   $('#b0').click();
