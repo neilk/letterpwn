@@ -44,20 +44,19 @@
     var $words = $('<span>');
     if (data.length) {
       for (var i = 0; i < data.length; i++) {
-        var word = data[i][0];
-        var wordBitMask = data[i][1];
-        var oursBitMask = data[i][2];
-        var theirsBitMask = data[i][3];
+        // we expect [ "word", moveBitMask, moveOursBitMask, moveTheirsBitmask ]
+        var move = data[i];
+        var word = move[0];
         $word = $('<span>')
           .addClass('word')
           .append(word)
-          .data('wordBitMask', wordBitMask)
-          .data('oursBitMask', oursBitMask)
-          .data('theirsBitMask', theirsBitMask)
+          .data('moveWordBitMask', move[1])
+          .data('moveOursBitMask', move[2])
+          .data('moveTheirsBitMask', move[3])
           .hover(
             function(){
-              colorBoard($(this).data('oursBitMask'), $(this).data('theirsBitMask'));
-              classMask($(this).data('wordBitMask'), 'move');
+              colorBoard($(this).data('moveOursBitMask'), $(this).data('moveTheirsBitMask'));
+              classMask($(this).data('moveWordBitMask'), 'move');
             },
             function(){
               colorBoard(oursBitMask, theirsBitMask);
