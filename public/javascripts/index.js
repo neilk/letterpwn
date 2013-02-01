@@ -77,22 +77,33 @@
   }
 
   /**
-   * Apply a CSS class (or remove it) from positions matching bitmask
+   * Apply jquery transforms to positions matching bitmask & not matching
    * @param {Number} mask
-   * @param {String} klass
+   * @param {Function} onCb for element when matching
+   * @param {String} offCb for elements that do not match
    */
-  function classMask(mask, klass) {
+  function maskApply(mask, onCb, offCb) {
     var bit = 1;
+    var selector = [];
     for(var i = 0; i <= 24; i++) {
-      var $el = $('#tdb' + i);
+      $el = $('#tdb' + i);
       if (mask & bit) {
-        $el.addClass(klass);
+        onCb($el);
       } else {
-        $el.removeClass(klass);
+        offCb($el);
       }
       bit <<= 1;
     }
   }
+
+  function classMask(mask, klass) {
+    maskApply(
+      mask,
+      function($el) { $el.addClass(klass); },
+      function($el) { $el.removeClass(klass); }
+    );
+  }
+
 
   function colorBoard(oursBitMask, theirsBitMask) {
         function colorPlayer(mask, klass) {
