@@ -56,11 +56,11 @@
           .hover(
             function(){
               colorBoard($(this).data('moveOursBitMask'), $(this).data('moveTheirsBitMask'));
-              classMask($(this).data('moveWordBitMask'), 'move');
+              wiggleMask($(this).data('moveWordBitMask'));
             },
             function(){
               colorBoard(oursBitMask, theirsBitMask);
-              classMask(0, 'move');
+              wiggleMask(0);
             }
           );
         $words.append($word);
@@ -104,6 +104,13 @@
     );
   }
 
+  function wiggleMask(mask) {
+    maskApply(
+      mask,
+      function($el) { $el.wiggle('start'); },
+      function($el) { $el.wiggle('stop'); }
+    )
+  }
 
   function colorBoard(oursBitMask, theirsBitMask) {
         function colorPlayer(mask, klass) {
