@@ -69,7 +69,8 @@ exports.api = function(req, res, next) {
       moves
         .slice(0, 9)
         .map(function(move) {
-          return [move[2], move[3][0]];
+          // send ["word", wordBitMask, newOursBitMask, newTheirsBitMask ]
+          return [move[5][0], move[4], move[2], move[3]];
         })
     );
   }

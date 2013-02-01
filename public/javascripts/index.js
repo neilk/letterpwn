@@ -44,18 +44,24 @@
     var $words = $('<span>');
     if (data.length) {
       for (var i = 0; i < data.length; i++) {
-        var bitMask = data[i][0];
-        var word = data[i][1];
+        var word = data[i][0];
+        var wordBitMask = data[i][1];
+        var oursBitMask = data[i][2];
+        var theirsBitMask = data[i][3];
         $word = $('<span>')
           .addClass('word')
           .append(word)
-          .data('bitMask', bitMask)
+          .data('wordBitMask', wordBitMask)
+          .data('oursBitMask', oursBitMask)
+          .data('theirsBitMask', theirsBitMask)
           .hover(
             function(){
-              colorBoard(oursBitMask | $(this).data('bitMask'), theirsBitMask);
+              colorBoard($(this).data('oursBitMask'), $(this).data('theirsBitMask'));
+              classMask($(this).data('wordBitMask'), 'move');
             },
             function(){
               colorBoard(oursBitMask, theirsBitMask);
+              classMask(0, 'move');
             }
           );
         $words.append($word);
@@ -71,24 +77,28 @@
     $('#words').html($words);
   }
 
-  function colorBoard(oursBitMask, theirsBitMask) {
-    function colorMask(mask, klass) {
-      console.log(mask, klass);
-      var bit = 1;
-      for(var i = 0; i <= 24; i++) {
-        var $el = $('#tdb' + i);
-        if (mask & bit) {
-          $el.addClass(klass);
-          console.log(klass, "for", $el.get(0).id)
-        } else {
-          $el.removeClass(klass);
-        }
-        bit <<= 1;
+  /**
+   * Apply a CSS class (or remove it) from positions matching bitmask
+   * @param {Number} mask
+   * @param {String} klass
+   */
+  function classMask(mask, klass) {
+    var bit = 1;
+    for(var i = 0; i <= 24; i++) {
+      var $el = $('#tdb' + i);
+      if (mask & bit) {
+        $el.addClass(klass);
+      } else {
+        $el.removeClass(klass);
       }
+      bit <<= 1;
     }
-    function colorPlayer(mask, klass) {
-      colorMask(mask, klass);
-      colorMask(lpBitMask.getProtectedBitMask(mask), klass + 'Protected');
+  }
+
+  function colorBoard(oursBitMask, theirsBitMask) {
+        function colorPlayer(mask, klass) {
+      classMask(mask, klass);
+      classMask(lpBitMask.getProtectedBitMask(mask), klass + 'Protected');
     }
     colorPlayer(oursBitMask, 'ours');
     colorPlayer(theirsBitMask, 'theirs');

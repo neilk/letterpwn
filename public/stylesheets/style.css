@@ -149,3 +149,6 @@ input.letter {
   background: #cccccc;
 }
 
+.move {
+  border: 3px solid green;
+}
