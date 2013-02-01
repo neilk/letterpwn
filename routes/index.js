@@ -70,7 +70,7 @@ exports.api = function(req, res, next) {
         .slice(0, 9)
         .map(function(move) {
           // send ["word", wordBitMask, newOursBitMask, newTheirsBitMask ]
-          return [move[5][0], move[4], move[2], move[3]];
+          return [move[6][0], move[5], move[3], move[4]];
         })
     );
   }
