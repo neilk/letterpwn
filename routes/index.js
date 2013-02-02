@@ -62,7 +62,7 @@ exports.api = function(req, res, next) {
     var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lp.DEFAULT_FREQUENCY;
     var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
     var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
-    var moves = lp.getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask);
+    var moves = lp.getMovesForBoardInGameState(board, minFrequency, oursBitMask, theirsBitMask);
 
     // send top 10, removing data to only show bitmask and string representation of word.
     res.send(
