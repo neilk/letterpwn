@@ -1,7 +1,7 @@
 (function(exports) {
 
   // Pairs of board position to adjacent positions, as bitmasks from bits 0-24
-  var adjacent = [
+  var adjacent = exports.adjacent = [
     [ 1, 34 ],
     [ 2, 69 ],
     [ 4, 138 ],
@@ -42,7 +42,7 @@
    */
   exports.getProtectedBitMask = function(bitMask) {
     var protectedBitMask = 0;
-    adjacent.forEach(function(a) {
+    exports.adjacent.forEach(function(a) {
       if (((a[0] | a[1]) & bitMask) == (a[0] | a[1])) {
         protectedBitMask |= a[0];
       }
