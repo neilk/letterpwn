@@ -1,5 +1,6 @@
 (function($){
   var letterInputsSelector = 'input.letter';
+  var $mainBoard = $('#getBoard');
 
   function initLettersForTyping() {
     $(letterInputsSelector)
@@ -40,27 +41,30 @@
 
   function displayWords(data) {
     $('#getBoard td').removeClass('ours protected');
-    colorBoard(oursBitMask, theirsBitMask);
-    var $words = $('<span>');
+    colorBoard($mainBoard, oursBitMask, theirsBitMask);
+    var $words = $('<div>');
     if (data.length) {
       for (var i = 0; i < data.length; i++) {
         // we expect [ "word", moveBitMask, moveOursBitMask, moveTheirsBitmask ]
         var move = data[i];
         var word = move[0];
-        $word = $('<span>')
+        $word = $('<table>')
           .addClass('word')
-          .append(word)
+          .append($('<tr>').append(
+            $('<td>').append(getPreviewBoard(move[2], move[3])),
+            $('<td>').append(word)
+          ))
           .data('moveWordBitMask', move[1])
           .data('moveOursBitMask', move[2])
           .data('moveTheirsBitMask', move[3])
           .hover(
             function(){
-              colorBoard($(this).data('moveOursBitMask'), $(this).data('moveTheirsBitMask'));
-              wiggleMask($(this).data('moveWordBitMask'));
+              colorBoard($mainBoard, $(this).data('moveOursBitMask'), $(this).data('moveTheirsBitMask'));
+              wiggleMask($mainBoard, $(this).data('moveWordBitMask'));
             },
             function(){
-              colorBoard(oursBitMask, theirsBitMask);
-              wiggleMask(0);
+              colorBoard($mainBoard, oursBitMask, theirsBitMask);
+              wiggleMask($mainBoard, 0);
             }
           );
         $words.append($word);
@@ -82,11 +86,11 @@
    * @param {Function} onCb for element when matching
    * @param {String} offCb for elements that do not match
    */
-  function maskApply(mask, onCb, offCb) {
+  function maskApply($parent, mask, onCb, offCb) {
     var bit = 1;
     var selector = [];
     for(var i = 0; i <= 24; i++) {
-      $el = $('#tdb' + i);
+      $el = $parent.find('.tdb' + i);
       if (mask & bit) {
         onCb($el);
       } else {
@@ -96,29 +100,31 @@
     }
   }
 
-  function classMask(mask, klass) {
+  function classMask($parent, mask, klass) {
     maskApply(
+      $parent,
       mask,
       function($el) { $el.addClass(klass); },
       function($el) { $el.removeClass(klass); }
     );
   }
 
-  function wiggleMask(mask) {
+  function wiggleMask($parent, mask) {
     maskApply(
+      $parent,
       mask,
       function($el) { $el.wiggle('start'); },
       function($el) { $el.wiggle('stop'); }
     )
   }
 
-  function colorBoard(oursBitMask, theirsBitMask) {
-        function colorPlayer(mask, klass) {
-      classMask(mask, klass);
-      classMask(lpBitMask.getProtectedBitMask(mask), klass + 'Protected');
+  function colorBoard($parent, oursBitMask, theirsBitMask) {
+    function colorPlayer($parent, mask, klass) {
+      classMask($parent, mask, klass);
+      classMask($parent, lpBitMask.getProtectedBitMask(mask), klass + 'Protected');
     }
-    colorPlayer(oursBitMask, 'ours');
-    colorPlayer(theirsBitMask, 'theirs');
+    colorPlayer($parent, oursBitMask, 'ours');
+    colorPlayer($parent, theirsBitMask, 'theirs');
   }
 
   function getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask) {
@@ -144,10 +150,24 @@
       });
   }
 
+  function getPreviewBoard(oursBitMask, theirsBitMask) {
+    var $table = $('<table>').addClass('preview');
+    for (var i = 0; i < 5; i++) {
+      var $tr = $('<tr>');
+      for (var j = 0; j < 5; j++) {
+        var $td = $('<td>').addClass('tdb' + (i * 5 + j));
+        $tr.append($td);
+      }
+      $table.append($tr);
+    }
+    colorBoard($table, oursBitMask, theirsBitMask);
+    return $table;
+  }
+
   $('#randomize').click(function(e) {
     oursBitMask = 0;
     theirsBitMask = 0;
-    colorBoard(0, 0); // why should we have to do this here? updateWords does it, but it happens slowly
+    colorBoard($mainBoard, 0, 0); // why should we have to do this here? updateWords does it, but it happens slowly
 
     $('input.letter').each(function() {
       // ascii 'a' = 65
@@ -169,7 +189,7 @@
       theirsBitMask &= ~ $(this).data('bitmask');
       // toggle it in 'ours'
       oursBitMask ^= $(this).data('bitmask');
-      colorBoard(oursBitMask, theirsBitMask);
+      colorBoard($mainBoard, oursBitMask, theirsBitMask);
       updateWords();
     });
   });
@@ -179,7 +199,7 @@
       oursBitMask &= ~ $(this).data('bitmask');
       // toggle it in theirs
       theirsBitMask ^= $(this).data('bitmask');
-      colorBoard(oursBitMask, theirsBitMask);
+      colorBoard($mainBoard, oursBitMask, theirsBitMask);
       updateWords();
     });
   });
@@ -191,5 +211,7 @@
   displayWords([]);
 
   $('#b0').click();
+
+
 
 })(jQuery);
