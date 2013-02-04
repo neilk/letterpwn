@@ -1,8 +1,24 @@
-- factor out board state from move generation
+- slider
+
+- toolbars red, blue, erase, I-bar
 
 - throttle communication (backbone?)
+  - explicitly get new recommendations with a button?
 
-- the scoring algo is still wonky, although almost working
+  - when state changes, set timeout (1 second?) for recalc
+  - when new thing comes in, throw that away
+  - ajax request when returns should check if it corresponds to current state. Need a way to get a "signature" of the model. 
+    simple sequence numbers could work. Seem to be solving a general problem here which backbone and so on might have solved.
+    
+    when an ajax request is "out" and new thing comes in...?
+  - 
+    - backbonify and see how they do it
+- error handling of XHR issues
+
+- title - give this a better name?
+
+
+- about? go with neilk.net generic header. Maybe give up on the red-orange.
 
 - sequence of events
   - enter board (w/instruction)
@@ -11,10 +27,7 @@
   - desired inputs appear
   - changing anything, wait a few ms, requests the API
     - don't pile up async requests
-- make page nicer
-- error handling:
- - on page
- - in XHR
+
 - pagination in API (get first 5, memoize, paginate)
 
 - rethink, does backbone make sense here or...?
