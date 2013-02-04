@@ -39,7 +39,6 @@ app.configure('development', function(){
 
 app.get('/', routes.index);
 app.get('/api', routes.api);
-app.get('/slidetest', routes.slidetest);
 
 
 http.createServer(app).listen(app.get('port'), function(){
