@@ -8,7 +8,7 @@ block content
           li= error.param + ': ' + error.msg
     div(id='controls')
       - var checker = 0;
-      form(id='getBoard')
+      div(id='getBoard')
         table
           th
           each i in [0, 1, 2, 3, 4]
@@ -18,9 +18,6 @@ block content
               - checker ^= 1;
               td(id='tdb' + id, class='checker' + checker)
                 input.letter(type='text', id='b' + id, name='b' + id, tabIndex=id + 1, size=1, maxLength=1)
-        p
-          label minimum frequency
-            input(name='minFrequency', value=minFrequency, size=2)
       table(id='paintControls')
         tr
           td
@@ -34,7 +31,10 @@ block content
     div(id='results')
       p(id='timing')
       h2 Words?
-      p(id='words')
+      div#frequency
+        div#frequencyCtrl
+        input(name='minFrequency', value=minFrequency, size=2)
+      div(id='words')
 
 block contentScripts
   script(src='/javascripts/jquery-wiggle/lib/wiggle.jquery.js')

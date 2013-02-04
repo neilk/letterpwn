@@ -31,7 +31,6 @@
     var board = letterInputsToString();
     if (board.length === 25) {
       $('input').blur();
-      var minFrequency = $('#getBoard input[name=minFrequency]').get(0).value;
       getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask);
     } else {
       displayWords([]);
@@ -185,9 +184,23 @@
   });
 
 
+  // init board
   initLettersForTyping();
   $('#getBoard input.letter').keyup(updateWords);
-  $('#getBoard input[name=minFrequency]').keyup(updateWords);
+
+  // init frequency slider
+  var minFrequency = 12;
+  $('#frequencyCtrl').slider({
+    min: 0,
+    max: 20,
+    value: 20 - minFrequency,
+    change: function(event,ui) {
+      minFrequency = 20 - ui.value;
+      $('input[name=minFrequency]').attr('value', minFrequency);
+      updateWords();
+    },
+  });
+
   displayWords([]);
 
   $('#b0').click();

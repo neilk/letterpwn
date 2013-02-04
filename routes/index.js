@@ -67,7 +67,7 @@ exports.api = function(req, res, next) {
     // send top 10, removing data to only show bitmask and string representation of word.
     res.send(
       moves
-        .slice(0, 9)
+        .slice(0, 99)
         .map(function(move) {
           // send ["word", wordBitMask, newOursBitMask, newTheirsBitMask ]
           return [move[6][0], move[5], move[3], move[4]];
