@@ -87,3 +87,7 @@ exports.index = function(req, res, next) {
   res.render('index', params);
 }
 
+exports.slidetest = function(req, res, next) {
+  res.render('empty', { title: 'slidetest'} );
+};
+
