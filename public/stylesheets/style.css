@@ -152,3 +152,12 @@ input.letter {
 .move {
   border: 3px solid green;
 }
+
+#frequency div {
+  margin-bottom: 0.5em;
+}
+
+#frequencyLabel {
+  color: #999999;
+  margin-right: 0.33em;
+}

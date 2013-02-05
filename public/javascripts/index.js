@@ -188,15 +188,44 @@
   initLettersForTyping();
   $('#getBoard input.letter').keyup(updateWords);
 
+  // TODO i18n
+  var frequencyNames = [
+    /* 0 */ 'sesquipedalian',
+    /* 1 */ 'crazy obscure',
+    /* 2 */ 'really obscure',
+    /* 3 */ 'obscure',
+    /* 4 */ 'grad school',
+    /* 5 */ 'grad school',
+    /* 6 */ 'university',
+    /* 7 */ 'university',
+    /* 8 */ 'high school',
+    /* 9 */ 'high school (debate club)',
+    /* 10 */ 'high school (drama club)',,
+    /* 11 */  'high school',
+    /* 12 */ 'high school',
+    /* 13 */ 'grade school (chess club)',
+    /* 14 */ 'grade school (chess club)',
+    /* 15 */ 'grade school (chess club)',
+    /* 16 */ 'grade school',
+    /* 17 */ 'grade school',
+    /* 18 */ 'grade school',
+    /* 19 */ 'kindergarten',
+  ];
+
   // init frequency slider
+  // this REALLY needs to transition to a model which gets updated
   var minFrequency = 12;
+  $('#frequencyName').html(frequencyNames[minFrequency]);
+
   $('#frequencyCtrl').slider({
     min: 0,
-    max: 20,
-    value: 20 - minFrequency,
-    change: function(event,ui) {
-      minFrequency = 20 - ui.value;
-      $('input[name=minFrequency]').attr('value', minFrequency);
+    max: 19,
+    value: 19 - minFrequency,
+    slide: function(event,ui) {
+      minFrequency = 19 - ui.value;
+      $('#frequencyName').html(frequencyNames[minFrequency]);
+    },
+    stop: function(event, ui) {
       updateWords();
     },
   });

@@ -29,12 +29,15 @@ block content
       p(id='devControls')
         input(id='randomize', type='submit', value='randomize')
     div(id='results')
-      p(id='timing')
-      h2 Words?
       div#frequency
+        div#frequencyDescription
+          p
+            span#frequencyLabel
+              | Vocabulary:
+            span#frequencyName
         div#frequencyCtrl
-        input(name='minFrequency', value=minFrequency, size=2)
       div(id='words')
+      div(id='timing')
 
 block contentScripts
   script(src='/javascripts/jquery-wiggle/lib/wiggle.jquery.js')
