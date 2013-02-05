@@ -1,5 +1,3 @@
-- slider
-
 - toolbars red, blue, erase, I-bar
 
 - throttle communication (backbone?)
@@ -16,7 +14,6 @@
 - error handling of XHR issues
 
 - title - give this a better name?
-
 
 - about? go with neilk.net generic header. Maybe give up on the red-orange.
 
