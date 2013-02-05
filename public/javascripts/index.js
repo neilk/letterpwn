@@ -38,7 +38,6 @@
   }
 
   function displayWords(data) {
-    $('#getBoard td').removeClass('ours protected');
     colorBoard(oursBitMask, theirsBitMask);
     var $words = $('<span>');
     if (data.length) {
