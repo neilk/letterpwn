@@ -50,4 +50,7 @@
     return protectedBitMask;
   };
 
+  // this is all bits turned on;
+  exports.MAX_BITMASK = 33554431;
+
 })(typeof exports === 'undefined' ? this['lpBitMask']={} : exports);

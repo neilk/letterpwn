@@ -54,11 +54,11 @@
           .hover(
             function(){
               colorBoard($(this).data('moveOursBitMask'), $(this).data('moveTheirsBitMask'));
-              wiggleMask($(this).data('moveWordBitMask'));
+              classMask(lpBitMask.MAX_BITMASK & ~$(this).data('moveWordBitMask'), 'fade');
             },
             function(){
               colorBoard(oursBitMask, theirsBitMask);
-              wiggleMask(0);
+              classMask(0, 'fade');
             }
           );
         $words.append($word);
@@ -100,14 +100,6 @@
       function($el) { $el.addClass(klass); },
       function($el) { $el.removeClass(klass); }
     );
-  }
-
-  function wiggleMask(mask) {
-    maskApply(
-      mask,
-      function($el) { $el.wiggle('start'); },
-      function($el) { $el.wiggle('stop'); }
-    )
   }
 
   function colorBoard(oursBitMask, theirsBitMask) {
@@ -185,7 +177,7 @@
 
   // init board
   initLettersForTyping();
-  $('#getBoard input.letter').keyup(updateWords);
+  $('#board input.letter').keyup(updateWords);
 
   // TODO i18n
   var frequencyNames = [

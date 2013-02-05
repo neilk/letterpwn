@@ -8,15 +8,13 @@ block content
           li= error.param + ': ' + error.msg
     div#controls
       - var checker = 0;
-      div#getBoard
-        table
-          each i in [0, 1, 2, 3, 4]
-            tr
-            each j in [0, 1, 2, 3, 4]
-              - var id = (i * 5 + j);
-              - checker ^= 1;
-              td(id='tdb' + id, class='checker' + checker)
-                input.letter(type='text', id='b' + id, name='b' + id, tabIndex=id + 1, size=1, maxLength=1)
+      div#board
+        each i in [0, 1, 2, 3, 4]
+          each j in [0, 1, 2, 3, 4]
+            - var id = (i * 5 + j);
+            - checker ^= 1;
+            div(id='tdb' + id, class='checker' + checker, style='display: inline-block; position:relative; left:' + j + 'em; top:' + i + 'em;')
+              input.letter(type='text', id='b' + id, name='b' + id, tabIndex=id + 1, size=1, maxLength=1)
       table#paintControls
         tr
           td
