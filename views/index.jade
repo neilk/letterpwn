@@ -1,16 +1,15 @@
 extends layout
 
 block content
-  div(id='content')
+  div#content
     if errors.length > 0
       ul 
         for error in errors
           li= error.param + ': ' + error.msg
-    div(id='controls')
+    div#controls
       - var checker = 0;
-      div(id='getBoard')
+      div#getBoard
         table
-          th
           each i in [0, 1, 2, 3, 4]
             tr
             each j in [0, 1, 2, 3, 4]
@@ -18,17 +17,17 @@ block content
               - checker ^= 1;
               td(id='tdb' + id, class='checker' + checker)
                 input.letter(type='text', id='b' + id, name='b' + id, tabIndex=id + 1, size=1, maxLength=1)
-      table(id='paintControls')
+      table#paintControls
         tr
           td
-            div.fill.ours(id='oursPaint')
+            div#oursPaint.fill.ours
           td
-            div.fill.theirs(id='theirsPaint')
+            div#theirsPaint.fill.theirs
           td
-            div.fill(id='paintOff')
-      p(id='devControls')
-        input(id='randomize', type='submit', value='randomize')
-    div(id='results')
+            div#paintOff.fill
+      p#devControls
+        input#randomize(type='submit', value='randomize')
+    div#results
       div#frequency
         div#frequencyDescription
           p
@@ -36,11 +35,10 @@ block content
               | Vocabulary:
             span#frequencyName
         div#frequencyCtrl
-      div(id='words')
-      div(id='timing')
+      div#words
+      div#timing
 
 block contentScripts
-  script(src='/javascripts/jquery-wiggle/lib/wiggle.jquery.js')
   script(src='/javascripts/letterpress-bitmask.js')
   script(src='/javascripts/index.js')
   
