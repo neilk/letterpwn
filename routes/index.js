@@ -26,6 +26,12 @@ expressValidator.Validator.prototype.isSubsetOf = function(supersetStr) {
  * Actually serve requests
  */
 exports.api = function(req, res, next) {
+
+  // sequence number to ensure that ajax response matches client state
+  // BTW, this is lame and nobody else should do this, but it works
+  req.sanitize('seq').toInt();
+  req.assert('seq', 'Sequence must be an integer greater than or equal to zero').notEmpty().min(0);
+
   req.assert('board', 'Board must exist').notEmpty();
   if (typeof req.param('board') !== 'undefined' && req.param('board') !== '') {
     req.sanitize('board').lettersOnly().toLowerCase();
@@ -58,21 +64,22 @@ exports.api = function(req, res, next) {
     // how do we get the default error-renderer to do the right thing?
     throw new Error( errors );
   } else {
+    var sequence = req.param('seq'); // guaranteed to exist
     var board = req.param('board'); // guaranteed to exist
     var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lp.DEFAULT_FREQUENCY;
     var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
     var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
     var moves = lp.getMovesForBoardInGameState(board, minFrequency, oursBitMask, theirsBitMask);
 
-    // send top 10, removing data to only show bitmask and string representation of word.
-    res.send(
-      moves
-        .slice(0, 19)
-        .map(function(move) {
-          // send ["word", wordBitMask, newOursBitMask, newTheirsBitMask ]
-          return [move[6][0], move[5], move[3], move[4]];
-        })
-    );
+    // removing data to only show bitmask and string representation of word.
+    var topMoves = moves
+          .slice(0, 19)
+          .map(function(move) {
+            // send ["word", wordBitMask, newOursBitMask, newTheirsBitMask ]
+            return [move[6][0], move[5], move[3], move[4]];
+          });
+
+    res.send([sequence, topMoves]);
   }
 }
 
@@ -86,5 +93,6 @@ exports.index = function(req, res, next) {
   };
   res.render('index', params);
 }
+
 
 

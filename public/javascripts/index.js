@@ -122,6 +122,7 @@
   function getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask) {
     var ajaxRequest = {
       data: {
+        seq: ++sequence,
         board: board,
         minFrequency: minFrequency,
         oursBitMask: oursBitMask,
@@ -131,7 +132,11 @@
         console.log(xhr, status, err);
       },
       success: function(data, textStatus, xhr) {
-        displayWords(data);
+        var resSequence = parseInt(data[0], 10);
+        var moves = data[1];
+        if (resSequence === sequence) {
+          displayWords(moves);
+        }
       }
     }
 
@@ -159,8 +164,6 @@
     initLettersForTyping();
   });
 
-  var oursBitMask = 0;
-  var theirsBitMask = 0;
   $('#paintControls .ours').click(function(e) {
     $('input.letter').click( function() {
       // remove this position from 'theirs'
@@ -184,6 +187,9 @@
 
 
   // init board
+  var oursBitMask = 0,
+      theirsBitMask = 0,
+      sequence = 0;
   initLettersForTyping();
   $('#getBoard input.letter').keyup(updateWords);
 
