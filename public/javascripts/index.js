@@ -33,17 +33,17 @@
       $('input').blur();
       getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask);
     } else {
-      displayWords([]);
+      displayMoves([]);
     }
   }
 
-  function displayWords(data) {
+  function displayMoves(moves) {
     colorBoard(oursBitMask, theirsBitMask);
     var $words = $('<span>');
-    if (data.length) {
-      for (var i = 0; i < data.length; i++) {
+    if (moves.length) {
+      for (var i = 0; i < moves.length; i++) {
         // we expect [ "word", moveBitMask, moveOursBitMask, moveTheirsBitmask ]
-        var move = data[i];
+        var move = moves[i];
         var word = move[0];
         $word = $('<span>')
           .addClass('word')
@@ -62,7 +62,7 @@
             }
           );
         $words.append($word);
-        if (i < data.length - 1) {
+        if (i < moves.length - 1) {
           $words.append(' ');
         }
       }
@@ -70,7 +70,7 @@
       $words.append('(none)');
     }
     // var $words = $('<ul>');
-    // data.map( function(item){ $words.append($('<li>').append(item)) } );
+    // moves.map( function(item){ $words.append($('<li>').append(item)) } );
     $('#words').html($words);
   }
 
@@ -135,7 +135,7 @@
         var resSequence = parseInt(data[0], 10);
         var moves = data[1];
         if (resSequence === sequence) {
-          displayWords(moves);
+          displayMoves(moves);
         }
       }
     }
@@ -235,7 +235,7 @@
     },
   });
 
-  displayWords([]);
+  displayMoves([]);
 
   $('#b0').click();
 
