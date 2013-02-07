@@ -9,14 +9,15 @@ block content
     div#controls
       - var checker = 0;
       div#getBoard
-        table
-          each i in [0, 1, 2, 3, 4]
-            tr
-            each j in [0, 1, 2, 3, 4]
-              - var id = (i * 5 + j);
-              - checker ^= 1;
-              td(id='tdb' + id, class='checker' + checker)
-                input.letter(type='text', id='b' + id, name='b' + id, tabIndex=id + 1, size=1, maxLength=1)
+        form
+          table
+            each i in [0, 1, 2, 3, 4]
+              tr
+              each j in [0, 1, 2, 3, 4]
+                - var id = (i * 5 + j);
+                - checker ^= 1;
+                td(id='tdb' + id, class='checker' + checker)
+                  input.letter(type='text', id='b' + id, name='b' + id, tabIndex=id + 1, size=1, maxLength=1)
       table#paintControls
         tr
           td
