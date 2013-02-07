@@ -192,30 +192,28 @@
     updateNow();
   })
 
-
-  $('#paintControls #paintOff').click(function(e) {
-    initLettersForTyping();
-  });
-
   $('#paintControls .ours').click(function(e) {
-    $('input.letter').click( function() {
+    letterPaint = function(bitMask) {
       // remove this position from 'theirs'
-      theirsBitMask &= ~ $(this).data('bitmask');
+      theirsBitMask &= ~bitMask;
       // toggle it in 'ours'
-      oursBitMask ^= $(this).data('bitmask');
-      colorBoard($mainBoard, oursBitMask, theirsBitMask);
-      updateMoves();
-    });
+      oursBitMask |= bitMask;
+    };
   });
   $('#paintControls .theirs').click(function(e) {
-    $('input.letter').click( function() {
+    letterPaint = function(bitMask) {
       // remove this position from 'ours'
-      oursBitMask &= ~ $(this).data('bitmask');
+      oursBitMask &= ~bitMask;
       // toggle it in theirs
-      theirsBitMask ^= $(this).data('bitmask');
-      colorBoard($mainBoard, oursBitMask, theirsBitMask);
-      updateMoves();
-    });
+      theirsBitMask |= bitMask;
+    };
+  });
+  $('#paintControls #paintOff').click(function(e) {
+    // ?? initLettersForTyping();
+    letterPaint = function(bitMask) {
+      oursBitMask &= ~bitMask;
+      theirsBitMask &= ~bitMask;
+    };
   });
 
 
@@ -247,7 +245,8 @@
       initialFrequencySliderValue = parseInt(frequencyNames.length / 2, 10),
       queuedUpdate = null,
       lastUpdate = null,
-      $mainBoard = $('#getBoard');
+      $mainBoard = $('#getBoard'),
+      letterClickOp = function(){};
 
   /* init frequency slider */
 
@@ -270,20 +269,24 @@
   /* init letters */
 
   $('input.letter')
-    .keyup( function(event) {
+   .each(function() {
+      // we assume the name of the input is like 'b12' for the 13th position
+      var pos = parseInt(this.name.substr(1), 10);
+      $(this).data('pos', pos);
+      $(this).data('bitmask', 1 << pos);
+    })
+    .click(function() {
+      letterPaint($(this).data('bitmask'));
+      updateMoves();
+    })
+    .keyup(function(event) {
       // this form has tabIndexes 1-25 for the inputs. Submit button is 26.
       if (event.which !== 9) {
         var nextTabIndex = (parseInt(this.tabIndex, 10) + 1).toString()
         $(this.form).find('[tabIndex=' + nextTabIndex.toString() + ']').focus().select();
       }
       updateMoves();
-    })
-    // we assume the name of the input is 'b12' for the 13th square
-    .each( function() {
-      var pos = parseInt(this.name.substr(1), 10);
-      $(this).data('pos', pos);
-      $(this).data('bitmask', 1 << pos);
-    } );
+    });
 
   initLettersForTyping();
 
