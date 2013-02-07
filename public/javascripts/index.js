@@ -58,7 +58,7 @@
                 $('<td>').append(
                   $('<span>').addClass('ourScore').append(
                     "+",
-                    lpBitMask.countBits(move[1])
+                    lpBitMask.countBits(move[2])
                   ),
                   " ",
                   word
@@ -246,7 +246,7 @@
       queuedUpdate = null,
       lastUpdate = null,
       $mainBoard = $('#getBoard'),
-      letterClickOp = function(){};
+      letterPaint = function(){};
 
   /* init frequency slider */
 
