@@ -1,43 +1,45 @@
 extends layout
 
 block content
-  div(id='content')
+  div#content
     if errors.length > 0
       ul 
         for error in errors
           li= error.param + ': ' + error.msg
-    div(id='controls')
+    div#controls
       - var checker = 0;
-      form(id='getBoard')
-        table
-          th
-          each i in [0, 1, 2, 3, 4]
-            tr
-            each j in [0, 1, 2, 3, 4]
-              - var id = (i * 5 + j);
-              - checker ^= 1;
-              td(class='tdb' + id + ' checker' + checker)
-                input.letter(type='text', id='b' + id, name='b' + id, tabIndex=id + 1, size=1, maxLength=1)
-        p
-          label minimum frequency
-            input(name='minFrequency', value=minFrequency, size=2)
-      table(id='paintControls')
+      div#getBoard
+        form
+          table
+            each i in [0, 1, 2, 3, 4]
+              tr
+              each j in [0, 1, 2, 3, 4]
+                - var id = (i * 5 + j);
+                - checker ^= 1;
+                td(class='tdb' + id + ' checker' + checker)
+                  input.letter(type='text', id='b' + id, name='b' + id, tabIndex=id + 1, size=1, maxLength=1)
+      table#paintControls
         tr
           td
-            div.fill.ours(id='oursPaint')
+            div#oursPaint.fill.ours
           td
-            div.fill.theirs(id='theirsPaint')
+            div#theirsPaint.fill.theirs
           td
-            div.fill(id='paintOff')
-      p(id='devControls')
-        input(id='randomize', type='submit', value='randomize')
-    div(id='results')
-      p(id='timing')
-      h2 Words?
-      p(id='words')
+            div#paintOff.fill
+      p#devControls
+        input#randomize(type='submit', value='randomize')
+    div#results
+      div#frequency
+        div#frequencyDescription
+          p
+            span#frequencyLabelName
+              | Vocabulary:
+            span#frequencyLabel
+        div#frequencyCtrl
+      div#moves
+      div#timing
 
 block contentScripts
-  script(src='/javascripts/jquery-wiggle/lib/wiggle.jquery.js')
   script(src='/javascripts/letterpress-bitmask.js')
   script(src='/javascripts/index.js')
   

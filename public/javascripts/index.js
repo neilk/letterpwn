@@ -1,83 +1,92 @@
 (function($){
-  var letterInputsSelector = 'input.letter';
-  var $mainBoard = $('#getBoard');
 
   function initLettersForTyping() {
-    $(letterInputsSelector)
+    $('input.letter')
       .removeAttr('disabled')
       .click( function() { $(this).select(); } )
   }
 
-  $(letterInputsSelector)
-    .keyup( function(event) {
-      // this form has tabIndexes 1-25 for the inputs. Submit button is 26.
-      if (event.which !== 9) {
-        var nextTabIndex = (parseInt(this.tabIndex, 10) + 1).toString()
-        $(this.form).find('[tabIndex=' + nextTabIndex.toString() + ']').focus().select();
-      }
-    })
-    // we assume the name of the input is 'b12' for the 13th square
-    .each( function() {
-      var pos = parseInt(this.name.substr(1), 10);
-      $(this).data('pos', pos);
-      $(this).data('bitmask', 1 << pos);
-    } );
-
   function letterInputsToString() {
-    var board = $(letterInputsSelector).get().reduce(function(r,el){ return r + el.value; }, '');
+    var board = $('input.letter').get().reduce(function(r,el){ return r + el.value; }, '');
     return board.toLowerCase().replace(/[^a-z]/, '');
   }
 
-  function updateWords() {
-    var board = letterInputsToString();
-    if (board.length === 25) {
-      $('input').blur();
-      var minFrequency = $('#getBoard input[name=minFrequency]').get(0).value;
-      getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask);
+  function updateMoves() {
+    if (letterInputsToString().length === 25) {
+      queueUpdate();
     } else {
-      displayWords([]);
+      displayMoves([]);
     }
   }
 
-  function displayWords(data) {
-    $('#getBoard td').removeClass('ours protected');
+
+  function queueUpdate() {
+    hideMoves();
+    clearTimeout(queuedUpdate);
+    if (lastUpdate === null || lastUpdate < Date.now() - UPDATE_WAIT_MS) {
+      updateNow();
+    } else {
+      queuedUpdate = setTimeout(updateNow, UPDATE_WAIT_MS);
+    }
+  }
+
+  function updateNow() {
+    lastUpdate = Date.now();
+    queuedUpdate = null;
+    var board = letterInputsToString();
+    getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask);
+  }
+
+  function hideMoves() {
+    displayMoves([]);
+  }
+
+  function displayMoves(moves) {
     colorBoard($mainBoard, oursBitMask, theirsBitMask);
-    var $words = $('<div>');
-    if (data.length) {
-      for (var i = 0; i < data.length; i++) {
+    $('#moves').scrollTop();
+    var $moves = $('<div>')
+    if (moves.length) {
+      for (var i = 0; i < moves.length; i++) {
         // we expect [ "word", moveBitMask, moveOursBitMask, moveTheirsBitmask ]
-        var move = data[i];
+        var move = moves[i];
         var word = move[0];
-        $word = $('<table>')
-          .addClass('word')
-          .append($('<tr>').append(
-            $('<td>').append(getPreviewBoard(move[2], move[3])),
-            $('<td>').append(word)
-          ))
+        $moves.append(
+          $('<div>').addClass('move').append(
+            $('<table>').append(
+              $('<tr>').addClass('moveRow').append(
+                $('<td>').append(getPreviewBoard(move[2], move[3])),
+                $('<td>').append(
+                  $('<span>').addClass('ourScore').append(
+                    "+",
+                    lpBitMask.countBits(move[1])
+                  ),
+                  " ",
+                  word
+                )
+              )
+            )
+          )
           .data('moveWordBitMask', move[1])
           .data('moveOursBitMask', move[2])
           .data('moveTheirsBitMask', move[3])
           .hover(
             function(){
               colorBoard($mainBoard, $(this).data('moveOursBitMask'), $(this).data('moveTheirsBitMask'));
-              wiggleMask($mainBoard, $(this).data('moveWordBitMask'));
+              classMask($mainBoard, $(this).data('moveWordBitMask'), 'previewMove');
+              // wiggleMask($(this).data('moveWordBitMask'));
             },
             function(){
               colorBoard($mainBoard, oursBitMask, theirsBitMask);
-              wiggleMask($mainBoard, 0);
+              classMask($mainBoard, 0, 'previewMove');
+              // wiggleMask(0);
             }
-          );
-        $words.append($word);
-        if (i < data.length - 1) {
-          $words.append(' ');
-        }
+          )
+        );
       }
     } else {
-      $words.append('(none)');
+      $moves.append('(none)');
     }
-    // var $words = $('<ul>');
-    // data.map( function(item){ $words.append($('<li>').append(item)) } );
-    $('#words').html($words);
+    $('#moves').html($moves);
   }
 
   /**
@@ -130,6 +139,7 @@
   function getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask) {
     var ajaxRequest = {
       data: {
+        seq: ++sequence,
         board: board,
         minFrequency: minFrequency,
         oursBitMask: oursBitMask,
@@ -139,7 +149,11 @@
         console.log(xhr, status, err);
       },
       success: function(data, textStatus, xhr) {
-        displayWords(data);
+        var resSequence = parseInt(data[0], 10);
+        var moves = data[1];
+        if (resSequence === sequence) {
+          displayMoves(moves);
+        }
       }
     }
 
@@ -167,13 +181,15 @@
   $('#randomize').click(function(e) {
     oursBitMask = 0;
     theirsBitMask = 0;
+    queuedUpdate = null;
+    sequence = 0;
     colorBoard($mainBoard, 0, 0); // why should we have to do this here? updateWords does it, but it happens slowly
 
     $('input.letter').each(function() {
       // ascii 'a' = 65
       this.value = String.fromCharCode(Math.floor(Math.random()*26+65));
     });
-    updateWords();
+    updateNow();
   })
 
 
@@ -181,8 +197,6 @@
     initLettersForTyping();
   });
 
-  var oursBitMask = 0;
-  var theirsBitMask = 0;
   $('#paintControls .ours').click(function(e) {
     $('input.letter').click( function() {
       // remove this position from 'theirs'
@@ -190,7 +204,7 @@
       // toggle it in 'ours'
       oursBitMask ^= $(this).data('bitmask');
       colorBoard($mainBoard, oursBitMask, theirsBitMask);
-      updateWords();
+      updateMoves();
     });
   });
   $('#paintControls .theirs').click(function(e) {
@@ -200,16 +214,83 @@
       // toggle it in theirs
       theirsBitMask ^= $(this).data('bitmask');
       colorBoard($mainBoard, oursBitMask, theirsBitMask);
-      updateWords();
+      updateMoves();
     });
   });
 
 
-  initLettersForTyping();
-  $('#getBoard input.letter').keyup(updateWords);
-  $('#getBoard input[name=minFrequency]').keyup(updateWords);
-  displayWords([]);
+  function updateSlider(event, ui) {
+    minFrequency = frequencyNames[ui.value].minFrequency;
+    $('#frequencyLabel').html(frequencyNames[ui.value].label);
+  }
 
+  /* configuration */
+
+  // TODO i18n
+  var frequencyNames = [
+    { minFrequency:19, label:'see spot run'},
+    { minFrequency:16, label:'common' },
+    { minFrequency:10, label:'highbrow'},
+    { minFrequency:5, label:'obscure'},
+    { minFrequency:0, label:'sesquipedalian'}
+  ];
+
+  /* constants */
+
+  var UPDATE_WAIT_MS = 500;
+
+  /* initialize board & other inputs */
+
+  var oursBitMask = 0,
+      theirsBitMask = 0,
+      sequence = 0,
+      initialFrequencySliderValue = parseInt(frequencyNames.length / 2, 10),
+      queuedUpdate = null,
+      lastUpdate = null,
+      $mainBoard = $('#getBoard');
+
+  /* init frequency slider */
+
+  $('#frequencyCtrl').slider({
+    min: 0,
+    max: frequencyNames.length - 1,
+    change: function(event, ui) {
+      updateSlider(event, ui);
+    },
+    slide: function(event,ui) {
+      updateSlider(event, ui);
+    },
+    stop: function(event, ui) {
+      updateMoves();
+    },
+  });
+
+  $('#frequencyCtrl').slider( "value", initialFrequencySliderValue);
+
+  /* init letters */
+
+  $('input.letter')
+    .keyup( function(event) {
+      // this form has tabIndexes 1-25 for the inputs. Submit button is 26.
+      if (event.which !== 9) {
+        var nextTabIndex = (parseInt(this.tabIndex, 10) + 1).toString()
+        $(this.form).find('[tabIndex=' + nextTabIndex.toString() + ']').focus().select();
+      }
+      updateMoves();
+    })
+    // we assume the name of the input is 'b12' for the 13th square
+    .each( function() {
+      var pos = parseInt(this.name.substr(1), 10);
+      $(this).data('pos', pos);
+      $(this).data('bitmask', 1 << pos);
+    } );
+
+  initLettersForTyping();
+
+  // no moves yet to display
+  displayMoves([]);
+
+  // start off typing in the first position
   $('#b0').click();
 
 

@@ -50,4 +50,19 @@
     return protectedBitMask;
   };
 
+  /**
+   * Count the number of 'on' bits for a number in binary
+   * @param {Number} x
+   * @return {Number}
+   */
+  exports.countBits = function(x) {
+    var result = 0;
+    // strip one set bit per iteration
+    while (x != 0) {
+      x &= x-1;
+      result++;
+    }
+    return result;
+  }
+
 })(typeof exports === 'undefined' ? this['lpBitMask']={} : exports);
