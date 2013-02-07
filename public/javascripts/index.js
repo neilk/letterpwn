@@ -57,11 +57,13 @@
           .hover(
             function(){
               colorBoard($(this).data('moveOursBitMask'), $(this).data('moveTheirsBitMask'));
-              wiggleMask($(this).data('moveWordBitMask'));
+              classMask($(this).data('moveWordBitMask'), 'previewMove');
+              // wiggleMask($(this).data('moveWordBitMask'));
             },
             function(){
               colorBoard(oursBitMask, theirsBitMask);
-              wiggleMask(0);
+              classMask(0, 'previewMove');
+              // wiggleMask(0);
             }
           )
           .append($('<span>').addClass('ourScore').append("+", lpBitMask.countBits(move[1])), " ", word);

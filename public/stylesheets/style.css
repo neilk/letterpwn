@@ -162,3 +162,7 @@ input.letter {
   color: #999999;
   margin-right: 0.33em;
 }
+
+.previewMove {
+  border: 3px solid green;
+}
