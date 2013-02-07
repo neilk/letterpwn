@@ -51,7 +51,6 @@
         var word = move[0];
         $word = $('<span>')
           .addClass('word')
-          .append(word)
           .data('moveWordBitMask', move[1])
           .data('moveOursBitMask', move[2])
           .data('moveTheirsBitMask', move[3])
@@ -64,7 +63,8 @@
               colorBoard(oursBitMask, theirsBitMask);
               wiggleMask(0);
             }
-          );
+          )
+          .append($('<span>').addClass('ourScore').append("+", lpBitMask.countBits(move[1])), " ", word);
         $words.append($word);
         if (i < moves.length - 1) {
           $words.append(' ');
