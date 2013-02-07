@@ -1,31 +1,13 @@
 (function($){
-  var UPDATE_WAIT_MS = 500;
-
-  var letterInputsSelector = 'input.letter';
 
   function initLettersForTyping() {
-    $(letterInputsSelector)
+    $('input.letter')
       .removeAttr('disabled')
       .click( function() { $(this).select(); } )
   }
 
-  $(letterInputsSelector)
-    .keyup( function(event) {
-      // this form has tabIndexes 1-25 for the inputs. Submit button is 26.
-      if (event.which !== 9) {
-        var nextTabIndex = (parseInt(this.tabIndex, 10) + 1).toString()
-        $(this.form).find('[tabIndex=' + nextTabIndex.toString() + ']').focus().select();
-      }
-    })
-    // we assume the name of the input is 'b12' for the 13th square
-    .each( function() {
-      var pos = parseInt(this.name.substr(1), 10);
-      $(this).data('pos', pos);
-      $(this).data('bitmask', 1 << pos);
-    } );
-
   function letterInputsToString() {
-    var board = $(letterInputsSelector).get().reduce(function(r,el){ return r + el.value; }, '');
+    var board = $('input.letter').get().reduce(function(r,el){ return r + el.value; }, '');
     return board.toLowerCase().replace(/[^a-z]/, '');
   }
 
@@ -37,17 +19,20 @@
     }
   }
 
-  var queuedUpdate = null;
 
   function queueUpdate() {
     hideMoves();
     clearTimeout(queuedUpdate);
-    queuedUpdate = setTimeout(updateNow, UPDATE_WAIT_MS);
+    if (lastUpdate === null || lastUpdate < Date.now() - UPDATE_WAIT_MS) {
+      updateNow();
+    } else {
+      queuedUpdate = setTimeout(updateNow, UPDATE_WAIT_MS);
+    }
   }
 
   function updateNow() {
+    lastUpdate = Date.now();
     queuedUpdate = null;
-    $('input').blur();
     var board = letterInputsToString();
     getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask);
   }
@@ -208,19 +193,13 @@
   });
 
 
-  // init board
-  var oursBitMask = 0,
-      theirsBitMask = 0,
-      sequence = 0,
-      minFrequency = 10;
-  initLettersForTyping();
-  $('#getBoard input.letter').keyup(updateMoves);
-
-
   function updateSlider(event, ui) {
     minFrequency = frequencyNames[ui.value].minFrequency;
     $('#frequencyLabel').html(frequencyNames[ui.value].label);
   }
+
+  /* configuration */
+
   // TODO i18n
   var frequencyNames = [
     { minFrequency:19, label:'see spot run'},
@@ -230,8 +209,21 @@
     { minFrequency:0, label:'sesquipedalian'}
   ];
 
-  // init frequency slider
-  // this REALLY needs to transition to a model which gets updated
+  /* constants */
+
+  var UPDATE_WAIT_MS = 500;
+
+  /* initialize board & other inputs */
+
+  var oursBitMask = 0,
+      theirsBitMask = 0,
+      sequence = 0,
+      initialFrequencySliderValue = parseInt(frequencyNames.length / 2, 10),
+      queuedUpdate = null,
+      lastUpdate = null;
+
+  /* init frequency slider */
+
   $('#frequencyCtrl').slider({
     min: 0,
     max: frequencyNames.length - 1,
@@ -243,13 +235,35 @@
     },
     stop: function(event, ui) {
       updateMoves();
-    }
+    },
   });
 
-  $('#frequencyCtrl').slider( "value", parseInt(frequencyNames.length / 2, 10));
+  $('#frequencyCtrl').slider( "value", initialFrequencySliderValue);
 
+  /* init letters */
+
+  $('input.letter')
+    .keyup( function(event) {
+      // this form has tabIndexes 1-25 for the inputs. Submit button is 26.
+      if (event.which !== 9) {
+        var nextTabIndex = (parseInt(this.tabIndex, 10) + 1).toString()
+        $(this.form).find('[tabIndex=' + nextTabIndex.toString() + ']').focus().select();
+      }
+      updateMoves();
+    })
+    // we assume the name of the input is 'b12' for the 13th square
+    .each( function() {
+      var pos = parseInt(this.name.substr(1), 10);
+      $(this).data('pos', pos);
+      $(this).data('bitmask', 1 << pos);
+    } );
+
+  initLettersForTyping();
+
+  // no moves yet to display
   displayMoves([]);
 
+  // start off typing in the first position
   $('#b0').click();
 
 })(jQuery);
