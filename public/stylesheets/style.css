@@ -125,13 +125,13 @@ input.letter {
   background: #f5443c;
 }
 
-#words {
+#moves {
   height: 20em;
   line-height: 2em;
   overflow: scroll;
 }
 
-.word {
+.move {
   margin-bottom: 0.5em;
   padding: 0.25em 0.75em;
   border: 1px solid #e0e0e0;
@@ -151,10 +151,6 @@ input.letter {
 
 #paintOff {
   background: #cccccc;
-}
-
-.move {
-  border: 3px solid green;
 }
 
 #frequency div {

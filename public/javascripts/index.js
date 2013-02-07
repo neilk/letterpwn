@@ -43,7 +43,7 @@
 
   function displayMoves(moves) {
     colorBoard(oursBitMask, theirsBitMask);
-    $('#words').scrollTop();
+    $('#moves').scrollTop();
     var $words = $('<span>');
     if (moves.length) {
       for (var i = 0; i < moves.length; i++) {
@@ -51,7 +51,7 @@
         var move = moves[i];
         var word = move[0];
         $word = $('<div>')
-          .addClass('word')
+          .addClass('move')
           .data('moveWordBitMask', move[1])
           .data('moveOursBitMask', move[2])
           .data('moveTheirsBitMask', move[3])
@@ -78,7 +78,7 @@
     }
     // var $words = $('<ul>');
     // moves.map( function(item){ $words.append($('<li>').append(item)) } );
-    $('#words').html($words);
+    $('#moves').html($words);
   }
 
   /**
