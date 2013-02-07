@@ -75,8 +75,8 @@ exports.api = function(req, res, next) {
     var topMoves = moves
           .slice(0, 19)
           .map(function(move) {
-            // send ["word", wordBitMask, newOursBitMask, newTheirsBitMask ]
-            return [move[6][0], move[5], move[3], move[4]];
+            // send ["word", wordBitMask, newOursBitMask, newTheirsBitMask, gameEnder ]
+            return [move[6][0], move[5], move[3], move[4], move[2]];
           });
 
     res.send([sequence, topMoves]);

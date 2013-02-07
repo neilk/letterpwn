@@ -180,6 +180,16 @@ tr.moveRow > td {
   border: 3px solid green;
 }
 
+/* css variables would be helpful, these are the same as oursProtected & theirsProtected backgrounds */
 .ourScore {
   color: #00a1fe;
+}
+
+.theirScore {
+  color: #f5443c;
+}
+
+.gameEnder {
+  font-variant: small-caps;
+  margin-left: 0.5em;
 }

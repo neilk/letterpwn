@@ -47,15 +47,18 @@
     var $moves = $('<div>')
     if (moves.length) {
       for (var i = 0; i < moves.length; i++) {
-        // we expect [ "word", moveBitMask, moveOursBitMask, moveTheirsBitmask ]
+        // we expect [ "word", moveBitMask, moveOursBitMask, moveTheirsBitmask, gameEnder ]
         var move = moves[i];
         var word = move[0];
+        var gameEnder = move[4]
+        // see definition of gameEnderTag for why we add 1
+        var $gameEnder = gameEnder === 0 ? '' : gameEnderTag[gameEnder + 1].clone();
         $moves.append(
           $('<div>').addClass('move').append(
             $('<table>').append(
               $('<tr>').addClass('moveRow').append(
                 $('<td>').append(getPreviewBoard(move[2], move[3])),
-                $('<td>').append(word)
+                $('<td>').append(word, $gameEnder)
               )
             )
           )
@@ -240,6 +243,13 @@
       lastUpdate = null,
       $mainBoard = $('#getBoard'),
       letterPaint = function(){};
+
+  /* n.b. data comes to us as -1, 0, 1 so add 1 to get offset */
+  var gameEnderTag = [
+    $('<span>').addClass('gameEnder theirScore').append('lose'),
+    null,
+    $('<span>').addClass('gameEnder ourScore').append('win')
+  ];
 
   /* init frequency slider */
 
