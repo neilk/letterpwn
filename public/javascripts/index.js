@@ -49,7 +49,7 @@
         // we expect [ "word", moveBitMask, moveOursBitMask, moveTheirsBitmask ]
         var move = moves[i];
         var word = move[0];
-        $word = $('<span>')
+        $word = $('<div>')
           .addClass('word')
           .data('moveWordBitMask', move[1])
           .data('moveOursBitMask', move[2])
