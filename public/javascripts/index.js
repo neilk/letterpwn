@@ -1,4 +1,6 @@
 (function($){
+  var UPDATE_WAIT_MS = 500;
+
   var letterInputsSelector = 'input.letter';
 
   function initLettersForTyping() {
@@ -28,13 +30,30 @@
   }
 
   function updateMoves() {
-    var board = letterInputsToString();
-    if (board.length === 25) {
-      $('input').blur();
-      getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask);
+    if (letterInputsToString().length === 25) {
+      queueUpdate();
     } else {
       displayMoves([]);
     }
+  }
+
+  var queuedUpdate = null;
+
+  function queueUpdate() {
+    hideMoves();
+    clearTimeout(queuedUpdate);
+    queuedUpdate = setTimeout(updateNow, UPDATE_WAIT_MS);
+  }
+
+  function updateNow() {
+    queuedUpdate = null;
+    $('input').blur();
+    var board = letterInputsToString();
+    getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask);
+  }
+
+  function hideMoves() {
+    displayMoves([]);
   }
 
   function displayMoves(moves) {
@@ -150,13 +169,16 @@
   $('#randomize').click(function(e) {
     oursBitMask = 0;
     theirsBitMask = 0;
+    queuedUpdate = null;
+    sequence = 0;
+
     colorBoard(0, 0); // why should we have to do this here? updateMoves does it, but it happens slowly
 
     $('input.letter').each(function() {
       // ascii 'a' = 65
       this.value = String.fromCharCode(Math.floor(Math.random()*26+65));
     });
-    updateMoves();
+    updateNow();
   })
 
 
