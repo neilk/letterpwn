@@ -160,7 +160,6 @@ tr.moveRow > td {
 .preview {
   margin-right: .25em;
   border: 1px solid #cccccc;
-  display: inline-table;
 }
 
 .preview td {
