@@ -43,6 +43,7 @@
 
   function displayMoves(moves) {
     colorBoard(oursBitMask, theirsBitMask);
+    $('#words').scrollTop();
     var $words = $('<span>');
     if (moves.length) {
       for (var i = 0; i < moves.length; i++) {
