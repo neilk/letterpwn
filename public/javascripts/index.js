@@ -225,8 +225,8 @@
   var frequencyNames = [
     { minFrequency:19, label:'see spot run'},
     { minFrequency:16, label:'common' },
-    { minFrequency:10, label:'intellectual'},
-    { minFrequency:5, label:'obscurantist'},
+    { minFrequency:10, label:'highbrow'},
+    { minFrequency:5, label:'obscure'},
     { minFrequency:0, label:'sesquipedalian'}
   ];
 
