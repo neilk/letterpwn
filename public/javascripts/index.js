@@ -27,7 +27,7 @@
     return board.toLowerCase().replace(/[^a-z]/, '');
   }
 
-  function updateWords() {
+  function updateMoves() {
     var board = letterInputsToString();
     if (board.length === 25) {
       $('input').blur();
@@ -150,13 +150,13 @@
   $('#randomize').click(function(e) {
     oursBitMask = 0;
     theirsBitMask = 0;
-    colorBoard(0, 0); // why should we have to do this here? updateWords does it, but it happens slowly
+    colorBoard(0, 0); // why should we have to do this here? updateMoves does it, but it happens slowly
 
     $('input.letter').each(function() {
       // ascii 'a' = 65
       this.value = String.fromCharCode(Math.floor(Math.random()*26+65));
     });
-    updateWords();
+    updateMoves();
   })
 
 
@@ -171,7 +171,7 @@
       // toggle it in 'ours'
       oursBitMask ^= $(this).data('bitmask');
       colorBoard(oursBitMask, theirsBitMask);
-      updateWords();
+      updateMoves();
     });
   });
   $('#paintControls .theirs').click(function(e) {
@@ -181,7 +181,7 @@
       // toggle it in theirs
       theirsBitMask ^= $(this).data('bitmask');
       colorBoard(oursBitMask, theirsBitMask);
-      updateWords();
+      updateMoves();
     });
   });
 
@@ -191,7 +191,7 @@
       theirsBitMask = 0,
       sequence = 0;
   initLettersForTyping();
-  $('#getBoard input.letter').keyup(updateWords);
+  $('#getBoard input.letter').keyup(updateMoves);
 
   // TODO i18n
   var frequencyNames = [
@@ -231,7 +231,7 @@
       $('#frequencyName').html(frequencyNames[minFrequency]);
     },
     stop: function(event, ui) {
-      updateWords();
+      updateMoves();
     },
   });
 
