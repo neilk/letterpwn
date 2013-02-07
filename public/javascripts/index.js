@@ -55,14 +55,7 @@
             $('<table>').append(
               $('<tr>').addClass('moveRow').append(
                 $('<td>').append(getPreviewBoard(move[2], move[3])),
-                $('<td>').append(
-                  $('<span>').addClass('ourScore').append(
-                    "+",
-                    lpBitMask.countBits(move[2])
-                  ),
-                  " ",
-                  word
-                )
+                $('<td>').append(word)
               )
             )
           )
