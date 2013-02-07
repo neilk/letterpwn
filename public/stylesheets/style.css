@@ -155,9 +155,10 @@ input.letter {
 
 #frequency div {
   margin-bottom: 0.5em;
+  width: 15em;
 }
 
-#frequencyLabel {
+#frequencyLabelName {
   color: #999999;
   margin-right: 0.33em;
 }

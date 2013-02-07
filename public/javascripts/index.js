@@ -211,51 +211,42 @@
   // init board
   var oursBitMask = 0,
       theirsBitMask = 0,
-      sequence = 0;
+      sequence = 0,
+      minFrequency = 10;
   initLettersForTyping();
   $('#getBoard input.letter').keyup(updateMoves);
 
+
+  function updateSlider(event, ui) {
+    minFrequency = frequencyNames[ui.value].minFrequency;
+    $('#frequencyLabel').html(frequencyNames[ui.value].label);
+  }
   // TODO i18n
   var frequencyNames = [
-    /* 0 */ 'sesquipedalian',
-    /* 1 */ 'crazy obscure',
-    /* 2 */ 'really obscure',
-    /* 3 */ 'obscure',
-    /* 4 */ 'grad school',
-    /* 5 */ 'grad school',
-    /* 6 */ 'university',
-    /* 7 */ 'university',
-    /* 8 */ 'high school',
-    /* 9 */ 'high school (debate club)',
-    /* 10 */ 'high school (drama club)',,
-    /* 11 */  'high school',
-    /* 12 */ 'high school',
-    /* 13 */ 'grade school (chess club)',
-    /* 14 */ 'grade school (chess club)',
-    /* 15 */ 'grade school (chess club)',
-    /* 16 */ 'grade school',
-    /* 17 */ 'grade school',
-    /* 18 */ 'grade school',
-    /* 19 */ 'kindergarten',
+    { minFrequency:19, label:'see spot run'},
+    { minFrequency:16, label:'common' },
+    { minFrequency:10, label:'intellectual'},
+    { minFrequency:5, label:'obscurantist'},
+    { minFrequency:0, label:'sesquipedalian'}
   ];
 
   // init frequency slider
   // this REALLY needs to transition to a model which gets updated
-  var minFrequency = 12;
-  $('#frequencyName').html(frequencyNames[minFrequency]);
-
   $('#frequencyCtrl').slider({
     min: 0,
-    max: 19,
-    value: 19 - minFrequency,
+    max: frequencyNames.length - 1,
+    change: function(event, ui) {
+      updateSlider(event, ui);
+    },
     slide: function(event,ui) {
-      minFrequency = 19 - ui.value;
-      $('#frequencyName').html(frequencyNames[minFrequency]);
+      updateSlider(event, ui);
     },
     stop: function(event, ui) {
       updateMoves();
-    },
+    }
   });
+
+  $('#frequencyCtrl').slider( "value", parseInt(frequencyNames.length / 2, 10));
 
   displayMoves([]);
 
