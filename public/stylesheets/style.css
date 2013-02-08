@@ -229,3 +229,9 @@ tr.moveRow > td {
   margin-left: 0.5em;
 }
 
+.bigGameEnder {
+  font-variant: small-caps;
+  font-size: x-large;
+  text-align: center;
+  margin-top: 2em;
+}

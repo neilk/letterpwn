@@ -12,8 +12,17 @@
   }
 
   function updateMoves() {
-    if (letterInputsToString().length === 25) {
+    colorBoard($mainBoard, oursBitMask, theirsBitMask);
+
+    // did somebody win? show that
+    if (lpBitMask.countBits(oursBitMask | theirsBitMask) == 25) {
+      displayGameEnd(lpBitMask.countBits(oursBitMask) >= 13);
+
+    // ok do we even have enough letters to get new words?
+    } else if (letterInputsToString().length === 25) {
       queueUpdate();
+
+    // just show nothing
     } else {
       displayMoves([]);
     }
@@ -42,7 +51,6 @@
   }
 
   function displayMoves(moves) {
-    colorBoard($mainBoard, oursBitMask, theirsBitMask);
     $('#moves').scrollTop();
     var $moves = $('<div>')
     if (moves.length) {
@@ -81,6 +89,16 @@
       $moves.append('(none)');
     }
     $('#moves').html($moves);
+  }
+
+  function displayGameEnd(win) {
+    var message = msg.win,
+        klass = 'ourScore';
+    if (!win) {
+      message = msg.lose,
+      klass = 'theirScore';
+    }
+    $('#moves').html($('<p>').addClass(klass + ' bigGameEnder').append(message));
   }
 
   /**
@@ -246,6 +264,11 @@
     { minFrequency:0, label:'sesquipedalian'}
   ];
 
+  var msg = {
+    win: 'win',
+    lose: 'lose'
+  }
+
   /* constants */
 
   var UPDATE_WAIT_MS = 500;
@@ -263,9 +286,9 @@
 
   /* n.b. data comes to us as -1, 0, 1 so add 1 to get offset */
   var gameEnderTag = [
-    $('<span>').addClass('gameEnder theirScore').append('lose'),
+    $('<span>').addClass('gameEnder theirScore').append(msg.lose),
     null,
-    $('<span>').addClass('gameEnder ourScore').append('win')
+    $('<span>').addClass('gameEnder ourScore').append(msg.win)
   ];
 
   // set up initial toolbar highlights, active tool
