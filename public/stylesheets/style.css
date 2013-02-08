@@ -141,6 +141,10 @@ input.letter {
   border-bottom: 1px solid #cccccc;
 }
 
+.move.previewed {
+  background: #e0e0e0;
+}
+
 #getBoard .shadow {
   z-index: 1000;
   box-shadow: .25em .25em 1.5em #999;
@@ -192,6 +196,7 @@ tr.moveRow > td {
 .preview {
   margin-right: .25em;
   border: 1px solid #cccccc;
+  background: #ffffff;
 }
 
 .preview td {
@@ -210,10 +215,6 @@ tr.moveRow > td {
 #frequencyLabelName {
   color: #999999;
   margin-right: 0.33em;
-}
-
-.previewMove {
-  border: 3px solid green;
 }
 
 /* css variables would be helpful, these are the same as oursProtected & theirsProtected backgrounds */

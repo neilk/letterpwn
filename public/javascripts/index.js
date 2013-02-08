@@ -11,8 +11,15 @@
     return board.toLowerCase().replace(/[^a-z]/, '');
   }
 
-  function updateMoves() {
+  function resetBoard() {
     colorBoard($mainBoard, oursBitMask, theirsBitMask);
+    $('#moves .move').removeClass('previewed');
+    $previewMove = null;
+    wiggleMask(0);
+  }
+
+  function updateMoves() {
+    resetBoard();
 
     // did somebody win? show that
     if (lpBitMask.countBits(oursBitMask | theirsBitMask) == 25) {
@@ -73,14 +80,9 @@
           .data('moveWordBitMask', move[1])
           .data('moveOursBitMask', move[2])
           .data('moveTheirsBitMask', move[3])
-          .hover(
+          .click(
             function(){
-              colorBoard($mainBoard, $(this).data('moveOursBitMask'), $(this).data('moveTheirsBitMask'));
-              wiggleMask($(this).data('moveWordBitMask'));
-            },
-            function(){
-              colorBoard($mainBoard, oursBitMask, theirsBitMask);
-              wiggleMask(0);
+              movePreviewToggle($(this));
             }
           )
         );
@@ -89,6 +91,14 @@
       $moves.append($('<p>').addClass('gameAnnounce').append(msg.noMoves));
     }
     $('#moves').html($moves);
+  }
+
+  function movePreviewToggle($move) {
+    resetBoard();
+    if ($previewMove !== $move) {
+      $move.addClass('previewed');
+      wiggleMask($move.data('moveWordBitMask'));
+    }
   }
 
   function displayGameEnd(win) {
@@ -204,7 +214,7 @@
     theirsBitMask = 0;
     queuedUpdate = null;
     sequence = 0;
-    colorBoard($mainBoard, 0, 0); // why should we have to do this here? updateWords does it, but it happens slowly
+    resetBoard();
 
     $('input.letter').each(function() {
       // ascii 'a' = 65
@@ -283,7 +293,8 @@
       queuedUpdate = null,
       lastUpdate = null,
       $mainBoard = $('#getBoard'),
-      letterPaint = function(){};
+      letterPaint = function(){},
+      $previewMove = null;
 
   /* n.b. data comes to us as -1, 0, 1 so add 1 to get offset */
   var gameEnderTag = [
