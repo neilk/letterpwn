@@ -61,26 +61,43 @@
         var gameEnder = move[4]
         // see definition of gameEnderTag for why we add 1
         var $gameEnder = gameEnder === 0 ? '' : gameEnderTag[gameEnder + 1].clone();
+        // TODO using an instantly executed anonymous function to close over the bitmask, and then
+        // using $.data for a similar purpose. Need to figure this out
+        // Also, we use a mini table inside each move simply for the use of vertical alignment, surely we can do better
+        var $playButton = $('<button>')
+          .css({'visibility':'hidden'})
+          .addClass('play')
+          .click( (function(bitMask) {
+            return function(e){
+              theirsBitMask &= ~bitMask;
+              oursBitMask |= bitMask;
+              updateMoves();
+            };
+          })(move[1]) )
+          .html(msg.playThis);
         $moves.append(
           $('<div>').addClass('move').append(
             $('<table>').append(
               $('<tr>').addClass('moveRow').append(
                 $('<td>').append(getPreviewBoard(move[2], move[3])),
-                $('<td>').append(word, $gameEnder)
+                $('<td>').append(word, $gameEnder, $playButton)
               )
             )
           )
           .data('moveWordBitMask', move[1])
           .data('moveOursBitMask', move[2])
           .data('moveTheirsBitMask', move[3])
+          .data('moveTheirsBitMask', move[3])
           .hover(
             function(){
               colorBoard($mainBoard, $(this).data('moveOursBitMask'), $(this).data('moveTheirsBitMask'));
               wiggleMask($(this).data('moveWordBitMask'));
+              $(this).find('.play').css({'visibility':'visible'});
             },
             function(){
               colorBoard($mainBoard, oursBitMask, theirsBitMask);
               wiggleMask(0);
+              $(this).find('.play').css({'visibility':'hidden'});
             }
           )
         );
@@ -267,7 +284,8 @@
   var msg = {
     win: 'win',
     lose: 'lose',
-    noMoves: 'no moves to show'
+    noMoves: 'no moves to show',
+    playThis: 'play'
   }
 
   /* constants */

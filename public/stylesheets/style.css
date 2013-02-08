@@ -150,6 +150,10 @@ input.letter {
   box-shadow: .25em .25em 1.5em #999;
 }
 
+.move > table {
+  width: 100%; 
+}
+
 tr.moveRow > td {
   vertical-align: middle;
 }
@@ -239,4 +243,8 @@ tr.moveRow > td {
 
 .fade {
   opacity: 0.25;
+}
+
+.play {
+  float: right;
 }
