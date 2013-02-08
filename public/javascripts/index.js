@@ -68,13 +68,11 @@
           .hover(
             function(){
               colorBoard($mainBoard, $(this).data('moveOursBitMask'), $(this).data('moveTheirsBitMask'));
-              classMask($mainBoard, $(this).data('moveWordBitMask'), 'previewMove');
-              // wiggleMask($(this).data('moveWordBitMask'));
+              wiggleMask($(this).data('moveWordBitMask'));
             },
             function(){
               colorBoard($mainBoard, oursBitMask, theirsBitMask);
-              classMask($mainBoard, 0, 'previewMove');
-              // wiggleMask(0);
+              wiggleMask(0);
             }
           )
         );
@@ -114,12 +112,12 @@
     );
   }
 
-  function wiggleMask($parent, mask) {
+  function wiggleMask(mask) {
     maskApply(
-      $parent,
+      $mainBoard,
       mask,
-      function($el) { $el.wiggle('start'); },
-      function($el) { $el.wiggle('stop'); }
+      function($el) { $el.addClass('shadow').wiggle('start'); },
+      function($el) { $el.removeClass('shadow').wiggle('stop'); }
     )
   }
 
