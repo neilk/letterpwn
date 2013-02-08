@@ -85,7 +85,7 @@ exports.api = function(req, res, next) {
 
 exports.index = function(req, res, next) {
   var params = {
-    'title': 'letterpress cheat! with API',
+    'title': 'letterpress solver by neilk',
     'errors': [],
     'minFrequency': 16,
     'desired': '',
