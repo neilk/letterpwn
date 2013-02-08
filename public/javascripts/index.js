@@ -116,8 +116,17 @@
     maskApply(
       $mainBoard,
       mask,
-      function($el) { $el.addClass('shadow').wiggle('start'); },
-      function($el) { $el.removeClass('shadow').wiggle('stop'); }
+      function($el) {
+        // we activate relative positioning so the shadows are over other non-wiggly cells
+        $('#getBoard td').css({position: 'relative'});
+        $el.addClass('shadow').wiggle('start');
+      },
+      function($el) {
+        // take away all of style because *any* position seems to cause the highlighting of the input
+        // to overlap with neighbors. Strange.
+        $('#getBoard td').removeAttr('style');
+        $el.removeClass('shadow').wiggle('stop');
+      }
     )
   }
 
