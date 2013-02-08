@@ -191,7 +191,7 @@
     $(this).addClass('active');
   });
   $('#enterText').parent().click(function(e) {
-    letterPaint = function() {};
+    letterPaint = function() {return false;};
     initLettersForTyping();
   });
   $('#oursPaint').parent().click(function(e) {
@@ -200,6 +200,7 @@
       theirsBitMask &= ~bitMask;
       // toggle it in 'ours'
       oursBitMask |= bitMask;
+      return true;
     };
   });
   $('#theirsPaint').parent().click(function(e) {
@@ -208,12 +209,14 @@
       oursBitMask &= ~bitMask;
       // toggle it in theirs
       theirsBitMask |= bitMask;
+      return true;
     };
   });
   $('#paintOff').click(function(e) {
     letterPaint = function(bitMask) {
       oursBitMask &= ~bitMask;
       theirsBitMask &= ~bitMask;
+      return true;
     };
   });
 
@@ -287,8 +290,9 @@
       $(this).data('bitmask', 1 << pos);
     })
     .click(function() {
-      letterPaint($(this).data('bitmask'));
-      updateMoves();
+      if (letterPaint($(this).data('bitmask'))) {
+        updateMoves();
+      }
     })
     .keyup(function(event) {
       // this form has tabIndexes 1-25 for the inputs. Submit button is 26.
