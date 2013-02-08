@@ -258,6 +258,9 @@
     $('<span>').addClass('gameEnder ourScore').append('win')
   ];
 
+  // set up initial toolbar highlights, active tool
+  $('#enterText').parent().click();
+
   /* init frequency slider */
 
   $('#frequencyCtrl').slider({
@@ -298,7 +301,6 @@
       updateMoves();
     });
 
-  initLettersForTyping();
 
   // no moves yet to display
   displayMoves([]);
