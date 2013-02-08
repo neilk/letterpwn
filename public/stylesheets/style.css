@@ -66,29 +66,10 @@ input {
   font-family: CoreHumanistSans, Helvetica, Arial, sans-serif;
 }
 
-#getBoard table {
-  position: relative;
-  z-index: 1;
-}
-
-#getBoard tbody {
-  position: relative;
-  z-index: 1;
-}
-
-#getBoard tr {
-  position: relative;
-  z-index: 1;
-}
-
 #getBoard td {
-  position:relative;
-  z-index: 1;
 }
 
 #getBoard input.letter {
-  position: relative;
-  z-index: 1;
   text-transform: uppercase;
   height: 1.5em;
   width: 1.5em;
@@ -166,10 +147,11 @@ input.letter {
   box-shadow: 2px 2px 2px #dddddd; */
 }
 
-.shadow {
-  z-index: 10;
+#getBoard .shadow {
+  z-index: 1000;
   box-shadow: .25em .25em 1.5em #999;
 }
+
 tr.moveRow > td {
   vertical-align: middle;
 }
