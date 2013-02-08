@@ -222,6 +222,7 @@
     queuedUpdate = null;
     sequence = 0;
     resetBoard();
+    wiggleMask(0);
 
     $('input.letter').each(function() {
       // ascii 'a' = 65
