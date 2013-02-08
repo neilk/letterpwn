@@ -13,13 +13,12 @@
 
   function resetBoard() {
     colorBoard($mainBoard, oursBitMask, theirsBitMask);
-    $('#moves .move').removeClass('previewed');
-    $previewMove = null;
-    wiggleMask(0);
   }
 
   function updateMoves() {
     resetBoard();
+    wiggleMask(0);
+    $previewMove = null;
 
     // did somebody win? show that
     if (lpBitMask.countBits(oursBitMask | theirsBitMask) == 25) {
@@ -94,11 +93,19 @@
   }
 
   function movePreviewToggle($move) {
-    resetBoard();
-    if ($previewMove !== $move) {
+    if ($previewMove === $move) {
+      $previewMove.removeClass('previewed');
+      wiggleMask(0);
+      $previewMove = null;
+    } else {
+      if ($previewMove !== null) {
+        $previewMove.removeClass('previewed');
+      }
       $move.addClass('previewed');
       wiggleMask($move.data('moveWordBitMask'));
+      $previewMove = $move;
     }
+    resetBoard();
   }
 
   function displayGameEnd(win) {
