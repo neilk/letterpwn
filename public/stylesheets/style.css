@@ -133,15 +133,12 @@ input.letter {
   height: 20em;
   line-height: 2em;
   overflow: scroll;
+  border: 1px solid #aaaaaa;
 }
 
 .move {
-  margin-bottom: 0.5em;
-  padding: 0.25em 0.75em;
-  border: 1px solid #e0e0e0;
-  background: #f5f5f5;
-  /* border-radius: 0.5em;
-  box-shadow: 2px 2px 2px #dddddd; */
+  padding: 0.5em 0.75em;
+  border-bottom: 1px solid #cccccc;
 }
 
 #getBoard .shadow {
@@ -180,7 +177,7 @@ tr.moveRow > td {
 }
 
 .iconHighlight.active {
-  border: 1px solid #666666;
+  border: 1px solid #aaaaaa;
 }
 
 #enterText {
@@ -202,7 +199,11 @@ tr.moveRow > td {
   height: 5px;
 }
 
-#frequency div {
+#frequencyCtrl {
+  margin-bottom: 1em;
+}
+
+#frequencyDescription {
   margin-bottom: 0.5em;
 }
 
@@ -229,9 +230,12 @@ tr.moveRow > td {
   margin-left: 0.5em;
 }
 
-.bigGameEnder {
-  font-variant: small-caps;
-  font-size: x-large;
+.gameAnnounce {
+  font-size: large;
   text-align: center;
   margin-top: 2em;
+}
+
+.fade {
+  opacity: 0.25;
 }

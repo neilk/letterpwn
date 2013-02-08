@@ -47,11 +47,11 @@
   }
 
   function hideMoves() {
-    displayMoves([]);
+    $('#moves').children().addClass('fade');
   }
 
   function displayMoves(moves) {
-    $('#moves').scrollTop();
+    $('#moves').removeClass('fade').scrollTop();
     var $moves = $('<div>')
     if (moves.length) {
       for (var i = 0; i < moves.length; i++) {
@@ -86,7 +86,7 @@
         );
       }
     } else {
-      $moves.append('(none)');
+      $moves.append($('<p>').addClass('gameAnnounce').append(msg.noMoves));
     }
     $('#moves').html($moves);
   }
@@ -98,7 +98,7 @@
       message = msg.lose,
       klass = 'theirScore';
     }
-    $('#moves').html($('<p>').addClass(klass + ' bigGameEnder').append(message));
+    $('#moves').html($('<p>').addClass(klass + ' gameAnnounce').append(message));
   }
 
   /**
@@ -266,7 +266,8 @@
 
   var msg = {
     win: 'win',
-    lose: 'lose'
+    lose: 'lose',
+    noMoves: 'no moves to show'
   }
 
   /* constants */
@@ -286,9 +287,9 @@
 
   /* n.b. data comes to us as -1, 0, 1 so add 1 to get offset */
   var gameEnderTag = [
-    $('<span>').addClass('gameEnder theirScore').append(msg.lose),
+    $('<span>').addClass('gameAnnounce theirScore').append(msg.lose),
     null,
-    $('<span>').addClass('gameEnder ourScore').append(msg.win)
+    $('<span>').addClass('gameAnnounce ourScore').append(msg.win)
   ];
 
   // set up initial toolbar highlights, active tool
