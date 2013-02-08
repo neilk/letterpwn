@@ -21,11 +21,17 @@ block content
       table#paintControls
         tr
           td
-            div#oursPaint.fill.ours
+            div.iconHighlight
+              div#enterText.icon
           td
-            div#theirsPaint.fill.theirs
+            div.iconHighlight
+              div#oursPaint.icon.ours
           td
-            div#paintOff.fill
+            div.iconHighlight
+              div#theirsPaint.icon.theirs
+          td
+            div.iconHighlight
+              div#paintOff.icon
       p#devControls
         input#randomize(type='submit', value='randomize')
     div#results

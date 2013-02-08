@@ -188,7 +188,15 @@
     updateNow();
   })
 
-  $('#paintControls .ours').click(function(e) {
+  $('#paintControls .icon').parent().click(function(e) {
+    $('#paintControls .iconHighlight').removeClass('active');
+    $(this).addClass('active');
+  });
+  $('#enterText').parent().click(function(e) {
+    letterPaint = function() {};
+    initLettersForTyping();
+  });
+  $('#oursPaint').parent().click(function(e) {
     letterPaint = function(bitMask) {
       // remove this position from 'theirs'
       theirsBitMask &= ~bitMask;
@@ -196,7 +204,7 @@
       oursBitMask |= bitMask;
     };
   });
-  $('#paintControls .theirs').click(function(e) {
+  $('#theirsPaint').parent().click(function(e) {
     letterPaint = function(bitMask) {
       // remove this position from 'ours'
       oursBitMask &= ~bitMask;
@@ -204,8 +212,7 @@
       theirsBitMask |= bitMask;
     };
   });
-  $('#paintControls #paintOff').click(function(e) {
-    // ?? initLettersForTyping();
+  $('#paintOff').click(function(e) {
     letterPaint = function(bitMask) {
       oursBitMask &= ~bitMask;
       theirsBitMask &= ~bitMask;

@@ -76,6 +76,10 @@ input {
   text-align: center;
 }
 
+input.letter[disabled="disabled"] {
+  color: black !important;
+}
+
 #controls {
   float: left;
   width: 25em;
@@ -144,13 +148,39 @@ tr.moveRow > td {
   vertical-align: middle;
 }
 
-#paintControls td {
-  padding: 1em;
+#controls table { 
+  margin: 0 auto 1em auto;
 }
 
-.fill {
+#paintControls {
+  margin-top: 1.5em;
+}
+
+#paintControls td {
+  padding: 0.5em;
+}
+
+#paintControls .icon {
   width: 1em;
   height: 1em;
+}
+
+.iconHighlight {
+  padding: 0.5em;
+  border: 1px solid white;
+}
+
+.iconHighlight:hover {
+  border: 1px solid #cccccc;
+}
+
+.iconHighlight.active {
+  border: 1px solid #666666;
+}
+
+#enterText {
+  background-image: url(../images/ibeam.svg);
+  background-size: 100% 100%;
 }
 
 #paintOff {
