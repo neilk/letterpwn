@@ -55,57 +55,57 @@
     var $moves = $('<div>')
     if (moves.length) {
       for (var i = 0; i < moves.length; i++) {
-        // we expect [ "word", moveBitMask, moveOursBitMask, moveTheirsBitmask, gameEnder ]
-        var move = moves[i];
-        var word = move[0];
-        var gameEnder = move[4]
-        // see definition of gameEnderTag for why we add 1
-        var $gameEnder = gameEnder === 0 ? '' : gameEnderTag[gameEnder + 1].clone();
-        // TODO using an instantly executed anonymous function to close over the bitmask, and then
-        // using $.data for a similar purpose. Need to figure this out
-        // Also, we use a mini table inside each move simply for the use of vertical alignment, surely we can do better
-        var $playButton = $('<button>')
-          .css({'visibility':'hidden'})
-          .addClass('play')
-          .click( (function(bitMask) {
-            return function(e){
-              theirsBitMask &= ~bitMask;
-              oursBitMask |= bitMask;
-              updateMoves();
-            };
-          })(move[1]) )
-          .html(msg.playThis);
-        $moves.append(
-          $('<div>').addClass('move').append(
-            $('<table>').append(
-              $('<tr>').addClass('moveRow').append(
-                $('<td>').append(getPreviewBoard(move[2], move[3])),
-                $('<td>').append(word, $gameEnder, $playButton)
-              )
-            )
-          )
-          .data('moveWordBitMask', move[1])
-          .data('moveOursBitMask', move[2])
-          .data('moveTheirsBitMask', move[3])
-          .data('moveTheirsBitMask', move[3])
-          .hover(
-            function(){
-              colorBoard($mainBoard, $(this).data('moveOursBitMask'), $(this).data('moveTheirsBitMask'));
-              wiggleMask($(this).data('moveWordBitMask'));
-              $(this).find('.play').css({'visibility':'visible'});
-            },
-            function(){
-              colorBoard($mainBoard, oursBitMask, theirsBitMask);
-              wiggleMask(0);
-              $(this).find('.play').css({'visibility':'hidden'});
-            }
-          )
-        );
+        $moves.append(getMoveHtml(moves[i]));
       }
     } else {
       $moves.append($('<p>').addClass('gameAnnounce').append(msg.noMoves));
     }
     $('#moves').html($moves);
+  }
+
+  function getMoveHtml(move) {
+    // we expect [ "word", moveBitMask, moveOursBitMask, moveTheirsBitmask, gameEnder ]
+    var word = move[0];
+    var moveBitMask = move[1];
+    var moveOursBitMask = move[2];
+    var moveTheirsBitMask = move[3];
+    var gameEnder = move[4];
+
+    // see definition of gameEnderTag for why we add 1
+    var $gameEnder = gameEnder === 0 ? '' : gameEnderTag[gameEnder + 1].clone();
+
+    var $playButton = $('<button>')
+      .css({'visibility':'hidden'})
+      .addClass('play')
+      .html(msg.playThis)
+      .click(function() {
+        theirsBitMask &= ~moveBitMask;
+        oursBitMask |= moveBitMask;
+        updateMoves();
+      });
+
+    var $html = $('<div>').addClass('move').append(
+      $('<table>').append(
+        $('<tr>').addClass('moveRow').append(
+          $('<td>').append(getPreviewBoard(move[2], move[3])),
+          $('<td>').append(word, $gameEnder, $playButton)
+        )
+      )
+    )
+    .hover(
+      function(){
+        colorBoard($mainBoard, moveOursBitMask, moveTheirsBitMask);
+        wiggleMask(moveBitMask);
+        $playButton.css({visibility:'visible'});
+      },
+      function(){
+        colorBoard($mainBoard, oursBitMask, theirsBitMask);
+        wiggleMask(0);
+        $playButton.css({visibility:'hidden'});
+      }
+    );
+
+    return $html;
   }
 
   function displayGameEnd(win) {
