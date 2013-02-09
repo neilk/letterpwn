@@ -179,8 +179,12 @@
     }
 
     var startTime = new Date();
-    $.ajax('/api', ajaxRequest)
+    if (xhr) {
+      xhr.abort();
+    }
+    xhr = $.ajax('/api', ajaxRequest)
       .done(function() {
+        xhr = null;
         $('#timing').html( "Request completed in " + ((new Date() - startTime)/1000).toFixed(3) + " seconds");
       });
   }
@@ -283,7 +287,8 @@
       queuedUpdate = null,
       lastUpdate = null,
       $mainBoard = $('#getBoard'),
-      letterPaint = function(){};
+      letterPaint = function(){},
+      xhr = null;
 
   /* n.b. data comes to us as -1, 0, 1 so add 1 to get offset */
   var gameEnderTag = [
