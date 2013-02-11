@@ -277,9 +277,9 @@
   // TODO i18n
   var frequencyNames = [
     { minFrequency:19, label:'see spot run'},
-    { minFrequency:16, label:'common' },
-    { minFrequency:10, label:'highbrow'},
-    { minFrequency:5, label:'obscure'},
+    { minFrequency:15, label:'common' },
+    { minFrequency:12, label:'highbrow'},
+    { minFrequency:9, label:'obscure'},
     { minFrequency:0, label:'sesquipedalian'}
   ];
 
