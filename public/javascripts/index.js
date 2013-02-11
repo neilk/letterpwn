@@ -211,6 +211,7 @@
   }
 
   function commify(n) {
+    n = n.toString();
     var x = n.split("");
     for (var i = n.length - 3; i > 0; i-= 3) {
       x.splice(i, 0, ",");
