@@ -183,9 +183,16 @@
       xhr.abort();
     }
     xhr = $.ajax('/api', ajaxRequest)
-      .done(function() {
+      .done(function(data) {
         xhr = null;
-        $('#timing').html( "Request completed in " + ((new Date() - startTime)/1000).toFixed(3) + " seconds");
+        var serverStats = data[2];
+        var serverDictionaryLength = commify(serverStats[0]);
+        var serverMoves = commify(serverStats[1]);
+        var serverElapsedTime = (serverStats[2]/1000).toFixed(3);
+        var clientElapsedTime = ((Date.now() - startTime)/1000).toFixed(3);
+        $('#timing').html( serverDictionaryLength + " words searched, " + serverMoves
+                           + " possible moves ranked in " + serverElapsedTime + " seconds."
+                           + " Round trip in " + clientElapsedTime + " seconds");
       });
   }
 
@@ -201,6 +208,14 @@
     }
     colorBoard($table, oursBitMask, theirsBitMask);
     return $table;
+  }
+
+  function commify(n) {
+    var x = n.split("");
+    for (var i = n.length - 3; i > 0; i-= 3) {
+      x.splice(i, 0, ",");
+    }
+    return x.join("");
   }
 
   $('#randomize').click(function(e) {

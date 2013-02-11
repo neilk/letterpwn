@@ -1,7 +1,8 @@
 var
   expressValidator = require('express-validator'),
   lp = require('../lib/letterpress'),
-  set = require('../lib/set');
+  set = require('../lib/set'),
+  words = require('../data/words');
 
 
 // some extra filters for our processing
@@ -26,6 +27,8 @@ expressValidator.Validator.prototype.isSubsetOf = function(supersetStr) {
  * Actually serve requests
  */
 exports.api = function(req, res, next) {
+
+  var startTime = Date.now();
 
   // sequence number to ensure that ajax response matches client state
   // BTW, this is lame and nobody else should do this, but it works
@@ -69,7 +72,9 @@ exports.api = function(req, res, next) {
     var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lp.DEFAULT_FREQUENCY;
     var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
     var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
-    var moves = lp.getMovesForBoardInGameState(board, minFrequency, oursBitMask, theirsBitMask);
+    var movesObj = lp.getMovesForBoardInGameState(board, minFrequency, oursBitMask, theirsBitMask);
+    var moves = movesObj[0];
+    var movesLength = movesObj[1];
 
     // removing data to only show bitmask and string representation of word.
     var topMoves = moves
@@ -79,7 +84,12 @@ exports.api = function(req, res, next) {
             return [move[6][0], move[5], move[3], move[4], move[2]];
           });
 
-    res.send([sequence, topMoves]);
+    var stats = [
+      words.length,
+      movesLength,
+      Date.now() - startTime
+    ];
+    res.send([sequence, topMoves, stats]);
   }
 }
 
