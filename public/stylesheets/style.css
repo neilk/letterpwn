@@ -104,6 +104,7 @@ input.letter[disabled="disabled"] {
   cursor: pointer;
   color: #cccccc;
   text-decoration: underline;
+  white-space: nowrap;
 }
   
 
