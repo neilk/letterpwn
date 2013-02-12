@@ -154,6 +154,16 @@
   }
 
   function getMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask) {
+    var newBoardState = [board, oursBitMask, theirsBitMask].join('\x01');
+    if (newBoardState !== boardState) {
+      apiCache = {};
+    }
+    boardState = newBoardState;
+    if (apiCache[minFrequency]) {
+      $('#actualApiRequestStats').hide();
+      displayApiResult(apiCache[minFrequency]);
+      return;
+    }
     var ajaxRequest = {
       data: {
         seq: ++sequence,
@@ -168,6 +178,7 @@
       success: function(data, textStatus, xhr) {
         var resSequence = parseInt(data[0], 10);
         if (resSequence === sequence) {
+          apiCache[minFrequency] = data;
           displayApiResult(data);
         }
       }
@@ -355,7 +366,9 @@
       queuedUpdate = null,
       lastUpdate = null,
       $mainBoard = $('#getBoard'),
-      xhr = null;
+      xhr = null,
+      apiCache = {},
+      boardState = null;
 
   /* n.b. data comes to us as -1, 0, 1 so add 1 to get offset */
   var gameEnderTag = [
