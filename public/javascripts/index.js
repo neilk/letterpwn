@@ -234,6 +234,7 @@
     $('#paintControls .iconHighlight').removeClass('active');
     $(this).addClass('active');
   });
+
   $('#enterText').parent().click(function(e) {
     $('input.letter')
       .keyup(function(event) {
@@ -250,43 +251,51 @@
         $(this).select();
       } );
   });
-  $('#oursPaint').parent().click(function(e) {
-    $('input.letter')
-      .attr('readonly', 'readonly')
-      .off('click')
-      .on('click', function(e) {
-        var bitMask = $(this).data('bitmask');
+
+  // this is used for the three coloring tools - ours, theirs, none
+  function getLetterPainterMode(bitMaskOp) {
+    return function() {
+      $('input.letter')
+        .attr('readonly', 'readonly')
+        .off('click')
+        .on('click', function(e) {
+          bitMaskOp($(this).data('bitmask'));
+          updateMoves();
+        });
+    }
+  };
+
+  $('#oursPaint').parent().click(
+    getLetterPainterMode(
+      function(bitMask) {
         // remove this position from 'theirs'
         theirsBitMask &= ~bitMask;
         // toggle it in 'ours'
         oursBitMask |= bitMask;
-        updateMoves();
-      });
-  });
-  $('#theirsPaint').parent().click(function(e) {
-    $('input.letter')
-      .attr('readonly', 'readonly')
-      .off('click')
-      .on('click', function(e) {
-        var bitMask = $(this).data('bitmask');
+      }
+    )
+  );
+
+  $('#theirsPaint').parent().click(
+    getLetterPainterMode(
+      function(bitMask) {
         // remove this position from 'ours'
         oursBitMask &= ~bitMask;
         // toggle it in theirs
         theirsBitMask |= bitMask;
-        updateMoves();
-      });
-  });
-  $('#paintOff').click(function(e) {
-    $('input.letter')
-      .attr('readonly', 'readonly')
-      .off('click')
-      .on('click', function(e) {
-        var bitMask = $(this).data('bitmask');
+      }
+    )
+  );
+
+  $('#nonePaint').parent().click(
+    getLetterPainterMode(
+      function(bitMask) {
         oursBitMask &= ~bitMask;
         theirsBitMask &= ~bitMask;
-        updateMoves();
-      });
-  });
+      }
+    )
+  );
+
 
   function updateSlider(event, ui) {
     minFrequency = frequencyNames[ui.value].minFrequency;
