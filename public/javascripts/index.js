@@ -299,7 +299,7 @@
   var oursBitMask = 0,
       theirsBitMask = 0,
       sequence = 0,
-      initialFrequencySliderValue = parseInt(frequencyNames.length / 2, 10),
+      initialFrequencySliderValue = 1,
       queuedUpdate = null,
       lastUpdate = null,
       $mainBoard = $('#getBoard'),
