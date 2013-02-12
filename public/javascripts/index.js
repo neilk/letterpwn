@@ -24,13 +24,13 @@
 
     // just show nothing
     } else {
-      displayMoves([]);
+      hideMoves();
     }
   }
 
 
   function queueUpdate() {
-    hideMoves();
+    $('#moves').addClass('fade').scrollTop();
     clearTimeout(queuedUpdate);
     if (lastUpdate === null || lastUpdate < Date.now() - UPDATE_WAIT_MS) {
       updateNow();
@@ -47,11 +47,13 @@
   }
 
   function hideMoves() {
-    $('#moves').children().addClass('fade');
+    $('#results').hide("slide", { direction: "left" }, SLIDE_DELAY_MS);
   }
 
   function displayMoves(moves) {
+    $('#results').show("slide", { direction: "left"}, SLIDE_DELAY_MS);
     $('#moves').removeClass('fade').scrollTop();
+    $('#moves').scrollTop();
     var $moves = $('<div>')
     if (moves.length) {
       for (var i = 0; i < moves.length; i++) {
@@ -288,11 +290,11 @@
   var msg = {
     win: 'win',
     lose: 'lose',
-    noMoves: 'no moves to show'
+    noMoves: 'no moves found'
   }
 
   /* constants */
-
+  var SLIDE_DELAY_MS = 200;
   var UPDATE_WAIT_MS = 500;
 
   /* initialize board & other inputs */
@@ -359,8 +361,6 @@
     });
 
 
-  // no moves yet to display
-  displayMoves([]);
 
   // start off typing in the first position
   $('#b0').click();

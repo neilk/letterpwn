@@ -83,15 +83,17 @@ input.letter[disabled="disabled"] {
 #controls {
   float: left;
   width: 25em;
+  height: 30em;
 }
 
 #results {
-  margin-left: 25em;
+  float: left;
   width: 15em;
+  vertical-align: top;
+  display: none;
 }
 
 #timing {
-  float: right;
   font-size: x-small;
   color: #cccccc;
   margin-top: 0em;
