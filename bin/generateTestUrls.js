@@ -1,4 +1,15 @@
 // generate urls for testing (for instance, with siege)
+//
+// for localhost:3000, invoke it like
+//
+// $ node generateTestUrls.js > urls.txt
+//
+// or, for a different protocol, host, and port:
+//
+// $ node generatetestUrls.js http://example.com > urls.txt
+// $ node generatetestUrls.js http://example.com:8888 > urls.txt
+//
+
 var _ = require('underscore'),
     lp = require('../lib/letterpress.js');
 
