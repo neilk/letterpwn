@@ -24,7 +24,7 @@
 
 
   function queueUpdate() {
-    $('#moves').addClass('fade').scrollTop();
+    $('#moves').addClass('fade').scrollTop(0);
     clearTimeout(queuedUpdate);
     if (lastUpdate === null || lastUpdate < Date.now() - UPDATE_WAIT_MS) {
       updateNow();
