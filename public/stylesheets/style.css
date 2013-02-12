@@ -140,7 +140,7 @@ input.letter {
 }
 
 #moves {
-  height: 20em;
+  height: 15.75em;
   line-height: 2em;
   overflow: scroll;
   border: 1px solid #aaaaaa;
