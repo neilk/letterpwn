@@ -1,11 +1,5 @@
 (function($){
 
-  function initLettersForTyping() {
-    $('input.letter')
-      .removeAttr('disabled')
-      .click( function() { $(this).select(); } )
-  }
-
   function letterInputsToString() {
     var board = $('input.letter').get().reduce(function(r,el){ return r + el.value; }, '');
     return board.toLowerCase().replace(/[^a-z]/, '');
@@ -241,35 +235,58 @@
     $(this).addClass('active');
   });
   $('#enterText').parent().click(function(e) {
-    letterPaint = function() {return false;};
-    initLettersForTyping();
+    $('input.letter')
+      .keyup(function(event) {
+        // this form has tabIndexes 1-25 for the inputs. Submit button is 26.
+        if (event.which !== 9) {
+          var nextTabIndex = (parseInt(this.tabIndex, 10) + 1).toString()
+          $(this.form).find('[tabIndex=' + nextTabIndex.toString() + ']').focus().select();
+        }
+        updateMoves();
+      })
+      .removeAttr('readonly')
+      .off('click')
+      .on('click', function() {
+        $(this).select();
+      } );
   });
   $('#oursPaint').parent().click(function(e) {
-    letterPaint = function(bitMask) {
-      // remove this position from 'theirs'
-      theirsBitMask &= ~bitMask;
-      // toggle it in 'ours'
-      oursBitMask |= bitMask;
-      return true;
-    };
+    $('input.letter')
+      .attr('readonly', 'readonly')
+      .off('click')
+      .on('click', function(e) {
+        var bitMask = $(this).data('bitmask');
+        // remove this position from 'theirs'
+        theirsBitMask &= ~bitMask;
+        // toggle it in 'ours'
+        oursBitMask |= bitMask;
+        updateMoves();
+      });
   });
   $('#theirsPaint').parent().click(function(e) {
-    letterPaint = function(bitMask) {
-      // remove this position from 'ours'
-      oursBitMask &= ~bitMask;
-      // toggle it in theirs
-      theirsBitMask |= bitMask;
-      return true;
-    };
+    $('input.letter')
+      .attr('readonly', 'readonly')
+      .off('click')
+      .on('click', function(e) {
+        var bitMask = $(this).data('bitmask');
+        // remove this position from 'ours'
+        oursBitMask &= ~bitMask;
+        // toggle it in theirs
+        theirsBitMask |= bitMask;
+        updateMoves();
+      });
   });
   $('#paintOff').click(function(e) {
-    letterPaint = function(bitMask) {
-      oursBitMask &= ~bitMask;
-      theirsBitMask &= ~bitMask;
-      return true;
-    };
+    $('input.letter')
+      .attr('readonly', 'readonly')
+      .off('click')
+      .on('click', function(e) {
+        var bitMask = $(this).data('bitmask');
+        oursBitMask &= ~bitMask;
+        theirsBitMask &= ~bitMask;
+        updateMoves();
+      });
   });
-
 
   function updateSlider(event, ui) {
     minFrequency = frequencyNames[ui.value].minFrequency;
@@ -306,7 +323,6 @@
       queuedUpdate = null,
       lastUpdate = null,
       $mainBoard = $('#getBoard'),
-      letterPaint = function(){},
       xhr = null;
 
   /* n.b. data comes to us as -1, 0, 1 so add 1 to get offset */
@@ -347,19 +363,7 @@
       $(this).data('bitmask', 1 << pos);
     })
     .click(function() {
-      if (letterPaint($(this).data('bitmask'))) {
-        updateMoves();
-      }
     })
-    .keyup(function(event) {
-      // this form has tabIndexes 1-25 for the inputs. Submit button is 26.
-      if (event.which !== 9) {
-        var nextTabIndex = (parseInt(this.tabIndex, 10) + 1).toString()
-        $(this.form).find('[tabIndex=' + nextTabIndex.toString() + ']').focus().select();
-      }
-      updateMoves();
-    });
-
 
 
   // start off typing in the first position
