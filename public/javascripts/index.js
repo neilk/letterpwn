@@ -340,7 +340,7 @@
 
   // TODO i18n
   var frequencyNames = [
-    { minFrequency:19, label:'see spot run'},
+    { minFrequency:18, label:'basic'},
     { minFrequency:15, label:'common' },
     { minFrequency:12, label:'highbrow'},
     { minFrequency:9, label:'obscure'},
