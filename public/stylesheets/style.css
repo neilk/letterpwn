@@ -160,7 +160,7 @@ input.letter {
   top: 0px;
   left: 0px;
   height: 15.75em;
-  width: 15em;
+  width: 100%;
   line-height: 2em;
   overflow: scroll;
 }
