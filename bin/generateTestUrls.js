@@ -22,6 +22,7 @@ for (var i = 0; i <= 1000; i++) {
   params.minFrequency = frequencyNames[parseInt(Math.random()*frequencyNames.length, 10)].minFrequency;
   params.oursBitMask = parseInt(Math.random()*lp.MAX_BITMASK, 10);
   params.theirsBitMask = parseInt(Math.random()*lp.MAX_BITMASK, 10);
+  params.seq = Math.floor(Math.random()*10);
   var query = _.pairs(params).map(function(pair) { return pair.join('=')}).join('&');
 
   var url = protoHostPort + '/api?' + query;
