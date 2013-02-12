@@ -225,12 +225,13 @@
     queuedUpdate = null;
     sequence = 0;
     colorBoard($mainBoard, 0, 0); // why should we have to do this here? updateWords does it, but it happens slowly
+    lastUpdate = null;
 
     $('input.letter').each(function() {
       // ascii 'a' = 65
       this.value = String.fromCharCode(Math.floor(Math.random()*26+65));
     });
-    updateNow();
+    queueUpdate();
   })
 
   $('#paintControls .icon').parent().click(function(e) {
