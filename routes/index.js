@@ -75,6 +75,8 @@ exports.api = function(req, res, next) {
     var movesObj = lp.getMovesForBoardInGameState(board, minFrequency, oursBitMask, theirsBitMask);
     var moves = movesObj[0];
     var movesLength = movesObj[1];
+    var dictionaryLength = movesObj[2];
+    var wordsLength = movesObj[3];
 
     // removing data to only show bitmask and string representation of word.
     var topMoves = moves
@@ -85,7 +87,8 @@ exports.api = function(req, res, next) {
           });
 
     var stats = [
-      words.length,
+      dictionaryLength,
+      wordsLength,
       movesLength,
       Date.now() - startTime
     ];

@@ -167,29 +167,52 @@
       },
       success: function(data, textStatus, xhr) {
         var resSequence = parseInt(data[0], 10);
-        var moves = data[1];
         if (resSequence === sequence) {
-          displayMoves(moves);
+          displayApiResult(data);
         }
       }
     }
 
     var startTime = new Date();
     if (xhr) {
+      // don't send out two XHRs at once - abort the other one
+      // we could still have a race condition, which we try to ameliorate with
+      // the sequence number
       xhr.abort();
     }
     xhr = $.ajax('/api', ajaxRequest)
       .done(function(data) {
+        // we won't need to abort this xhr, 'cause we're done.
+        // is there a race condition here if someone else grabbed xhr?
         xhr = null;
-        var serverStats = data[2];
-        var serverDictionaryLength = commify(serverStats[0]);
-        var serverMoves = commify(serverStats[1]);
-        var serverElapsedTime = (serverStats[2]/1000).toFixed(3);
-        var clientElapsedTime = ((Date.now() - startTime)/1000).toFixed(3);
-        $('#timing').html( serverDictionaryLength + " words searched, " + serverMoves
-                           + " possible moves ranked in " + serverElapsedTime + " seconds."
-                           + " Round trip in " + clientElapsedTime + " seconds");
+        // show some stats related to actual API calls
+        // (not always shown if results were cached locally)
+        $('#clientElapsedTime').html(((Date.now() - startTime)/1000).toFixed(3));
+        $('#actualApiRequestStats').show();
       });
+  }
+
+  /**
+   * We expect the api result to be:
+   * data[0]  sequence number (ignored here)
+   * data[1]  array of moves
+   * data[2]  stats
+   * @param {Array} data described above
+   */
+  function displayApiResult(data) {
+    displayMoves(data[1]);
+    displayStats(data[2]);
+  }
+
+  /**
+   * display stats
+   * @param stats [dictionaryCount, wordsCount, movesCount, serverElapsedTime]
+   */
+  function displayStats(stats) {
+    $('#statsDictionaryCount').html(commify(stats[0]));
+    $('#statsWordsCount').html(commify(stats[1]));
+    $('#statsMoveCount').html(commify(stats[2]));
+    $('#statsServerElapsedTime').html((stats[3]/1000).toFixed(3));
   }
 
   function getPreviewBoard(oursBitMask, theirsBitMask) {
@@ -361,6 +384,16 @@
   });
 
   $('#frequencyCtrl').slider( "value", initialFrequencySliderValue);
+
+  /* init show / hide stats */
+  $('#hideStats').click(function() {
+    $('#stats').hide();
+    $('#showStats').show();
+  });
+  $('#showStats a').click(function() {
+    $('#stats').show();
+    $('#showStats').hide();
+  })
 
   /* init letters */
 

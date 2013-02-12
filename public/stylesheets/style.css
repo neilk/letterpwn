@@ -93,11 +93,19 @@ input.letter[disabled="disabled"] {
   display: none;
 }
 
-#timing {
+#statsToggle {
+  text-align: right;
   font-size: x-small;
   color: #cccccc;
   margin-top: 0em;
 }
+
+#statsToggle a {
+  cursor: pointer;
+  color: #cccccc;
+  text-decoration: underline;
+}
+  
 
 input.letter {
   background: none;
@@ -241,4 +249,8 @@ tr.moveRow > td {
 
 .fade {
   opacity: 0.25;
+}
+
+#stats {
+  display: none;
 }
