@@ -24,6 +24,7 @@
 
 
   function queueUpdate() {
+    $('#results').show("slide", { direction: "left"}, SLIDE_DELAY_MS);
     $('#moves').addClass('fade').scrollTop(0);
     clearTimeout(queuedUpdate);
     if (lastUpdate === null || lastUpdate < Date.now() - UPDATE_WAIT_MS) {
@@ -45,7 +46,7 @@
   }
 
   function displayMoves(moves) {
-    $('#results').show("slide", { direction: "left"}, SLIDE_DELAY_MS);
+    $('#loading').hide();
     $('#moves').removeClass('fade').scrollTop();
     $('#moves').scrollTop();
     var $moves = $('<div>')
@@ -185,17 +186,22 @@
     }
 
     var startTime = new Date();
+    var showSpinnerTimeout;
     if (xhr) {
       // don't send out two XHRs at once - abort the other one
       // we could still have a race condition, which we try to ameliorate with
       // the sequence number
       xhr.abort();
     }
+    showSpinnerTimeout = setTimeout( function() { $('#loading').show(); }, LOADING_SPINNER_DELAY_MS );
     xhr = $.ajax('/api', ajaxRequest)
       .done(function(data) {
         // we won't need to abort this xhr, 'cause we're done.
         // is there a race condition here if someone else grabbed xhr?
         xhr = null;
+
+        clearTimeout(showSpinnerTimeout);
+        $('#loading').hide();
         // show some stats related to actual API calls
         // (not always shown if results were cached locally)
         $('#clientElapsedTime').html(((Date.now() - startTime)/1000).toFixed(3));
@@ -356,6 +362,7 @@
   /* constants */
   var SLIDE_DELAY_MS = 200;
   var UPDATE_WAIT_MS = 500;
+  var LOADING_SPINNER_DELAY_MS = 1000;
 
   /* initialize board & other inputs */
 

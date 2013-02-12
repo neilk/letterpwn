@@ -107,6 +107,15 @@ input.letter[disabled="disabled"] {
   white-space: nowrap;
 }
   
+#loading {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 15.75em;
+  width: 15em;
+  background: url('/images/loading.gif') no-repeat center;
+  display: none;
+}
 
 input.letter {
   background: none;
@@ -140,11 +149,20 @@ input.letter {
   background: #f5443c;
 }
 
-#moves {
+#moveContainer {
+  position: relative;
   height: 15.75em;
+  border: 1px solid #aaaaaa;
+}
+
+#moves {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 15.75em;
+  width: 15em;
   line-height: 2em;
   overflow: scroll;
-  border: 1px solid #aaaaaa;
 }
 
 .move {
