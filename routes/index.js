@@ -1,5 +1,6 @@
 var
   expressValidator = require('express-validator'),
+  fork = require('child_process').fork,
   lp = require('../lib/letterpress'),
   set = require('../lib/set'),
   words = require('../data/words');
@@ -72,27 +73,18 @@ exports.api = function(req, res, next) {
     var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lp.DEFAULT_FREQUENCY;
     var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
     var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
-    var movesObj = lp.getMovesForBoardInGameState(board, minFrequency, oursBitMask, theirsBitMask);
-    var moves = movesObj[0];
-    var movesLength = movesObj[1];
-    var dictionaryLength = movesObj[2];
-    var wordsLength = movesObj[3];
 
-    // removing data to only show bitmask and string representation of word.
-    var topMoves = moves
-          .slice(0, 19)
-          .map(function(move) {
-            // send ["word", wordBitMask, newOursBitMask, newTheirsBitMask, gameEnder ]
-            return [move[6][0], move[5], move[3], move[4], move[2]];
-          });
+    var child = fork('bin/letterpressMoves.js', [board, minFrequency, oursBitMask, theirsBitMask] );
 
-    var stats = [
-      dictionaryLength,
-      wordsLength,
-      movesLength,
-      Date.now() - startTime
-    ];
-    res.send([sequence, topMoves, stats]);
+    child.on('message', function(m) {
+      var stats = [
+        m.dictionaryLength,
+        m.wordsLength,
+        m.movesLength,
+        Date.now() - startTime
+      ];
+      res.send([sequence, m.topMoves, stats]);
+    });
   }
 }
 
