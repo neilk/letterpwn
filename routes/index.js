@@ -1,10 +1,18 @@
 var
+  backgrounder = require('backgrounder'),
   expressValidator = require('express-validator'),
-  fork = require('child_process').fork,
   lp = require('../lib/letterpress'),
-  set = require('../lib/set'),
-  words = require('../data/words');
+  path = require('path');
+  set = require('../lib/set');
 
+
+var worker = backgrounder.spawn(
+  path.join(__dirname, "../bin/letterpressMoves.js"),
+  { 'children-count': 5 },
+  function() {
+    console.log("worker children started");
+  }
+);
 
 // some extra filters for our processing
 expressValidator.Filter.prototype.toLowerCase = function() {
@@ -74,9 +82,14 @@ exports.api = function(req, res, next) {
     var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
     var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
 
-    var child = fork('bin/letterpressMoves.js', [board, minFrequency, oursBitMask, theirsBitMask] );
+    var message = {
+      board: board,
+      minFrequency: minFrequency,
+      oursBitMask: oursBitMask,
+      theirsBitMask: theirsBitMask
+    };
 
-    child.on('message', function(m) {
+    worker.send( message, function (m) {
       var stats = [
         m.dictionaryLength,
         m.wordsLength,
@@ -85,6 +98,7 @@ exports.api = function(req, res, next) {
       ];
       res.send([sequence, m.topMoves, stats]);
     });
+
   }
 }
 
@@ -98,6 +112,5 @@ exports.index = function(req, res, next) {
   };
   res.render('index', params);
 }
-
 
 

@@ -19,6 +19,7 @@
     "npm": "1.1.x"
   },
   "dependencies": {
+    "backgrounder": "*",
     "express": "*",
     "express-validator": "*",
     "jade": "*",
