@@ -1,5 +1,4 @@
-var lp = require('../lib/letterpress.js'),
-    worker = require('worker-pool/lib/worker').worker;
+var lp = require('../lib/letterpress.js');
 
 process.on('config', function(message, callback) {
     console.log('Worker: Configured %s!', process.id);
