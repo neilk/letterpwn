@@ -1,7 +1,7 @@
 var
   backgrounder = require('backgrounder'),
   expressValidator = require('express-validator'),
-  lp = require('../lib/letterpress'),
+  lpConfig = require('../lib/letterpress-config'),
   path = require('path');
   set = require('../lib/set');
 
@@ -47,28 +47,28 @@ exports.api = function(req, res, next) {
   req.assert('board', 'Board must exist').notEmpty();
   if (typeof req.param('board') !== 'undefined' && req.param('board') !== '') {
     req.sanitize('board').lettersOnly().toLowerCase();
-    req.assert('board', 'Board must have ' + lp.BOARD_SIZE + ' letters').len(lp.BOARD_SIZE, lp.BOARD_SIZE);
+    req.assert('board', 'Board must have ' + lpConfig.BOARD_SIZE + ' letters').len(lpConfig.BOARD_SIZE, lpConfig.BOARD_SIZE);
   }
 
   if (typeof req.param('minFrequency') !== 'undefined') {
     req.sanitize('minFrequency').toInt();
-    req.assert('minFrequency', 'Frequency must be between 0 and ' + lp.MAX_FREQUENCY)
+    req.assert('minFrequency', 'Frequency must be between 0 and ' + lpConfig.MAX_FREQUENCY)
       .min(0)
-      .max(lp.MAX_FREQUENCY);
+      .max(lpConfig.MAX_FREQUENCY);
   }
 
   if (typeof req.param('oursBitMask') !== 'undefined') {
     req.sanitize('oursBitMask').toInt();
-    req.assert('oursBitMask', 'oursBitMask must be between 0 and ' + lp.MAX_BITMASK)
+    req.assert('oursBitMask', 'oursBitMask must be between 0 and ' + lpConfig.MAX_BITMASK)
       .min(0)
-      .max(lp.MAX_BITMASK);
+      .max(lpConfig.MAX_BITMASK);
   }
 
   if (typeof req.param('theirsBitMask') !== 'undefined') {
     req.sanitize('theirsBitMask').toInt();
-    req.assert('theirsBitMask', 'theirsBitMask must be between 0 and ' + lp.MAX_BITMASK)
+    req.assert('theirsBitMask', 'theirsBitMask must be between 0 and ' + lpConfig.MAX_BITMASK)
       .min(0)
-      .max(lp.MAX_BITMASK);
+      .max(lpConfig.MAX_BITMASK);
   }
 
   var errors = req.validationErrors() || [];
@@ -78,7 +78,7 @@ exports.api = function(req, res, next) {
   } else {
     var sequence = req.param('seq'); // guaranteed to exist
     var board = req.param('board'); // guaranteed to exist
-    var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lp.DEFAULT_FREQUENCY;
+    var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lpConfig.DEFAULT_FREQUENCY;
     var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
     var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
 
