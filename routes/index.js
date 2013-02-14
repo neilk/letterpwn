@@ -8,7 +8,7 @@ var
 
 var worker = backgrounder.spawn(
   path.join(__dirname, "../bin/letterpressMoves.js"),
-  { 'children-count': 5 },
+  { 'children-count': 3 },
   function() {
     console.log("worker children started");
   }
