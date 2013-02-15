@@ -11,7 +11,7 @@
 //
 
 var _ = require('underscore'),
-    lp = require('../lib/letterpress.js');
+    lpConfig = require('../lib/letterpress-config.js');
 
 
 var frequencyNames = [
@@ -31,8 +31,8 @@ for (var i = 0; i <= 1000; i++) {
     params.board += String.fromCharCode(Math.floor(Math.random()*26+97));
   }
   params.minFrequency = frequencyNames[parseInt(Math.random()*frequencyNames.length, 10)].minFrequency;
-  params.oursBitMask = parseInt(Math.random()*lp.MAX_BITMASK, 10);
-  params.theirsBitMask = parseInt(Math.random()*lp.MAX_BITMASK, 10);
+  params.oursBitMask = parseInt(Math.random()*lpConfig.MAX_BITMASK, 10);
+  params.theirsBitMask = parseInt(Math.random()*lpConfig.MAX_BITMASK, 10);
   params.seq = Math.floor(Math.random()*10);
   var query = _.pairs(params).map(function(pair) { return pair.join('=')}).join('&');
 
