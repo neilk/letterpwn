@@ -83,7 +83,11 @@ input.letter[disabled="disabled"] {
 #controls {
   float: left;
   width: 25em;
-  height: 30em;
+  height: 25em;
+}
+
+#content p {
+  margin-bottom: 1em;
 }
 
 #results {
@@ -288,8 +292,14 @@ tr.moveRow > td {
 }
 
 #footer {
-  margin: 1em;
+  padding: 2em;
   clear: both;
   color: #a0a0a0;
   font-size: x-small;
+}
+
+#intro {
+  font-size: small;
+  color: #a0a0a0;
+  margin-bottom: 3em;
 }

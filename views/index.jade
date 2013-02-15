@@ -2,6 +2,22 @@ extends layout
 
 block content
   div#content
+    div#intro
+      p
+        | This is a solver for 
+        a(href='http://www.atebits.com/letterpress/') Letterpress
+        | , a game for iOS by Loren Brichter. I wrote it as an exercise to learn 
+        a(href='http://nodejs.com') Node.JS
+        | &#32;and related technologies, and also to test it under the so-called worst case for Node.JS - a computation intensive application.
+        | I'll be writing some blog posts soon, but for now the fastest way to try this is out is to see a
+        input#randomize(type='submit', value='random board')
+        | .
+      p
+        | See&#32;
+        a(href='http://twitter.com/flipzagging') @flipzagging
+        | &#32;for personal ramblings. Or&#32;
+        a(href='http://neilk.net') neilk.net
+        |.
     if errors.length > 0
       ul 
         for error in errors
@@ -32,8 +48,6 @@ block content
           td
             div.iconHighlight
               div#nonePaint.icon
-      p#devControls
-        input#randomize(type='submit', value='randomize')
     div#results
       div#frequency
         div#frequencyDescription
