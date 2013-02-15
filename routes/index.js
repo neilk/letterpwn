@@ -9,7 +9,7 @@ var
 
 var comboWorker = backgrounder.spawn(
   path.join(__dirname, "../bin/moveComboWorker.js"),
-  { 'children-count': 10 },
+  { 'children-count': 5 },
   function() {
     console.log("worker children started");
   }
