@@ -169,7 +169,6 @@
     }
     boardState = newBoardState;
     if (processedCache[minFrequency]) {
-      $('#actualApiRequestStats').hide();
       displayProcessedResult(processedCache[minFrequency]);
       return;
     }
