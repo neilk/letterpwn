@@ -1,9 +1,23 @@
-var
-  _ = require('underscore'),
-  lpBitMask = require('../public/javascripts/letterpress-bitmask'),
-    countBits = lpBitMask.countBits,
-  lpConfig = require('../lib/letterpress-config'),
-  getBitMaskForPositions = require('../lib/letterpress-getBitMask').getBitMaskForPositions;
+var MAX_FREQUENCY = 24;
+var DEFAULT_FREQUENCY = 15;
+
+var BOARD_SIZE = 25;
+var POSITIONS_TO_WIN = 13;
+
+// this is all bits turned on in BOARD_SIZE
+var MAX_BITMASK = _.range(exports.BOARD_SIZE).reduce(function (r, i) { return r | (1 << i); }, 0);
+
+
+/**
+ * Given a sorted list of board positions like
+ *   [ 10, 11, 15 ]
+ * Produce a number, whose on bits in binary correspond to these positions
+ * @param {Array} positions simple array of positive integers <= 24
+ * @return {Number}
+ */
+function getBitMaskForPositions(positions) {
+  return positions.reduce(function(bitMask, p) { return bitMask |= (1 << p) }, 0);
+}
 
 
 /**
@@ -136,8 +150,8 @@ function getTopMoves(moves, oursBitMask, theirsBitMask) {
     var vulnerability = getVulnerability(newOursProtectedBitMask);
 
     var gameEnder = 0;
-    if ((newOursBitMask | newTheirsBitMask) === lpConfig.MAX_BITMASK) {
-      gameEnder = (newOursCount >= lpConfig.POSITIONS_TO_WIN) ? 1 : -1;
+    if ((newOursBitMask | newTheirsBitMask) === MAX_BITMASK) {
+      gameEnder = (newOursCount >= POSITIONS_TO_WIN) ? 1 : -1;
     }
 
     // and let's add this to the moves!
