@@ -1,20 +1,9 @@
 var
-  backgrounder = require('backgrounder'),
   expressValidator = require('express-validator'),
   lp = require('../lib/letterpress'),
   lpConfig = require('../lib/letterpress-config'),
   path = require('path'),
   set = require('../lib/set');
-
-
-var comboWorker = backgrounder.spawn(
-  path.join(__dirname, "../bin/moveComboWorker.js"),
-  { 'children-count': 5 },
-  function() {
-    console.log("worker children started");
-  }
-);
-
 
 // some extra filters for our processing
 expressValidator.Filter.prototype.toLowerCase = function() {
@@ -59,20 +48,6 @@ exports.api = function(req, res, next) {
       .max(lpConfig.MAX_FREQUENCY);
   }
 
-  if (typeof req.param('oursBitMask') !== 'undefined') {
-    req.sanitize('oursBitMask').toInt();
-    req.assert('oursBitMask', 'oursBitMask must be between 0 and ' + lpConfig.MAX_BITMASK)
-      .min(0)
-      .max(lpConfig.MAX_BITMASK);
-  }
-
-  if (typeof req.param('theirsBitMask') !== 'undefined') {
-    req.sanitize('theirsBitMask').toInt();
-    req.assert('theirsBitMask', 'theirsBitMask must be between 0 and ' + lpConfig.MAX_BITMASK)
-      .min(0)
-      .max(lpConfig.MAX_BITMASK);
-  }
-
   var errors = req.validationErrors() || [];
   if (errors.length) {
     // how do we get the default error-renderer to do the right thing?
@@ -81,28 +56,11 @@ exports.api = function(req, res, next) {
     var sequence = req.param('seq'); // guaranteed to exist
     var board = req.param('board'); // guaranteed to exist
     var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lpConfig.DEFAULT_FREQUENCY;
-    var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
-    var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
 
-    var send = function(movesObj) {
-      var stats = [
-        movesObj.dictionaryLength,
-        movesObj.wordsLength,
-        movesObj.movesLength,
-        Date.now() - startTime
-      ];
+    var wordsObj = lp.getWordsForBoard(board, minFrequency);
 
-      res.send([sequence, movesObj.topMoves, stats]);
-    };
-
-    lp.getMovesForBoardInGameState(
-      board,
-      minFrequency,
-      oursBitMask,
-      theirsBitMask,
-      comboWorker,
-      send
-    );
+    var serverTime = Date.now() - startTime;
+    res.send([sequence, wordsObj.wordStructs, wordsObj.dictionaryLength, serverTime]);
 
   }
 }
