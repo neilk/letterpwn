@@ -1,18 +1,20 @@
 var
   backgrounder = require('backgrounder'),
   expressValidator = require('express-validator'),
+  lp = require('../lib/letterpress'),
   lpConfig = require('../lib/letterpress-config'),
-  path = require('path');
+  path = require('path'),
   set = require('../lib/set');
 
 
-var worker = backgrounder.spawn(
-  path.join(__dirname, "../bin/letterpressMoves.js"),
-  { 'children-count': 2 },
+var comboWorker = backgrounder.spawn(
+  path.join(__dirname, "../bin/moveComboWorker.js"),
+  { 'children-count': 10 },
   function() {
     console.log("worker children started");
   }
 );
+
 
 // some extra filters for our processing
 expressValidator.Filter.prototype.toLowerCase = function() {
@@ -82,22 +84,25 @@ exports.api = function(req, res, next) {
     var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
     var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
 
-    var message = {
-      board: board,
-      minFrequency: minFrequency,
-      oursBitMask: oursBitMask,
-      theirsBitMask: theirsBitMask
-    };
-
-    worker.send( message, function (m) {
+    var send = function(movesObj) {
       var stats = [
-        m.dictionaryLength,
-        m.wordsLength,
-        m.movesLength,
+        movesObj.dictionaryLength,
+        movesObj.wordsLength,
+        movesObj.movesLength,
         Date.now() - startTime
       ];
-      res.send([sequence, m.topMoves, stats]);
-    });
+
+      res.send([sequence, movesObj.topMoves, stats]);
+    };
+
+    lp.getMovesForBoardInGameState(
+      board,
+      minFrequency,
+      oursBitMask,
+      theirsBitMask,
+      comboWorker,
+      send
+    );
 
   }
 }
