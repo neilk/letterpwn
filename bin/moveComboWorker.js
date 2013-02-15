@@ -2,7 +2,8 @@ var
   _ = require('underscore'),
   lpBitMask = require('../public/javascripts/letterpress-bitmask'),
     countBits = lpBitMask.countBits,
-  lpConfig = require('../lib/letterpress-config');
+  lpConfig = require('../lib/letterpress-config'),
+  getBitMaskForPositions = require('../lib/letterpress-getBitMask').getBitMaskForPositions;
 
 
 /**
@@ -49,7 +50,7 @@ function getMovesForBoard(board, wordStructs) {
     var flatCombos = flattenCombos(posCombos);
 
     flatCombos.forEach(function(positions) {
-      moves.push([wordStruct, lpConfig.getBitMaskForPositions(positions)]);
+      moves.push([wordStruct, getBitMaskForPositions(positions)]);
     });
 
   });
