@@ -275,6 +275,17 @@ tr.moveRow > td {
 }
 
 
+.fillOurs {
+  cursor: url('/images/fill-ours.png') 13 14, auto;
+}
+
+.fillTheirs {
+  cursor: url('/images/fill-theirs.png') 13 14, auto;
+}
+
+.fillNone {
+  cursor: url('/images/fill-none.png') 8 8, auto;
+}
 
 #footer {
   margin: 1em;
