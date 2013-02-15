@@ -137,7 +137,7 @@ function getTopMoves(moves, oursBitMask, theirsBitMask) {
 
     var gameEnder = 0;
     if ((newOursBitMask | newTheirsBitMask) === lpConfig.MAX_BITMASK) {
-      gameEnder = (newOursCount >= POSITIONS_TO_WIN) ? 1 : -1;
+      gameEnder = (newOursCount >= lpConfig.POSITIONS_TO_WIN) ? 1 : -1;
     }
 
     // and let's add this to the moves!
