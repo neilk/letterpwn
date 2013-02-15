@@ -1,14 +1,33 @@
 var
   _ = require('underscore'),
-  lp = require('../lib/letterpress'),
   lpBitMask = require('../public/javascripts/letterpress-bitmask'),
     countBits = lpBitMask.countBits,
   lpConfig = require('../lib/letterpress-config');
 
 
+/**
+ * Given a string representing a board, return a map of
+ * where each letter is used on the board
+ * TODO could return the bitmap position, to save some time
+ * e.g. given "aba", return { "a": [0, 2], "b": [1] }
+ * @param {String} board
+ * @return {Array} as described above
+ */
+function getBoardPositionMap(board) {
+  var boardMap = {};
+  for (var i = 0; i < board.length; i += 1) {
+    var c = board[i];
+    if (!(c in boardMap)) {
+      boardMap[c] = [];
+    }
+    boardMap[c].push(i);
+  }
+  return boardMap;
+}
+
 function getMovesForBoard(board, wordStructs) {
   // an index of where letters are, on the board
-  var boardPositionMap = lp.getBoardPositionMap(board);
+  var boardPositionMap = getBoardPositionMap(board);
   var moves = [];
 
   wordStructs.forEach(function(wordStruct) {
@@ -30,7 +49,7 @@ function getMovesForBoard(board, wordStructs) {
     var flatCombos = flattenCombos(posCombos);
 
     flatCombos.forEach(function(positions) {
-      moves.push([wordStruct, lp.getBitMaskForPositions(positions)]);
+      moves.push([wordStruct, lpConfig.getBitMaskForPositions(positions)]);
     });
 
   });

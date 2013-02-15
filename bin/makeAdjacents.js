@@ -2,7 +2,7 @@
 // the letterpress board
 
 var _ = require('underscore'),
-    lp = require('lib/letterpress');
+    lpConfig = require('lib/letterpress-config');
 
 var neighbors = [
   [ -1, 0 ],
@@ -28,7 +28,7 @@ _.each( _.range(5), function(i) {
 adjacentBitMasks = [];
 for (var i = 0; i <= 24; i++) {
   adjacentBitMasks.push(
-    [ lp.getBitMaskForPositions([i]), lp.getBitMaskForPositions(adjacent[i]) ]
+    [ lpConfig.getBitMaskForPositions([i]), lpConfig.getBitMaskForPositions(adjacent[i]) ]
   )
 }
 
