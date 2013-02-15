@@ -164,15 +164,17 @@
   }
 
   function updateMovesForBoard(board, minFrequency, oursBitMask, theirsBitMask) {
-    var newBoardState = [board, oursBitMask, theirsBitMask].join('\x01');
-    if (newBoardState !== boardState) {
+    var newGameState = [board, oursBitMask, theirsBitMask].join('\x01');
+    if (newGameState !== gameState) {
       processedCache = {};
     }
-    boardState = newBoardState;
+    gameState = newGameState;
     if (processedCache[minFrequency]) {
       displayProcessedResult(processedCache[minFrequency]);
       return;
     }
+
+    // TODO cache the Api result again
     var ajaxRequest = {
       data: {
         seq: ++sequence,
@@ -206,7 +208,6 @@
         xhr = null;
 
         // show some stats related to actual API calls
-        // (not always shown if results were cached locally)
         $('#clientElapsedTime').html(((Date.now() - startTime)/1000).toFixed(3));
         $('#actualApiRequestStats').show();
       });
@@ -630,6 +631,7 @@
       $mainBoard = $('#getBoard'),
       xhr = null,
       processedCache = {},
+      gameState = null,
       boardState = null;
 
   /* n.b. data comes to us as -1, 0, 1 so add 1 to get offset */
