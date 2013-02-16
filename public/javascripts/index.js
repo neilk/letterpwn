@@ -296,8 +296,8 @@
   });
 
   $('#enterText').parent().click(function(e) {
-    $('input.letter').css('cursor', 'auto');
     $('input.letter')
+      .removeClass('fillOurs fillTheirs fillNone')
       .keyup(function(event) {
         // this form has tabIndexes 1-25 for the inputs. Submit button is 26.
         if (event.which !== 9) {
@@ -314,7 +314,7 @@
   });
 
   // this is used for the three coloring tools - ours, theirs, none
-  function getLetterPainterMode(image, bitMaskOp) {
+  function getLetterPainterMode(klass, bitMaskOp) {
     return function() {
       $('input.letter')
         .attr('readonly', 'readonly')
@@ -323,13 +323,14 @@
           bitMaskOp($(this).data('bitmask'));
           updateMoves();
         })
-        .css('cursor', "url('/images/" + image + ".png'), auto");
+        .removeClass('fillOurs fillTheirs fillNone')
+        .addClass(klass);
     };
   }
 
   $('#oursPaint').parent().click(
     getLetterPainterMode(
-      'fill-ours',
+      'fillOurs',
       function(bitMask) {
         // remove this position from 'theirs'
         theirsBitMask &= ~bitMask;
@@ -341,7 +342,7 @@
 
   $('#theirsPaint').parent().click(
     getLetterPainterMode(
-      'fill-theirs',
+      'fillTheirs',
       function(bitMask) {
         // remove this position from 'ours'
         oursBitMask &= ~bitMask;
@@ -353,7 +354,7 @@
 
   $('#nonePaint').parent().click(
     getLetterPainterMode(
-      'eraser',
+      'fillNone',
       function(bitMask) {
         oursBitMask &= ~bitMask;
         theirsBitMask &= ~bitMask;
