@@ -273,3 +273,12 @@ tr.moveRow > td {
 #stats {
   display: none;
 }
+
+
+
+#footer {
+  margin: 1em;
+  clear: both;
+  color: #a0a0a0;
+  font-size: x-small;
+}
