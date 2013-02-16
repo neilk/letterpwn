@@ -267,7 +267,12 @@ tr.moveRow > td {
 .gameAnnounce {
   font-size: large;
   text-align: center;
+  margin: 0.25em;
+}
+
+#moves > .gameAnnounce {
   margin-top: 2em;
+  font-size: xx-large;
 }
 
 .fade {
