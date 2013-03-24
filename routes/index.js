@@ -77,7 +77,6 @@ exports.api = function(req, res, next) {
     req.sanitize('isClientComboAble').toBoolean();
   }
 
-
   var errors = req.validationErrors() || [];
   if (errors.length) {
     // how do we get the default error-renderer to do the right thing?
@@ -88,7 +87,7 @@ exports.api = function(req, res, next) {
     var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lpConfig.DEFAULT_FREQUENCY;
     var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
     var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
-    var isClientComboAble = typeof req.param('isClientComboAble') !== 'undefined' ? req.param('isClientCombos') : false;
+    var isClientComboAble = typeof req.param('isClientComboAble') !== 'undefined' ? req.param('isClientComboAble') : false;
 
     var wfb = lp.getWordsForBoard(board, minFrequency);
     var wordStructs = wfb.wordStructs;
