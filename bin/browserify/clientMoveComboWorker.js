@@ -11,6 +11,8 @@ onmessage = function(oEvent) {
 
   postMessage({
     topMoves: topMoves,
-    movesLength: moves.length
+    movesLength: moves.length,
+    seq: message.seq,
+    minFrequency: message.minFrequency
   });
 };

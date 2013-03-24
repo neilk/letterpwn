@@ -1,4 +1,4 @@
-(function($, ComboWorker){
+(function($){
 
   function letterInputsToString() {
     var board = $('input.letter').get().reduce(function(r,el){ return r + el.value; }, '');
@@ -172,7 +172,7 @@
         minFrequency: minFrequency,
         oursBitMask: oursBitMask,
         theirsBitMask: theirsBitMask,
-        clientCombos: (typeof(ComboWorker) !== 'undefined')
+        clientCombos: typeof comboWorker !== undefined
       },
       error: function(xhr, status, err) {
         console.log(xhr, status, err);
@@ -181,10 +181,24 @@
         var resSequence = parseInt(data[0], 10);
         if (resSequence === sequence) {
           if (data[1] == 'moves') {
+            /* if server was able to provide moves, we just display them */
             apiCache[minFrequency] = data;
             displayApiResult(data);
           } else if (data[1] == 'words') {
-            console.log("do the worker here");
+            /* if server was only able to provide words (due to timeout, or because we want to otherwise
+               offload work to the client) and we can use a combo worker here to calculate moves, do that */
+            if (typeof comboWorker !== 'undefined') {
+              comboWorker.postMessage({
+                seq: sequence,
+                board: board,
+                wordStructs: data[2],
+                oursBitMask: oursBitMask,
+                theirsBitMask: theirsBitmask,
+                minFrequency: minFrequency
+              });
+            } else {
+              console.log("we got a message to use a combo worker, but we can't do that!");
+            }
           }
         }
       }
@@ -353,6 +367,25 @@
     $('#frequencyLabel').html(frequencyNames[ui.value].label);
   }
 
+
+  /* worker initialization */
+  var comboWorker;
+  if (typeof Worker !== 'undefined') {
+    var w = new Worker('/javascripts/browserify/clientMoveComboWorker.js');
+    w.onMessage = function(oEvent) {
+      var message = oEvent.data;
+      var apiLikeData = [
+        message.seq, /* sequence number - irrelevant to cache, done just to match signature. TODO fix */
+        "moves",
+        message.topMoves,
+        [ 999, 999, 999, 999 ] /* fake stats - placeholder */
+      ]
+      apiCache[message.minFrequency] = apiLikeData;
+      displayApiResult(apiLikeData);
+    };
+    comboWorker = w;
+  }
+
   /* configuration */
 
   // TODO i18n
@@ -441,7 +474,6 @@
 
   // start off typing in the first position
   $('#b0').click();
-
 
 
 })(jQuery);
