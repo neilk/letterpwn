@@ -241,14 +241,14 @@
   }
 
   /**
-   * display stats
-   * @param stats [dictionaryCount, wordsCount, movesCount, serverElapsedTime]
+   * display stats TODO this doesn't work with client combos
+   * @param {Object} stats
    */
   function displayStats(stats) {
-    $('#statsDictionaryCount').html(commify(stats[0]));
-    $('#statsWordsCount').html(commify(stats[1]));
-    $('#statsMoveCount').html(commify(stats[2]));
-    $('#statsServerElapsedTime').html((stats[3]/1000).toFixed(3));
+    $('#statsDictionaryCount').html(commify(stats.dictionaryLength));
+    $('#statsWordsCount').html(commify(stats.wordsLength));
+    $('#statsMoveCount').html(commify(stats.movesLength));
+    $('#statsServerElapsedTime').html((stats.serverTime/1000).toFixed(3));
   }
 
   function getPreviewBoard(oursBitMask, theirsBitMask) {
