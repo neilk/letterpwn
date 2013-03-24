@@ -1,9 +1,9 @@
 var
   _ = require('underscore'),
-  lpBitMask = require('../public/javascripts/letterpress-bitmask'),
+  lpBitMask = require('./letterpress-bitmask'),
     countBits = lpBitMask.countBits,
-  lpConfig = require('../lib/letterpress-config'),
-  getBitMaskForPositions = require('../lib/letterpress-getBitMask').getBitMaskForPositions;
+  lpConfig = require('../../lib/letterpress-config'),
+  getBitMaskForPositions = require('../../lib/letterpress-getBitMask').getBitMaskForPositions;
 
 
 /**
