@@ -172,7 +172,7 @@
         minFrequency: minFrequency,
         oursBitMask: oursBitMask,
         theirsBitMask: theirsBitMask,
-        clientCombos: (typeof comboWorker !== undefined) & 1
+        isClientComboAble: typeof comboWorker !== undefined
       },
       error: function(xhr, status, err) {
         console.log(xhr, status, err);

@@ -73,6 +73,11 @@ exports.api = function(req, res, next) {
       .max(lpConfig.MAX_BITMASK);
   }
 
+  if (typeof req.param('isClientComboAble') !== 'undefined') {
+    req.sanitize('isClientComboAble').toBoolean();
+  }
+
+
   var errors = req.validationErrors() || [];
   if (errors.length) {
     // how do we get the default error-renderer to do the right thing?
@@ -83,31 +88,55 @@ exports.api = function(req, res, next) {
     var minFrequency = typeof req.param('minFrequency') !== 'undefined' ? req.param('minFrequency') : lpConfig.DEFAULT_FREQUENCY;
     var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
     var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
+    var isClientComboAble = typeof req.param('isClientComboAble') !== 'undefined' ? req.param('isClientCombos') : false;
 
-    var sender = function(movesObj) {
-      var stats = [
-        movesObj.dictionaryLength,
-        movesObj.wordsLength,
-        movesObj.movesLength,
-        Date.now() - startTime
-      ];
-      /* if worker gave up, just send the wordStructs */
-      if (movesObj.wordStructs) {
-        res.send([sequence, 'words', movesObj.wordStructs, stats]);
-      } else {
-        res.send([sequence, 'moves', movesObj.topMoves, stats]);
+    var wfb = lp.getWordsForBoard(board, minFrequency);
+    var wordStructs = wfb.wordStructs;
+    var dictionaryLength = wfb.dictionaryLength;
 
-      }
+    var stats = {
+      dictionaryLength: wfb.dictionaryLength,
+      wordsLength: wordStructs.length
     };
 
-    lp.getMovesForBoardInGameState(
-      board,
-      minFrequency,
-      oursBitMask,
-      theirsBitMask,
-      comboWorker,
-      sender
-    );
+    /**
+     * Send results to client, in a way we can invoke inline, or in a callback
+     * invoked when worker completes.
+     * @param {String} objType 'words' or 'moves'
+     * @param {Object} obj whatever we're sending
+     * @param {Object} extraStats object of simple key-value pairs, stats about what was considered
+     */
+    function sendToClient(objType, obj, extraStats) {
+      // merge extra stats
+      if (typeof extraStats !== 'undefined') {
+        for (var key in extraStats) {
+          stats[key] = extraStats[key];
+        }
+      }
+      stats['serverTime'] = Date.now() - startTime;
+
+      // and send!
+      res.send([sequence, objType, obj, stats]);
+    }
+
+
+    /* if client can calculate moves, just send the words. Otherwise get a worker to
+       do the calculation here on the server */
+    if (isClientComboAble) {
+      sendToClient('words', wfb.wordStructs);
+    } else {
+      comboWorker.send(
+        {
+          board: board,
+          wordStructs: wordStructs,
+          oursBitMask: oursBitMask,
+          theirsBitMask: theirsBitMask
+        },
+        function(movesObj) {
+          sendToClient('moves', movesObj.topMoves, { movesLength: movesObj.movesLength });
+        }
+      );
+    }
 
   }
 }
