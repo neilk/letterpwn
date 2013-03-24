@@ -193,7 +193,7 @@
                 board: board,
                 wordStructs: data[2],
                 oursBitMask: oursBitMask,
-                theirsBitMask: theirsBitmask,
+                theirsBitMask: theirsBitMask,
                 minFrequency: minFrequency
               });
             } else {
@@ -372,7 +372,7 @@
   var comboWorker;
   if (typeof Worker !== 'undefined') {
     var w = new Worker('/javascripts/browserify/clientMoveComboWorker.js');
-    w.onMessage = function(oEvent) {
+    w.onmessage = function(oEvent) {
       var message = oEvent.data;
       var apiLikeData = [
         message.seq, /* sequence number - irrelevant to cache, done just to match signature. TODO fix */

@@ -84,15 +84,20 @@ exports.api = function(req, res, next) {
     var oursBitMask = typeof req.param('oursBitMask') !== 'undefined' ? req.param('oursBitMask') : 0;
     var theirsBitMask = typeof req.param('theirsBitMask') !== 'undefined' ? req.param('theirsBitMask') : 0;
 
-    var send = function(movesObj) {
+    var sender = function(movesObj) {
       var stats = [
         movesObj.dictionaryLength,
         movesObj.wordsLength,
         movesObj.movesLength,
         Date.now() - startTime
       ];
+      /* if worker gave up, just send the wordStructs */
+      if (movesObj.wordStructs) {
+        res.send([sequence, 'words', movesObj.wordStructs, stats]);
+      } else {
+        res.send([sequence, 'moves', movesObj.topMoves, stats]);
 
-      res.send([sequence, 'moves', movesObj.topMoves, stats]);
+      }
     };
 
     lp.getMovesForBoardInGameState(
@@ -101,7 +106,7 @@ exports.api = function(req, res, next) {
       oursBitMask,
       theirsBitMask,
       comboWorker,
-      send
+      sender
     );
 
   }
