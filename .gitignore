@@ -1,3 +1,4 @@
 .diskcache
 jtags
 node_modules/*
+public/javascripts/browserify/*.js

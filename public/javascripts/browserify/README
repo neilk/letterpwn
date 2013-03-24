@@ -1,0 +1,2 @@
+This directory should contain browserified scripts from the 'bin/browserify' directory. If
+it's empty, run bin/browserify/generatePublicScripts.

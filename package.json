@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "backgrounder": "*",
+    "browserify": "*",
     "express": "*",
     "express-validator": "*",
     "jade": "*",
