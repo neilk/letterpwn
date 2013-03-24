@@ -1,4 +1,4 @@
-(function($){
+(function($, ComboWorker){
 
   function letterInputsToString() {
     var board = $('input.letter').get().reduce(function(r,el){ return r + el.value; }, '');
@@ -171,7 +171,8 @@
         board: board,
         minFrequency: minFrequency,
         oursBitMask: oursBitMask,
-        theirsBitMask: theirsBitMask
+        theirsBitMask: theirsBitMask,
+        clientCombos: (typeof(ComboWorker) !== 'undefined')
       },
       error: function(xhr, status, err) {
         console.log(xhr, status, err);
@@ -179,8 +180,12 @@
       success: function(data, textStatus, xhr) {
         var resSequence = parseInt(data[0], 10);
         if (resSequence === sequence) {
-          apiCache[minFrequency] = data;
-          displayApiResult(data);
+          if (data[1] == 'moves') {
+            apiCache[minFrequency] = data;
+            displayApiResult(data);
+          } else if (data[1] == 'words') {
+            console.log("do the worker here");
+          }
         }
       }
     }
@@ -217,8 +222,8 @@
    * @param {Array} data described above
    */
   function displayApiResult(data) {
-    displayMoves(data[1]);
-    displayStats(data[2]);
+    displayMoves(data[2]);
+    displayStats(data[3]);
   }
 
   /**

@@ -92,7 +92,7 @@ exports.api = function(req, res, next) {
         Date.now() - startTime
       ];
 
-      res.send([sequence, movesObj.topMoves, stats]);
+      res.send([sequence, 'moves', movesObj.topMoves, stats]);
     };
 
     lp.getMovesForBoardInGameState(
