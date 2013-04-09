@@ -142,7 +142,9 @@ exports.api = function(req, res, next) {
 
 exports.index = function(req, res, next) {
   var params = {
-    'title': 'LetterPwn - a Letterpress solver by Neil K.',
+    'title': 'LetterPwn',
+    'subtitle': 'a Letterpress solver by Neil K.',
+    'about': 'about stuff',
     'errors': [],
     'minFrequency': 16,
     'desired': '',
