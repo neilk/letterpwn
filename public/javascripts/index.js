@@ -261,7 +261,9 @@
     $('#statsDictionaryCount').html(commify(stats.dictionaryLength));
     $('#statsWordsCount').html(commify(stats.wordsLength));
     $('#statsMoveCount').html(commify(stats.movesLength));
-    $('#statsComputeTime').html((stats.computeTime/1000).toFixed(3));
+    var computeSeconds = stats.computeTime/1000;
+    $('#statsComputeTime').html(computeSeconds.toFixed(3));
+    $('#statsMovesPerSecond').html(commify(parseInt(stats.movesLength/computeSeconds, 10)));
   }
 
   function getPreviewBoard(oursBitMask, theirsBitMask) {
