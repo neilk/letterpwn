@@ -304,16 +304,29 @@
     $(this).addClass('active');
   });
 
+  // determine if a letter's ascii code produces a letter in a-z or A-Z
+  // 65-90 for A-Z, 97-122 for a-z
+  // old trick; do it in one test because the ranges are offset by 32
+  function isLetter(code) {
+    code = code | 32;
+    return ((code >= 97) && (code <= 122));
+  }
+
   $('#enterText').parent().click(function(e) {
     $('input.letter')
       .removeClass('fillOurs fillTheirs fillNone')
+      .keydown(function(event) {
+        if (!isLetter(event.which)) {
+          event.preventDefault();
+        }
+      })
       .keyup(function(event) {
         // this form has tabIndexes 1-25 for the inputs. Submit button is 26.
-        if (event.which !== 9) {
+        if (isLetter(event.which)) {
           var nextTabIndex = (parseInt(this.tabIndex, 10) + 1).toString()
           $(this.form).find('[tabIndex=' + nextTabIndex.toString() + ']').focus().select();
+          updateMoves();
         }
-        updateMoves();
       })
       .removeAttr('readonly')
       .off('click')
