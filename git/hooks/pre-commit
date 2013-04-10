@@ -1,0 +1,15 @@
+#!/bin/bash
+
+/bin/bash bin/browserify/generatePublicScripts
+
+fail=0
+for f in `git ls-files -m`; do
+  if [[ "$f" == public/javascripts/browserify/* ]]
+  then
+    git add $f
+    echo "you forgot to add $f, so I did it for you. Commit again"
+    fail=1
+  fi
+done;
+
+exit $fail
