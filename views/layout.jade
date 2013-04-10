@@ -18,15 +18,23 @@ html
     script(src='/javascripts/jquery-1.9.0.js')
     script(src='/jquery-ui-1.10.0.custom/js/jquery-ui-1.10.0.custom.js')
     block contentScripts
-
-div#footer
-  a(href='http://www.atebits.com/letterpress/')
-    | Letterpress 
-  | is a trademark of 
-  a(href='http://atebits.com/') atebits
-  |. No copyright or trademark violation is intended, this is just a coding exercise. 
-  | LetterPwn is by 
-  a(href='http://neilk.net/') Neil Kandalgaonkar&#32;
-  | &copy; 2013.
-
+    div#footer
+      a(href='http://www.atebits.com/letterpress/')
+        | Letterpress 
+      | is a trademark of 
+      a(href='http://atebits.com/') atebits
+      |. No copyright or trademark violation is intended, this is just a coding exercise. 
+      | LetterPwn is by 
+      a(href='http://neilk.net/') Neil Kandalgaonkar&#32;
+      | &copy; 2013.
+    script
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-39611348-1']);
+      _gaq.push(['_setDomainName', 'letterpwn.neilk.net']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
 
