@@ -32,21 +32,11 @@ body {
 a {
   color: #00B7FF;
 }
-
-h1 {
-  font-size: large;
-  color: white;
-}
-
-h2 {
-  font-size: larger;
-  color: #999999;
-  margin-bottom: 1em;
-}
-
 #header {
+  color: #ccc;
   background: #666666;
   padding: 1em;
+  height: 2.5em;
   margin-bottom: 1em;
 }
 
@@ -56,6 +46,35 @@ h2 {
   height: 100px;
   float: left;
 }
+
+h1 {
+  font-size: 2em;
+  color: white;
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
+h2 {
+  font-size: normal;
+  margin-bottom: 1em;
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
+#header p {
+  /* text-align: right; */
+  display: inline-block;
+}
+
+#header a {
+  color: #fff;
+  text-decoration: none;
+}
+
+#header a:hover {
+  text-decoration: underline;
+}
+
 
 
 #content {
