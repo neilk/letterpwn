@@ -58,7 +58,7 @@ h2 {
   font-size: normal;
   margin-bottom: 1em;
   display: inline-block;
-  margin-right: 0.5em;
+  margin-right: em;
 }
 
 #header p {
@@ -75,13 +75,35 @@ h2 {
   text-decoration: underline;
 }
 
-
-
 #content {
-  padding: 2em;
+  padding: 1em 2em 2em 2em;
 }
 
-input {
+#boardControls {
+  width: 25em;
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+input.styled {
+  color:#333;
+  background-color:#eee;
+  border-radius:5px;
+  -moz-border-radius:5px;
+  -webkit-border-radius:5px;
+  border:none;
+  font-size: 1em;
+  height:2em;
+  padding:.25em 1em;
+  margin: 0em 0.25em;
+}
+
+input.styled:hover {
+  color: #fff;
+  cursor: pointer;
+}
+
+input, input.styled {
   font-family: CoreHumanistSans, Helvetica, Arial, sans-serif;
 }
 
@@ -156,7 +178,7 @@ input.letter {
   background: #f5f5f5;
 }
 
-.ours {
+.ours, input.styled:hover {
   background: #72d0ff;
 }
 
