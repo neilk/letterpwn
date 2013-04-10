@@ -172,7 +172,7 @@
         minFrequency: minFrequency,
         oursBitMask: oursBitMask,
         theirsBitMask: theirsBitMask,
-        isClientComboAble: typeof comboWorker !== undefined
+        isClientComboAble: typeof comboWorkerSend !== undefined
       },
       error: function(xhr, status, err) {
         console.log(xhr, status, err);
@@ -185,16 +185,29 @@
             apiCache[minFrequency] = data;
             displayApiResult(data);
           } else if (data[1] == 'words') {
+            var serverStats = data[3];
+            var startLocalComputeTime = Date.now();
             /* if server was only able to provide words (due to timeout, or because we want to otherwise
                offload work to the client) and we can use a combo worker here to calculate moves, do that */
-            if (typeof comboWorker !== 'undefined') {
-              comboWorker.postMessage({
+            if (typeof comboWorkerSend !== 'undefined') {
+              comboWorkerSend({
                 seq: sequence,
                 board: board,
                 wordStructs: data[2],
                 oursBitMask: oursBitMask,
                 theirsBitMask: theirsBitMask,
                 minFrequency: minFrequency
+              }, function(message) {
+                serverStats.movesLength = message.movesLength;
+                serverStats.computeTime += Date.now() - startLocalComputeTime;
+                var apiLikeData = [
+                  message.seq, /* sequence number - important to match callbacks when worker returns */
+                  "moves",
+                  message.topMoves,
+                  serverStats
+                ];
+                apiCache[message.minFrequency] = apiLikeData;
+                displayApiResult(apiLikeData);
               });
             } else {
               console.log("we got a message to use a combo worker, but we can't do that!");
@@ -223,7 +236,6 @@
         $('#loading').hide();
         // show some stats related to actual API calls
         // (not always shown if results were cached locally)
-        $('#clientElapsedTime').html(((Date.now() - startTime)/1000).toFixed(3));
         $('#actualApiRequestStats').show();
       });
   }
@@ -231,8 +243,9 @@
   /**
    * We expect the api result to be:
    * data[0]  sequence number (ignored here)
-   * data[1]  array of moves
-   * data[2]  stats
+   * data[1]  return type (words|moves)
+   * data[2]  array of moves
+   * data[3]  stats
    * @param {Array} data described above
    */
   function displayApiResult(data) {
@@ -248,7 +261,7 @@
     $('#statsDictionaryCount').html(commify(stats.dictionaryLength));
     $('#statsWordsCount').html(commify(stats.wordsLength));
     $('#statsMoveCount').html(commify(stats.movesLength));
-    $('#statsServerElapsedTime').html((stats.serverTime/1000).toFixed(3));
+    $('#statsComputeTime').html((stats.computeTime/1000).toFixed(3));
   }
 
   function getPreviewBoard(oursBitMask, theirsBitMask) {
@@ -392,21 +405,21 @@
 
 
   /* worker initialization */
-  var comboWorker;
+  var comboWorkerSend;
   if (typeof Worker !== 'undefined') {
-    var w = new Worker('/javascripts/browserify/clientMoveComboWorker.js');
-    w.onmessage = function(oEvent) {
-      var message = oEvent.data;
-      var apiLikeData = [
-        message.seq, /* sequence number - irrelevant to cache, done just to match signature. TODO fix */
-        "moves",
-        message.topMoves,
-        [ 999, 999, 999, 999 ] /* fake stats - placeholder */
-      ]
-      apiCache[message.minFrequency] = apiLikeData;
-      displayApiResult(apiLikeData);
-    };
-    comboWorker = w;
+    (function() {
+      var worker = new Worker('/javascripts/browserify/clientMoveComboWorker.js');
+      var callbacks = [];
+      worker.onmessage = function(oEvent) {
+        var message = oEvent.data;
+        callbacks[message.seq](message);
+        delete callbacks[message.seq];
+      };
+      comboWorkerSend = function(message, callback) {
+        callbacks[message.seq] = callback;
+        worker.postMessage(message);
+      };
+    })();
   }
 
   /* configuration */

@@ -112,7 +112,7 @@ exports.api = function(req, res, next) {
           stats[key] = extraStats[key];
         }
       }
-      stats['serverTime'] = Date.now() - startTime;
+      stats['computeTime'] = Date.now() - startTime;
 
       // and send!
       res.send([sequence, objType, obj, stats]);
