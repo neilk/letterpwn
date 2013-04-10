@@ -274,20 +274,30 @@
     return x.join("");
   }
 
-  $('#randomize').click(function(e) {
+  function reset() {
     oursBitMask = 0;
     theirsBitMask = 0;
     queuedUpdate = null;
     sequence = 0;
     colorBoard($mainBoard, 0, 0); // why should we have to do this here? updateWords does it, but it happens slowly
     lastUpdate = null;
+  }
 
+  $('#randomize').click( function() {
+    reset();
     $('input.letter').each(function() {
-      // ascii 'a' = 65
       this.value = String.fromCharCode(Math.floor(Math.random()*26+65));
     });
     queueUpdate();
-  })
+  });
+
+  $('#clear').click( function() {
+    reset();
+    $('input.letter').each(function() {
+      this.value = '';
+    });
+    updateMoves();
+  });
 
   $('#paintControls .icon').parent().click(function(e) {
     $('#paintControls .iconHighlight').removeClass('active');
