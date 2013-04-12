@@ -1,0 +1,8 @@
+#!/bin/bash
+
+COMPILE="java -jar $COMPILERJAR --compilation_level ADVANCED_OPTIMIZATIONS"
+
+for sourcefile in `ls -1 public/javascripts/*.js`; do
+  targetfile="public/js/$(/usr/bin/basename $sourcefile)"
+  $COMPILE $sourcefile > $targetfile
+done;
