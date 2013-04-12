@@ -482,7 +482,7 @@
     },
     stop: function(event, ui) {
       updateMoves();
-    },
+    }
   });
 
   $('#frequencyCtrl').slider( "value", initialFrequencySliderValue);
