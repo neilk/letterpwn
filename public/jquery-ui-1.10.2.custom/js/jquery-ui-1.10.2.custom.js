@@ -1,6 +1,6 @@
-/*! jQuery UI - v1.10.2 - 2013-04-11
+/*! jQuery UI - v1.10.2 - 2013-04-12
 * http://jqueryui.com
-* Includes: jquery.ui.core.js, jquery.ui.widget.js, jquery.ui.mouse.js, jquery.ui.position.js, jquery.ui.slider.js, jquery.ui.effect.js, jquery.ui.effect-fade.js, jquery.ui.effect-slide.js
+* Includes: jquery.ui.core.js, jquery.ui.widget.js, jquery.ui.mouse.js, jquery.ui.position.js, jquery.ui.slider.js, jquery.ui.effect.js, jquery.ui.effect-slide.js
 * Copyright 2013 jQuery Foundation and other contributors Licensed MIT */
 
 (function( $, undefined ) {
@@ -3403,23 +3403,6 @@ $.each( baseEasings, function( name, easeIn ) {
 })();
 
 })(jQuery);
-(function( $, undefined ) {
-
-$.effects.effect.fade = function( o, done ) {
-	var el = $( this ),
-		mode = $.effects.setMode( el, o.mode || "toggle" );
-
-	el.animate({
-		opacity: mode
-	}, {
-		queue: false,
-		duration: o.duration,
-		easing: o.easing,
-		complete: done
-	});
-};
-
-})( jQuery );
 (function( $, undefined ) {
 
 $.effects.effect.slide = function( o, done ) {

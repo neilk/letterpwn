@@ -332,7 +332,19 @@ exports.getBoardPositionMap = getBoardPositionMap;
 
 
 
-},{"../public/javascripts/letterpress-bitmask":3,"./letterpress-config":5,"./letterpress-getBitMask":4,"underscore":6}],6:[function(require,module,exports){
+},{"../public/javascripts/letterpress-bitmask":3,"./letterpress-config":5,"./letterpress-getBitMask":4,"underscore":6}],5:[function(require,module,exports){
+var _ = require('underscore');
+
+exports.MAX_FREQUENCY = 24;
+exports.DEFAULT_FREQUENCY = 15;
+
+exports.BOARD_SIZE = 25;
+exports.POSITIONS_TO_WIN = 13;
+
+// this is all bits turned on in BOARD_SIZE
+exports.MAX_BITMASK = _.range(exports.BOARD_SIZE).reduce(function (r, i) { return r | (1 << i); }, 0);
+
+},{"underscore":6}],6:[function(require,module,exports){
 (function(){//     Underscore.js 1.4.4
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud Inc.
@@ -1561,17 +1573,5 @@ exports.getBoardPositionMap = getBoardPositionMap;
 }).call(this);
 
 })()
-},{}],5:[function(require,module,exports){
-var _ = require('underscore');
-
-exports.MAX_FREQUENCY = 24;
-exports.DEFAULT_FREQUENCY = 15;
-
-exports.BOARD_SIZE = 25;
-exports.POSITIONS_TO_WIN = 13;
-
-// this is all bits turned on in BOARD_SIZE
-exports.MAX_BITMASK = _.range(exports.BOARD_SIZE).reduce(function (r, i) { return r | (1 << i); }, 0);
-
-},{"underscore":6}]},{},[1])
+},{}]},{},[1])
 ;
