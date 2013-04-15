@@ -1,20 +1,13 @@
 var
-  backgrounder = require('backgrounder'),
   expressValidator = require('express-validator'),
   lp = require('../lib/letterpress'),
   lpConfig = require('../lib/letterpress-config'),
   path = require('path'),
-  set = require('../lib/set');
+  set = require('../lib/set'),
+  Worker = require('webworker-threads').Worker;
 
 
-var comboWorker = backgrounder.spawn(
-  path.join(__dirname, "../bin/serverMoveComboWorker.js"),
-  { 'children-count': 5 },
-  function() {
-    console.log("worker children started");
-  }
-);
-
+var worker = new Worker('bin/serverMoveComboWorker.js')
 
 // some extra filters for our processing
 expressValidator.Filter.prototype.toLowerCase = function() {
@@ -106,7 +99,7 @@ exports.api = function(req, res, next) {
      * @param {Object} extraStats object of simple key-value pairs, stats about what was considered
      */
     function sendToClient(objType, obj, extraStats) {
-      // merge extra stats
+
       if (typeof extraStats !== 'undefined') {
         for (var key in extraStats) {
           stats[key] = extraStats[key];
@@ -124,15 +117,15 @@ exports.api = function(req, res, next) {
     if (isClientComboAble) {
       sendToClient('words', wfb.wordStructs);
     } else {
-      comboWorker.send(
+      worker.onmessage = function(movesObj) {
+        sendToClient('moves', movesObj.topMoves, { movesLength: movesObj.movesLength });
+      };
+      worker.postMessage(
         {
           board: board,
           wordStructs: wordStructs,
           oursBitMask: oursBitMask,
           theirsBitMask: theirsBitMask
-        },
-        function(movesObj) {
-          sendToClient('moves', movesObj.topMoves, { movesLength: movesObj.movesLength });
         }
       );
     }
