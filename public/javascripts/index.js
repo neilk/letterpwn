@@ -515,17 +515,4 @@
   // start off typing in the first position
   $('#b0').click();
 
-  // if loaded in an iframe, make sure that external links break out
-  if (self !== top) {
-    var proto = '^\\s*\\w+:\\/\\/';
-    var protoRe = new RegExp(proto);
-    var sameHostRe = new RegExp(proto + self.location.host);
-    $('a').each(function() {
-      if (this.href.match(protoRe) && !this.href.match(sameHostRe)) {
-        var escapedHref = this.href.replace('"', '\\"'); // paranoia
-        this.href = 'javascript:top.location="' + escapedHref + '"';
-      }
-    });
-  }
-
 })(jQuery);

@@ -27,6 +27,19 @@ html
     script(src='/jquery-ui-1.10.2.custom/js/jquery-ui-1.10.2.custom.js')
     block contentScripts
     script
+      // if loaded in an iframe, make sure that external links break out
+      if (self !== top) {
+        var proto = '^\\s*\\w+:\\/\\/';
+        var protoRe = new RegExp(proto);
+        var sameHostRe = new RegExp(proto + self.location.host);
+        jQuery('a').each(function() {
+          if (this.href.match(protoRe) && !this.href.match(sameHostRe)) {
+            var escapedHref = this.href.replace('"', '\\"'); // paranoia
+            this.href = 'javascript:top.location="' + escapedHref + '"';
+          }
+        });
+      }
+    script
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-39611348-1']);
       _gaq.push(['_setDomainName', 'letterpwn.neilk.net']);
