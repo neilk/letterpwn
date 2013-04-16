@@ -158,3 +158,7 @@ exports.about = function(req, res, next) {
   res.render('about');
 }
 
+exports.colophon = function(req, res, next) {
+  res.render('colophon');
+}
+
