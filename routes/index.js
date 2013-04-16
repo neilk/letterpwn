@@ -154,4 +154,7 @@ exports.index = function(req, res, next) {
   res.render('index', params);
 }
 
+exports.about = function(req, res, next) {
+  res.render('about');
+}
 
