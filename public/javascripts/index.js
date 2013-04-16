@@ -1,3 +1,5 @@
+// Hello, curious person.
+// FYI: nobody should code like this. it's not MVC or particularly clean. But this is a side project. -- NK
 (function($){
 
   function letterInputsToString() {
