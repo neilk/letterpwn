@@ -7,11 +7,15 @@ var
   set = require('../lib/set');
 
 
+var sendToWorker = function() { console.log("sendToWorker called before workers ready"); }
 var comboWorker = backgrounder.spawn(
   path.join(__dirname, "../bin/serverMoveComboWorker.js"),
-  { 'children-count': 5 },
+  {
+    'children-count': 5,
+    'auto-restart': true
+  },
   function() {
-    console.log("worker children started");
+    console.log("Coordinator: Workers started");
   }
 );
 
