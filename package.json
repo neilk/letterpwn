@@ -26,7 +26,7 @@
     "jade": "*",
     "lazy": "1.x",
     "lru-memoize": "git://github.com/neilk/lru-memoize.git",
-    "webworker-threads": "*",
+    "threads_a_gogo": "*",
     "underscore": "1.x"
   }
 }

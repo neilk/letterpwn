@@ -4,10 +4,12 @@ var
   lpConfig = require('../lib/letterpress-config'),
   path = require('path'),
   set = require('../lib/set'),
-  Worker = require('webworker-threads').Worker;
+  Thread = require('threads_a_gogo');
 
+var numThreads = 5;
+var threadPool= Thread.createPool(numThreads);
+threadPool.load('/Users/neilk/cloud/Dropbox/projects/letterpress-cheat/bin/serverMovesThread.js');
 
-var worker = new Worker('bin/serverMoveComboWorker.js')
 
 // some extra filters for our processing
 expressValidator.Filter.prototype.toLowerCase = function() {
@@ -114,20 +116,27 @@ exports.api = function(req, res, next) {
 
     /* if client can calculate moves, just send the words. Otherwise get a worker to
        do the calculation here on the server */
-    if (isClientComboAble) {
+    if (false) { //isClientComboAble) {
       sendToClient('words', wfb.wordStructs);
     } else {
-      worker.onmessage = function(movesObj) {
-        sendToClient('moves', movesObj.topMoves, { movesLength: movesObj.movesLength });
+      var message = {
+        board: board,
+        wordStructs: wordStructs,
+        oursBitMask: oursBitMask,
+        theirsBitMask: theirsBitMask
       };
-      worker.postMessage(
-        {
-          board: board,
-          wordStructs: wordStructs,
-          oursBitMask: oursBitMask,
-          theirsBitMask: theirsBitMask
+      var evalCall = 'getMoves(' + JSON.stringify(message) + ')';
+
+      threadPool.any.eval(evalCall, function(err, movesObj) {
+        if (err) {
+          console.log("error");
+          console.log(err);
+        } else {
+          console.log("success");
+          console.log(movesObj);
+          sendToClient('moves', movesObj.topMoves, { movesLength: movesObj.movesLength });
         }
-      );
+      });
     }
 
   }
