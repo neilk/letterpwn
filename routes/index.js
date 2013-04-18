@@ -10,7 +10,6 @@ var numThreads = 5;
 var threadPool= Thread.createPool(numThreads);
 threadPool.load('/Users/neilk/cloud/Dropbox/projects/letterpress-cheat/bin/serverMovesThreadRequireless.js');
 
-
 // some extra filters for our processing
 expressValidator.Filter.prototype.toLowerCase = function() {
   this.modify(this.str.toLowerCase());
@@ -116,7 +115,7 @@ exports.api = function(req, res, next) {
 
     /* if client can calculate moves, just send the words. Otherwise get a worker to
        do the calculation here on the server */
-    if (false) { //isClientComboAble) {
+    if (isClientComboAble) {
       sendToClient('words', wfb.wordStructs);
     } else {
       var message = {
@@ -150,4 +149,11 @@ exports.index = function(req, res, next) {
   res.render('index', params);
 }
 
+exports.about = function(req, res, next) {
+  res.render('about');
+}
+
+exports.colophon = function(req, res, next) {
+  res.render('colophon');
+}
 

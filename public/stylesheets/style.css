@@ -18,7 +18,8 @@
  * © 2013 MyFonts Inc
 */
 
-@font-face {font-family: 'CoreHumanistSans';src: url('webfonts/2597E3_0_0.eot');src: url('webfonts/2597E3_0_0.eot?#iefix') format('embedded-opentype'),url('webfonts/2597E3_0_0.woff') format('woff'),url('webfonts/2597E3_0_0.ttf') format('truetype');}
+/* A font by Alex Scholing, www.fontsbyalex.com */
+@font-face {font-family: 'CoreHumanistSans';src: url('http://neilk.net/font/CoreHumanistSans/2597E3_0_0.eot');src: url('http://neilk.net/font/CoreHumanistSans/2597E3_0_0.eot?#iefix') format('embedded-opentype'),url('http://neilk.net/font/CoreHumanistSans/2597E3_0_0.woff') format('woff'),url('http://neilk.net/font/CoreHumanistSans/2597E3_0_0.ttf') format('truetype');}
 
 /* end of webfonts */
 
@@ -65,6 +66,11 @@ h2 {
   margin-bottom: 1em;
   display: inline-block;
   margin-right: em;
+}
+
+h3 {
+  font-size: 1.5em;
+  margin: 0.5em 0em;
 }
 
 #header p {

@@ -40,6 +40,9 @@ app.configure('development', function(){
 app.get('/', routes.index);
 app.get('/api', routes.api);
 //app.get('/test', testRoute.test);
+app.get('/about', routes.about);
+app.get('/colophon', routes.colophon);
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

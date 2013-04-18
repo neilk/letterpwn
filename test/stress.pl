@@ -2,8 +2,9 @@
 
 use strict;
 
-my @childPid; 
+my $host = $ARGV[0] || 'localhost:3000';
 
+my @childPid; 
 
 $SIG{'TERM'} = $SIG{'INT'} = sub {
   local ($SIG{CHLD}) = 'IGNORE';
@@ -20,7 +21,7 @@ for my $child (0..4) {
   while(1) { 
     my $b = join "", map { chr(97 + (int(rand(26)))) } (0..24);
     print "$b\n";
-    my $url = "http://localhost:3000/api?seq=1&board=$b&minFrequency=0&oursBitMask=0&theirsBitMask=0";
+    my $url = "http://$host/api?seq=1&board=$b&minFrequency=0&oursBitMask=0&theirsBitMask=0&isClientComboAble=true";
     my $ret = `curl -sS '$url'`;
     $ret =~ s/[\n\r]//g;
     $ret = substr($ret, 0, 20);

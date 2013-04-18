@@ -7,8 +7,10 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     div(id='header')
-      img(src='/logo.png', id='logo')
-      h1 LetterPwn
+      a(href='/')
+        img(src='/logo.png', id='logo')
+      a(href='/')
+        h1 LetterPwn
       h2 a Letterpress solver by&nbsp;
         a(href='http://neilk.net/') Neil K.
       p
@@ -20,13 +22,27 @@ html
         | Letterpress 
       | is a trademark of 
       a(href='http://atebits.com/') atebits
-      |. No copyright or trademark violation is intended, this is just a coding exercise. 
-      | LetterPwn is by 
+      |. LetterPwn is by 
       a(href='http://neilk.net/') Neil Kandalgaonkar&#32;
       | &copy; 2013.
-    script(src='/javascripts/jquery-1.9.0.js')
+      | 
+      a(href='/colophon') Colophon
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js')
     script(src='/jquery-ui-1.10.2.custom/js/jquery-ui-1.10.2.custom.js')
     block contentScripts
+    script
+      // if loaded in an iframe, make sure that external links break out
+      if (self !== top) {
+        var proto = '^\\s*\\w+:\\/\\/';
+        var protoRe = new RegExp(proto);
+        var sameHostRe = new RegExp(proto + self.location.host);
+        jQuery('a').each(function() {
+          if (this.href.match(protoRe) && !this.href.match(sameHostRe)) {
+            var escapedHref = this.href.replace('"', '\\"'); // paranoia
+            this.href = 'javascript:top.location="' + escapedHref + '"';
+          }
+        });
+      }
     script
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-39611348-1']);
