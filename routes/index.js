@@ -8,7 +8,7 @@ var
 
 var numThreads = 5;
 var threadPool= Thread.createPool(numThreads);
-threadPool.load('/Users/neilk/cloud/Dropbox/projects/letterpress-cheat/bin/serverMovesThread.js');
+threadPool.load('/Users/neilk/cloud/Dropbox/projects/letterpress-cheat/bin/serverMovesThreadRequireless.js');
 
 
 // some extra filters for our processing
@@ -126,14 +126,12 @@ exports.api = function(req, res, next) {
         theirsBitMask: theirsBitMask
       };
       var evalCall = 'getMoves(' + JSON.stringify(message) + ')';
-
-      threadPool.any.eval(evalCall, function(err, movesObj) {
+      threadPool.any.eval(evalCall, function(err, movesObjJson) {
+        var movesObj = JSON.parse(movesObjJson);
         if (err) {
           console.log("error");
           console.log(err);
         } else {
-          console.log("success");
-          console.log(movesObj);
           sendToClient('moves', movesObj.topMoves, { movesLength: movesObj.movesLength });
         }
       });
