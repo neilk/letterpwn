@@ -20,8 +20,9 @@ for my $child (0..4) {
 
   while(1) { 
     my $b = join "", map { chr(97 + (int(rand(26)))) } (0..24);
-    print "$b\n";
-    my $url = "http://$host/api?seq=1&board=$b&minFrequency=0&oursBitMask=0&theirsBitMask=0&isClientComboAble=true";
+    my $combo = rand() * 3 > 1 ? 'true' : 'false';
+    print "$b $combo\n";
+    my $url = "http://$host/api?seq=1&board=$b&minFrequency=0&oursBitMask=0&theirsBitMask=0&isClientComboAble=$combo";
     my $ret = `curl -sS '$url'`;
     $ret =~ s/[\n\r]//g;
     $ret = substr($ret, 0, 20);
