@@ -1,7 +1,7 @@
-letterpress-cheat
+LetterPwn
 =================
 
-Cheat at letterpress. 
+Solve LetterPress boards. Try it out here: http://letterpwn.neilk.net/
 
-This repository uses browserified scripts. To ensure they are generated before each commit, add
-git/hooks/pre-commit to your .git/hooks/pre-commit script.
+Written as an exercise in concurrency with Node.JS.
+
