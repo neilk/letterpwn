@@ -8,7 +8,7 @@ var
 
 var numThreads = 5;
 var threadPool= Thread.createPool(numThreads);
-threadPool.load('/Users/neilk/cloud/Dropbox/projects/letterpress-cheat/bin/serverMovesThreadRequireless.js');
+threadPool.load('bin/serverMovesThreadRequireless.js');
 
 // some extra filters for our processing
 expressValidator.Filter.prototype.toLowerCase = function() {
