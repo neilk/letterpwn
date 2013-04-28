@@ -239,6 +239,11 @@
         // show some stats related to actual API calls
         // (not always shown if results were cached locally)
         $('#actualApiRequestStats').show();
+
+        // update google analytics
+        if (window._gaq) {
+          window._gaq.push(['_trackPageview', '/api']);
+        }
       });
   }
 
