@@ -9,12 +9,13 @@ var express = require('express')
     //testRoute = require('./routes/test')
     path = require('path');
 
-console.log(process.env.NODETIME_ACCOUNT_KEY);
 if(process.env.NODETIME_ACCOUNT_KEY) {
   require('nodetime').profile({
     accountKey: process.env.NODETIME_ACCOUNT_KEY,
     appName: 'LetterPwn' // optional
   });
+  console.log("Nodetime profile activated")
+  console.log("NODETIME_ACCOUNT_KEY=" + process.env.NODETIME_ACCOUNT_KEY);
 }
 
 var app = express();
