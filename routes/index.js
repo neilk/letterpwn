@@ -6,7 +6,7 @@ var
   set = require('../lib/set'),
   Thread = require('threads_a_gogo');
 
-var numThreads = 5;
+var numThreads = 10;
 var threadPool= Thread.createPool(numThreads);
 threadPool.load('bin/serverMovesThreadRequireless.js');
 
