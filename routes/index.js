@@ -3,12 +3,12 @@ var
   lp = require('../lib/letterpress'),
   lpConfig = require('../lib/letterpress-config'),
   path = require('path'),
-  set = require('../lib/set'),
-  Thread = require('threads_a_gogo');
+  set = require('../lib/set');
+  // Thread = require('threads_a_gogo');
 
-var numThreads = 5;
-var threadPool= Thread.createPool(numThreads);
-threadPool.load('bin/serverMovesThreadRequireless.js');
+//var numThreads = 5;
+//var threadPool= Thread.createPool(numThreads);
+//threadPool.load('bin/serverMovesThreadRequireless.js');
 
 // some extra filters for our processing
 expressValidator.Filter.prototype.toLowerCase = function() {
