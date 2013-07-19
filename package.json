@@ -19,7 +19,6 @@
     "npm": "1.1.x"
   },
   "dependencies": {
-    "backgrounder": "*",
     "browserify": "*",
     "express": "*",
     "express-validator": "*",
