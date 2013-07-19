@@ -43,8 +43,6 @@ app.get('/api', routes.api);
 app.get('/about', routes.about);
 app.get('/colophon', routes.colophon);
 
-// blitz.io proof of ownership
-app.get('/mu-b432335c-89203046-5ca83cfa-02a50845', function(req, res, next) { res.end("42"); });
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
