@@ -14,6 +14,7 @@ var app = express();
 app.configure(function(){
   app.use(express.favicon(path.join(__dirname, 'public', 'favicon.ico')));
   app.set('port', process.env.PORT || 3000);
+  app.set('jqueryUrl', process.env.JQUERYURL || '/javascripts/jquery-1.9.0.js');
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(expressValidator);
