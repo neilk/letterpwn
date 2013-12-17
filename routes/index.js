@@ -122,7 +122,7 @@ exports.api = function(req, res, next) {
       };
       var moves = lpMoves.getMovesForBoard(board, wordStructs);
       var topMoves = lpMoves.getTopMoves(moves, oursBitMask, theirsBitMask);
-      sendToClient('moves', topMoves, { movesLength: movesLength });
+      sendToClient('moves', topMoves, { movesLength: moves.length });
     }
 
   }
