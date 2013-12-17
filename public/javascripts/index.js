@@ -1,7 +1,7 @@
 // Hello, curious person.
 // FYI: nobody should code like this. it's not MVC or particularly clean. But this is a side project. -- NK
 (function($){
-  var useWorkers = false;
+  window.useWorkers = true;
 
   function letterInputsToString() {
     var board = $('input.letter').get().reduce(function(r,el){ return r + el.value; }, '');
@@ -175,7 +175,7 @@
         minFrequency: minFrequency,
         oursBitMask: oursBitMask,
         theirsBitMask: theirsBitMask,
-        isClientComboAble: (typeof comboWorkerSend !== undefined) && useWorkers
+        isClientComboAble: (typeof comboWorkerSend !== undefined) && window.useWorkers
       },
       error: function(xhr, status, err) {
         console.log(xhr, status, err);
