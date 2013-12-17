@@ -2,7 +2,8 @@
  * Module dependencies.
  */
 
-var express = require('express')
+var cluster = require('cluster'),
+    express = require('express'),
     expressValidator = require('express-validator'),
     http = require('http'),
     routes = require('./routes'),
@@ -10,6 +11,8 @@ var express = require('express')
     path = require('path');
 
 var app = express();
+
+var MAX_PROCESSES = 5;
 
 app.configure(function(){
   app.use(express.favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -48,6 +51,17 @@ app.get('/colophon', routes.colophon);
 // blitz.io proof of ownership
 app.get('/mu-b432335c-89203046-5ca83cfa-02a50845', function(req, res, next) { res.end("42"); });
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
-});
+if (cluster.isMaster) {
+  // fork!
+  for (var i = 0; i < MAX_PROCESSES; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', function(worker, code, signal) {
+    console.log('worker ' + worker.process.pid + ' died');
+  })
+} else {
+  http.createServer(app).listen(app.get('port'), function(){
+    console.log("Express server listening on port " + app.get('port'));
+  });
+}

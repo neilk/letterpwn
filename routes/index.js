@@ -2,13 +2,10 @@ var
   expressValidator = require('express-validator'),
   lp = require('../lib/letterpress'),
   lpConfig = require('../lib/letterpress-config'),
+  lpMoves = require('../lib/letterpress-moves'),
   path = require('path'),
-  set = require('../lib/set'),
-  Thread = require('threads_a_gogo');
+  set = require('../lib/set');
 
-var numThreads = 5;
-var threadPool= Thread.createPool(numThreads);
-threadPool.load('bin/serverMovesThreadRequireless.js');
 
 // some extra filters for our processing
 expressValidator.Filter.prototype.toLowerCase = function() {
@@ -112,7 +109,6 @@ exports.api = function(req, res, next) {
       res.send([sequence, objType, obj, stats]);
     }
 
-
     /* if client can calculate moves, just send the words. Otherwise get a worker to
        do the calculation here on the server */
     if (isClientComboAble) {
@@ -124,20 +120,13 @@ exports.api = function(req, res, next) {
         oursBitMask: oursBitMask,
         theirsBitMask: theirsBitMask
       };
-      var evalCall = 'getMoves(' + JSON.stringify(message) + ')';
-      threadPool.any.eval(evalCall, function(err, movesObjJson) {
-        var movesObj = JSON.parse(movesObjJson);
-        if (err) {
-          console.log("error");
-          console.log(err);
-        } else {
-          sendToClient('moves', movesObj.topMoves, { movesLength: movesObj.movesLength });
-        }
-      });
+      var moves = lpMoves.getMovesForBoard(board, wordStructs);
+      var topMoves = lpMoves.getTopMoves(moves, oursBitMask, theirsBitMask);
+      sendToClient('moves', topMoves, { movesLength: movesLength });
     }
 
   }
-}
+};
 
 exports.index = function(req, res, next) {
   var params = {
@@ -147,13 +136,13 @@ exports.index = function(req, res, next) {
     'words': []
   };
   res.render('index', params);
-}
+};
 
 exports.about = function(req, res, next) {
   res.render('about');
-}
+};
 
 exports.colophon = function(req, res, next) {
   res.render('colophon');
-}
+};
 
